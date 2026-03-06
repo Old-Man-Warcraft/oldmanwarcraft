@@ -104,3 +104,6 @@ local.properties
 # ==================
 .cache
 compile_commands.json
+env/logs/Server.log
+env/logs/Playerbots.log
+env/logs/Errors.log
