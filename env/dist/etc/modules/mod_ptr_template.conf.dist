@@ -36,6 +36,8 @@ LevelEnable = true
 #   TemplateReputation
 #   TemplateResources
 #   TemplateSkills
+#   TemplateTalents
+#   TemplateGlyphs
 #   TemplateSpells
 #   TemplateTaximask
 #   TemplateTeleport
@@ -54,6 +56,8 @@ TemplateQuests       = false
 TemplateReputation   = true
 TemplateResources    = true
 TemplateSkills       = true
+TemplateTalents      = true
+TemplateGlyphs       = true
 TemplateSpells       = true
 TemplateTaximask     = true
 TemplateTeleport     = true
