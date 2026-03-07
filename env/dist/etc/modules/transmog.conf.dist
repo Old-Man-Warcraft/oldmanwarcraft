@@ -105,7 +105,8 @@ Transmogrification.EnableSortByQualityAndName = 1
 #        Default:    1.0
 #
 #    Transmogrification.CopperCost
-#        Description: Cost added on top of other costs (can be negative)
+#        Description: Cost added on top of other costs.
+#                     Negative values are allowed, but final costs below 0 are clamped to 0.
 #        Default:    0
 #
 #    For custom gold cost set ScaledCostModifier to 0.0 and CopperCost to what ever cost you want
@@ -277,7 +278,8 @@ Transmogrification.IgnoreReqStats = 0
 #        Default:    3.0
 #
 #    Transmogrification.SetCopperCost
-#        Description: Cost added on top of other costs (can be negative)
+#        Description: Cost added on top of other costs.
+#                     Negative values are allowed, but final costs below 0 are clamped to 0.
 #        Default:    0
 
 Transmogrification.EnableSets = 1
