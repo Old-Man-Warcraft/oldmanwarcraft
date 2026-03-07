@@ -58,16 +58,25 @@ EXECPATH=$(realpath "$BINFILE")
 if [ "$GDB_ENABLED" -eq 1 ]; then
     echo "Starting $EXECPATH with GDB enabled"
 
+    if ulimit -c unlimited 2>/dev/null; then
+        echo "Core dumps enabled for $BINFILE"
+    else
+        echo "Warning: unable to raise core dump limit for $BINFILE"
+    fi
+
     # Generate GDB configuration on the fly
     TIMESTAMP=$(date +%Y-%m-%d-%H-%M-%S)
     GDB_TEMP_FILE="$CRASHES_PATH/gdb-$TIMESTAMP.conf"
     GDB_OUTPUT_FILE="$CRASHES_PATH/gdb-$TIMESTAMP.txt"
+    CORE_OUTPUT_FILE="$CRASHES_PATH/core-$BINFILE-$TIMESTAMP"
 
     # Create GDB configuration file if it is not defined
     if [ -z "$GDB_FILE" ]; then
 
         # Create GDB configuration
         cat > "$GDB_TEMP_FILE" << EOF
+    set pagination off
+    set confirm off
 set logging file $GDB_OUTPUT_FILE
 set logging enabled on
 set debug timestamp
@@ -81,6 +90,17 @@ EOF
     fi
     
     cat >> "$GDB_TEMP_FILE" << EOF
+python
+core_path = r"$CORE_OUTPUT_FILE"
+try:
+    inferior = gdb.selected_inferior()
+    if inferior is not None and inferior.pid:
+        gdb.execute("generate-core-file {}".format(core_path))
+    else:
+        gdb.write("Skipping core dump generation: inferior not available.\n")
+except gdb.error as err:
+    gdb.write("Skipping core dump generation: {}\n".format(err))
+end
 bt
 bt full
 info thread
