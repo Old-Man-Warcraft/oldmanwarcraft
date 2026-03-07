@@ -4470,7 +4470,7 @@ void ObjectMgr::LoadPlayerInfo()
                         {
                             if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
                             {
-                                if (!GetSkillRaceClassInfo(skill.SkillId, raceIndex, classIndex))
+                                if (!GetSkillRaceClassInfo(skill.SkillId, raceIndex, classIndex) && !IsLanguageSkill(skill.SkillId))
                                     continue;
 
                                 if (PlayerInfo* info = _playerInfo[raceIndex][classIndex])
@@ -9511,6 +9511,12 @@ SkillRangeType GetSkillRangeType(SkillRaceClassInfoEntry const* rcEntry)
     }
 
     return SKILL_RANGE_LEVEL;
+}
+
+bool IsLanguageSkill(uint32 skillId)
+{
+    SkillLineEntry const* skill = sSkillLineStore.LookupEntry(skillId);
+    return skill && skill->categoryId == SKILL_CATEGORY_LANGUAGES;
 }
 
 void ObjectMgr::LoadGameTele()
