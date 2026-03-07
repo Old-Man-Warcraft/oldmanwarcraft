@@ -25,7 +25,7 @@
 /*.override.yaml
 
 !.gitkeep
-
+/env/logs
 # default build directory if not specified by CMAKE configuration
 /out/*
 
