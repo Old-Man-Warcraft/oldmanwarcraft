@@ -37,6 +37,9 @@ template<class SocketType>
 class NetworkThread
 {
 public:
+    static constexpr int32 ACTIVE_UPDATE_DELAY_MS = 1;
+    static constexpr int32 IDLE_UPDATE_DELAY_MS = 10;
+
     NetworkThread() :
         _ioContext(1), _acceptSocket(_ioContext), _updateTimer(_ioContext), _proxyHeaderReadingEnabled(false) { }
 
@@ -179,7 +182,7 @@ protected:
     {
         LOG_DEBUG("misc", "Network Thread Starting");
 
-        _updateTimer.expires_at(std::chrono::steady_clock::now() + std::chrono::milliseconds(1));
+        _updateTimer.expires_at(std::chrono::steady_clock::now() + std::chrono::milliseconds(GetUpdateDelayMs()));
         _updateTimer.async_wait([this](boost::system::error_code const&) { Update(); });
         _ioContext.run();
 
@@ -193,7 +196,7 @@ protected:
         if (_stopped)
             return;
 
-        _updateTimer.expires_at(std::chrono::steady_clock::now() + std::chrono::milliseconds(1));
+        _updateTimer.expires_at(std::chrono::steady_clock::now() + std::chrono::milliseconds(GetUpdateDelayMs()));
         _updateTimer.async_wait([this](boost::system::error_code const&) { Update(); });
 
         AddNewSockets();
@@ -213,6 +216,12 @@ protected:
 
             return false;
         }), _sockets.end());
+    }
+
+    int32 GetUpdateDelayMs() const
+    {
+        // Back off while fully idle to avoid burning CPU with frequent wakeups.
+        return _connections.load(std::memory_order_relaxed) > 0 ? ACTIVE_UPDATE_DELAY_MS : IDLE_UPDATE_DELAY_MS;
     }
 
 private:
