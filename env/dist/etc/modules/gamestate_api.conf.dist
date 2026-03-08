@@ -23,10 +23,34 @@
 #
 #    GameStateAPI.AllowedOrigin
 #        Description: CORS allowed origin for web requests
-#        Default:     "*"
+#        Default:     ""
+#
+#    GameStateAPI.RequireAuth
+#        Description: Require API clients to send an auth token.
+#        Default:     1 - Required
+#                     0 - Disabled
+#
+#    GameStateAPI.AuthToken
+#        Description: Bearer or X-API-Key token required when auth is enabled.
+#                     Leave empty to force explicit configuration before startup.
+#        Default:     ""
+#
+#    GameStateAPI.IncludeSensitivePlayerFields
+#        Description: Include position, account-linked, and currency fields
+#                     in player payloads.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#
+#    GameStateAPI.SnapshotRefreshIntervalMs
+#        Description: Refresh interval for world-thread snapshots served by HTTP.
+#        Default:     5000
 #
 
-GameStateAPI.Enable = 1
-GameStateAPI.Host = "0.0.0.0"
+GameStateAPI.Enable = 0
+GameStateAPI.Host = "127.0.0.1"
 GameStateAPI.Port = 8080
-GameStateAPI.AllowedOrigin = "*"
+GameStateAPI.AllowedOrigin = ""
+GameStateAPI.RequireAuth = 1
+GameStateAPI.AuthToken = ""
+GameStateAPI.IncludeSensitivePlayerFields = 0
+GameStateAPI.SnapshotRefreshIntervalMs = 5000
