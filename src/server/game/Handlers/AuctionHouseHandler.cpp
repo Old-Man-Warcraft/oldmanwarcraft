@@ -273,7 +273,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
             CreatureData const* auctioneerData = sObjectMgr->GetCreatureData(creature->GetSpawnId());
             if (!auctioneerData)
             {
-                LOG_ERROR("network.opcode", "Data for auctioneer not found ({})", auctioneer.ToString());
+                LOG_ERROR("auctionHouse", "Data for auctioneer not found ({})", auctioneer.ToString());
                 delete AH;
                 return;
             }
@@ -281,7 +281,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
             CreatureTemplate const* auctioneerInfo = sObjectMgr->GetCreatureTemplate(auctioneerData->id1);
             if (!auctioneerInfo)
             {
-                LOG_ERROR("network.opcode", "Non existing auctioneer ({})", auctioneer.ToString());
+                LOG_ERROR("auctionHouse", "Non existing auctioneer ({})", auctioneer.ToString());
                 delete AH;
                 return;
             }
@@ -305,7 +305,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
             AH->deposit = deposit;
             AH->auctionHouseEntry = auctionHouseEntry;
 
-            LOG_DEBUG("network.opcode", "CMSG_AUCTION_SELL_ITEM: Player {} ({}) is selling item {} entry {} ({}) with count {} with initial bid {} with buyout {} and with time {} (in sec) in auctionhouse {}",
+            LOG_DEBUG("auctionHouse", "Player {} ({}) is selling item {} entry {} ({}) with count {} with initial bid {} with buyout {} and with time {} (in sec) in auctionhouse {}",
                 _player->GetName(), _player->GetGUID().ToString(), item->GetTemplate()->Name1, item->GetEntry(), item->GetGUID().ToString(), item->GetCount(), bid, buyout, auctionTime, AH->GetHouseId());
             sAuctionMgr->AddAItem(item);
             auctionHouse->AddAuction(AH);
@@ -329,7 +329,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
             Item* newItem = item->CloneItem(finalCount, _player);
             if (!newItem)
             {
-                LOG_ERROR("network.opcode", "CMSG_AUCTION_SELL_ITEM: Could not create clone of item {}", item->GetEntry());
+                LOG_ERROR("auctionHouse", "Could not create clone of item {}", item->GetEntry());
                 SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
                 return;
             }
@@ -346,7 +346,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
             AH->deposit = deposit;
             AH->auctionHouseEntry = auctionHouseEntry;
 
-            LOG_DEBUG("network.opcode", "CMSG_AUCTION_SELL_ITEM: Player {} ({}) is selling item {} entry {} ({}) with count {} with initial bid {} with buyout {} and with time {} (in sec) in auctionhouse {}",
+            LOG_DEBUG("auctionHouse", "Player {} ({}) is selling item {} entry {} ({}) with count {} with initial bid {} with buyout {} and with time {} (in sec) in auctionhouse {}",
                 _player->GetName(), _player->GetGUID().ToString(), newItem->GetTemplate()->Name1, newItem->GetEntry(), newItem->GetGUID().ToString(), newItem->GetCount(), bid, buyout, auctionTime, AH->GetHouseId());
             sAuctionMgr->AddAItem(newItem);
             auctionHouse->AddAuction(AH);
@@ -462,6 +462,9 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recvData)
 
     if (price < auction->buyout || auction->buyout == 0)
     {
+        LOG_DEBUG("auctionHouse", "Player {} ({}) is bidding {} on auction {} owned by {} in auctionhouse {}",
+            player->GetName(), player->GetGUID().ToString(), price, auction->Id, auction->owner.ToString(), auction->GetHouseId());
+
         if (auction->bidder)
         {
             if (auction->bidder == player->GetGUID())
@@ -493,6 +496,9 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recvData)
     }
     else
     {
+        LOG_DEBUG("auctionHouse", "Player {} ({}) is buying out auction {} for {} owned by {} in auctionhouse {}",
+            player->GetName(), player->GetGUID().ToString(), auction->Id, auction->buyout, auction->owner.ToString(), auction->GetHouseId());
+
         //buyout:
         if (player->GetGUID() == auction->bidder)
             player->ModifyMoney(-int32(auction->buyout - auction->bid));
