@@ -1,0 +1,59 @@
+AzerothCore rev. 9d0f8c97049e+ 2026-03-10 02:03:54 +0000 (Playerbot branch) (Unix, Release, Static) (worldserver-daemon)
+<Ctrl-C> to stop.
+
+   █████╗ ███████╗███████╗██████╗  ██████╗ ████████╗██╗  ██╗
+  ██╔══██╗╚══███╔╝██╔════╝██╔══██╗██╔═══██╗╚══██╔══╝██║  ██║
+  ███████║  ███╔╝ █████╗  ██████╔╝██║   ██║   ██║   ███████║
+  ██╔══██║ ███╔╝  ██╔══╝  ██╔══██╗██║   ██║   ██║   ██╔══██║
+  ██║  ██║███████╗███████╗██║  ██║╚██████╔╝   ██║   ██║  ██║
+  ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝
+                                 ██████╗ ██████╗ ██████╗ ███████╗
+                                ██╔════╝██╔═══██╗██╔══██╗██╔════╝
+                                ██║     ██║   ██║██████╔╝█████╗
+                                ██║     ██║   ██║██╔══██╗██╔══╝
+                                ╚██████╗╚██████╔╝██║  ██║███████╗
+                                 ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+
+     AzerothCore 3.3.5a  -  www.azerothcore.org
+
+> Using configuration file       ./src/server/apps/worldserver/worldserver.conf.dist
+> Using SSL version:             OpenSSL 3.0.13 30 Jan 2024 (library: OpenSSL 3.0.13 30 Jan 2024)
+> Using Boost version:           1.83.0
+ 
+Can't set process priority class, error: Permission denied
+ 
+Loading Modules Configuration...
+ 
+Using modules configuration:
+> 1v1arena.conf
+> mod_achievements.conf
+> mod_ahbot.conf
+> mod_ale.conf
+> mod_aoe_loot.conf
+> arena_3v3_solo_queue.conf
+> AutoBalance.conf
+> breakingnews.conf
+> challenge_modes.conf
+> mod_city_siege.conf
+> gamestate_api.conf
+> globalchat.conf
+> goblin_bank.conf
+> mod_guild_village.conf
+> mod_guildhouse.conf
+> individualProgression.conf
+> mod-instanced-worldbosses.conf
+> mod-mythic-plus.conf
+> mod_ollama_chat.conf
+> playerbots.conf
+> mod_ptr_template.conf
+> mod_pvptitles.conf
+> transmog.conf
+ 
+Initializing Scripts...
+> Loading C++ scripts
+ 
+[Ollama Chat] Registering mod-ollama-chat scripts.
+[Ollama Chat] Registering mod-ollama-chat events.
+Opening DatabasePool 'acore_auth'. Asynchronous connections: 1, synchronous connections: 1.
+Could not connect to MySQL database at 127.0.0.1: Access denied for user 'acore'@'localhost' (using password: YES)
+DatabasePool Login NOT opened. There were errors opening the MySQL connections. Check your log file for specific errors
