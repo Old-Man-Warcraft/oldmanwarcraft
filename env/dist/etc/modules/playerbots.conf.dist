@@ -2187,6 +2187,11 @@ AiPlayerbot.MaxRandomBotsPriceChangeInterval = 172800
 # RandomStackSize = 1 posts a random partial stack when possible, 0 posts the full stack
 AiPlayerbot.AuctionHouseRandomStackSize = 1
 
+# Comma-separated item IDs that bots must never post to the auction house.
+# Useful for class essentials (e.g. ammo) you want bots to keep.
+# Example: 2512,2515
+AiPlayerbot.AuctionHouseExcludedItemIds =
+
 # Minimum opening bid when bots post to the auction house
 AiPlayerbot.AuctionHouseMinBidPrice = 100
 
