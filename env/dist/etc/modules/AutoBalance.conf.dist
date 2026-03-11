@@ -892,6 +892,25 @@ AutoBalance.RewardScaling.XP.Modifier = 1.0
 AutoBalance.RewardScaling.Money = 1
 AutoBalance.RewardScaling.Money.Modifier = 1.0
 
+#
+# Compatibility Settings
+#
+
+#     AutoBalance.Compatibility.MythicPlus.SkipCreatureScaling
+#        Prevent AutoBalance from applying creature level/stat scaling to creatures
+#        managed by mod-mythic-plus. This avoids double-scaling when both modules
+#        are active in the same instance.
+#
+#        Default: 1 (1 = ON, 0 = OFF)
+
+#     AutoBalance.Compatibility.MythicPlus.SkipRewardScaling
+#        Prevent AutoBalance from modifying XP and money rewards in active
+#        mod-mythic-plus instances.
+#
+#        Default: 1 (1 = ON, 0 = OFF)
+AutoBalance.Compatibility.MythicPlus.SkipCreatureScaling = 1
+AutoBalance.Compatibility.MythicPlus.SkipRewardScaling = 1
+
 ##########################
 #
 # Messages
