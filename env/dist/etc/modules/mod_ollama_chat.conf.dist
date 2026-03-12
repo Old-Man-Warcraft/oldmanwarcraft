@@ -98,7 +98,10 @@ OllamaChat.Seed =
 #     OpenAI-compatible request builder.
 
 # OllamaChat.MaxConcurrentQueries
-#     Description: The maximum number of concurrent API queries allowed. Use 0 for no limit.
+#     Description: Number of async Ollama chat worker threads.
+#                  Each worker can process one queued chat/event/random request at a time,
+#                  so this also acts as the maximum number of concurrent API queries.
+#                  Use 0 to auto-size to the machine's hardware thread count.
 #     Default:     0
 OllamaChat.MaxConcurrentQueries = 0
 
@@ -880,3 +883,65 @@ OllamaChat.RAGSimilarityThreshold = 0.3
 #     Description: Template for including RAG information in bot prompts.
 #     Placeholders (named): {rag_info}
 OllamaChat.RAGPromptTemplate = "RELEVANT INFORMATION:\n{rag_info}\nUse this information to provide accurate and detailed responses when applicable."
+
+# OllamaChat.RAGQdrantEnabled
+#     Description: Enable Qdrant-backed vector retrieval for RAG.
+#                  When enabled, the module embeds JSON RAG entries, syncs them to Qdrant,
+#                  and queries Qdrant before falling back to local similarity search.
+#     Default:     0
+OllamaChat.RAGQdrantEnabled = 0
+
+# OllamaChat.RAGQdrantUrl
+#     Description: Base URL for the Qdrant server.
+#                  Example: http://127.0.0.1:6333
+#     Default:     (empty)
+OllamaChat.RAGQdrantUrl =
+
+# OllamaChat.RAGQdrantApiKey
+#     Description: Optional Qdrant API key sent as the api-key header.
+#     Default:     (empty)
+OllamaChat.RAGQdrantApiKey =
+
+# OllamaChat.RAGQdrantCollectionName
+#     Description: Qdrant collection used for mod-ollama-chat RAG payloads.
+#     Default:     mod_ollama_chat_rag
+OllamaChat.RAGQdrantCollectionName = mod_ollama_chat_rag
+
+# OllamaChat.RAGQdrantVectorSize
+#     Description: Explicit vector dimension for the Qdrant collection.
+#                  Set to 0 to infer the size from the first embeddings response.
+#     Default:     0
+OllamaChat.RAGQdrantVectorSize = 0
+
+# OllamaChat.RAGQdrantDistance
+#     Description: Qdrant distance metric used when creating the collection.
+#                  Common values: Cosine, Dot, Euclid.
+#     Default:     Cosine
+OllamaChat.RAGQdrantDistance = Cosine
+
+# OllamaChat.RAGQdrantSyncOnStartup
+#     Description: Sync the JSON knowledge base into Qdrant during startup and reload.
+#                  Disable only if the collection is maintained externally.
+#     Default:     1
+OllamaChat.RAGQdrantSyncOnStartup = 1
+
+# OllamaChat.RAGQdrantBatchSize
+#     Description: Number of RAG entries to embed and upsert per batch.
+#     Default:     16
+OllamaChat.RAGQdrantBatchSize = 16
+
+# OllamaChat.RAGEmbeddingApiUrl
+#     Description: OpenAI-compatible embeddings endpoint used for Qdrant sync and search.
+#                  Example: http://127.0.0.1:4000/v1/embeddings
+#     Default:     (empty)
+OllamaChat.RAGEmbeddingApiUrl =
+
+# OllamaChat.RAGEmbeddingApiKey
+#     Description: Bearer token for the embeddings endpoint.
+#     Default:     (empty)
+OllamaChat.RAGEmbeddingApiKey =
+
+# OllamaChat.RAGEmbeddingModel
+#     Description: Model identifier sent to the embeddings endpoint.
+#     Default:     (empty)
+OllamaChat.RAGEmbeddingModel =

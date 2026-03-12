@@ -368,6 +368,9 @@ private:
     std::string m_text;
     uint8 m_slot;
     Bag* m_container;
+    uint32 m_updateMapId;
+    uint32 m_updateInstanceId;
+    bool m_hasStoredUpdateMap;
     ItemUpdateState uState;
     int32 uQueuePos;
     bool mb_in_trade;                                   // true if item is currently in trade-window
