@@ -1,0 +1,95 @@
+---
+trigger: model_decision
+description: Apply when configuring spell procs, spell_proc table, proc flags, proc attributes, or debugging spell trigger behavior
+---
+# Spell Proc Configuration Rules
+
+## Proc Flags
+
+<proc_flags>
+- `0x1`: PROC_FLAG_KILLED - Killed by aggressor
+- `0x2`: PROC_FLAG_KILL - Kill target (requires XP/honor)
+- `0x4`: PROC_FLAG_DONE_MELEE_AUTO_ATTACK
+- `0x8`: PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK
+- `0x10`: PROC_FLAG_DONE_SPELL_MELEE_DMG_CLASS
+- `0x20`: PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS
+- `0x40`: PROC_FLAG_DONE_RANGED_AUTO_ATTACK
+- `0x80`: PROC_FLAG_TAKEN_RANGED_AUTO_ATTACK
+- `0x400`: PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_POS (healing)
+- `0x1000`: PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_NEG (debuff)
+- `0x100000`: PROC_FLAG_TAKEN_DAMAGE - Taken any damage
+- Verify procFlags match spell intent - incorrect flags cause unintended triggers
+</proc_flags>
+
+## Spell Type & Phase Masks
+
+<spell_masks>
+- **Spell Type**: 0x1=DAMAGE, 0x2=HEAL, 0x4=NO_DMG_HEAL, 0x7=ALL
+- **Spell Phase**: 0x1=CAST, 0x2=HIT, 0x4=FINISH, 0x7=ALL
+- Use `0x3 (0x1|0x2)` for damage spells that hit
+- Use `0x2` for most damage procs (on hit)
+- Use `0x1` for cast-time effects
+- Document spell type/phase selection in comments
+</spell_masks>
+
+## Hit Mask
+
+<hit_mask>
+- `0x0`: Default (NORMAL|CRITICAL for TAKEN, +ABSORB for DONE)
+- `0x1`: PROC_HIT_NORMAL - Non-critical hit
+- `0x2`: PROC_HIT_CRITICAL - Critical hit
+- `0x4`: PROC_HIT_MISS
+- `0x10`: PROC_HIT_DODGE
+- `0x20`: PROC_HIT_PARRY
+- `0x40`: PROC_HIT_BLOCK
+- `0x2fff`: PROC_HIT_MASK_ALL - Any hit result
+- Verify hit mask matches intended trigger conditions
+</hit_mask>
+
+## Proc Attributes
+
+<proc_attributes>
+- `0x1`: PROC_ATTR_REQ_EXP_OR_HONOR - Target must give XP/honor
+- `0x2`: PROC_ATTR_TRIGGERED_CAN_PROC - Can proc from triggered spells
+- `0x4`: PROC_ATTR_REQ_MANA_COST - Triggering spell needs mana cost
+- `0x80`: PROC_ATTR_REDUCE_PROC_60 - Reduced chance if actor level > 60
+- `0x100`: PROC_ATTR_CANT_PROC_FROM_ITEM_CAST - No item-casted spell procs
+- Check for conflicting proc attributes before deployment
+</proc_attributes>
+
+## Configuration Best Practices
+
+<config_best_practices>
+- Always verify spell_proc entry exists before testing
+- Use PPM (ppmRate) for consistent proc frequency, chance for simple on/off
+- Set cooldown to prevent excessive triggering
+- Use charges to limit proc stacking
+- Add conditions to filter unnecessary procs
+- Test proc interactions with triggered spells
+- Document proc conditions in spell_proc comments
+- Monitor proc frequency in combat logs
+</config_best_practices>
+
+## Testing Proc Configuration
+
+<testing_rules>
+- Test on development realm (8086) first
+- Enable combat logging: `.debug on`
+- Check spell exists: `.spell <spell_id>`
+- Verify spell_proc entry: Query database
+- Test with fresh creature spawn
+- Monitor combat log for proc triggers
+- Check for unintended side effects
+- Reload spell data: `.reload spell_proc`
+</testing_rules>
+
+## Common Proc Patterns
+
+<common_patterns>
+- **Melee Auto Attack**: procFlags=0xC (0x4|0x8), procChance=15
+- **Spell Damage**: procFlags=0x10, procEx=0x3, procChance=10
+- **Healing Spell**: procFlags=0x400, procEx=0x2, procChance=20
+- **PPM-Based**: ppmRate=2.0, procChance=0
+- **With Cooldown**: cooldown=5 (seconds between procs)
+- **Limited Charges**: charges=3 (procs before aura expires)
+</common_patterns>
