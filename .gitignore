@@ -58,6 +58,8 @@ CMakeLists.txt.user
 /.externalToolBuilders/*
 /.vs
 /out
+azerothcore-wotlk.code-workspace
+
 # exclude in all levels
 nbproject/
 .sync.ffs_db
