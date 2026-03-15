@@ -224,6 +224,16 @@ IndividualProgression.ProgressionLimit = 0
 #
 IndividualProgression.StartingProgression = 0
 
+# IndividualProgression.CharacterChoiceAtLevelOne
+#
+#        Description: Show level 1 characters a one-time choice between Individual Progression and normal play.
+#                     Characters that choose normal play are unrestricted by Individual Progression on a per-character basis.
+#
+#        Default:     1 - Enabled
+#                     0 - Disabled
+#
+IndividualProgression.CharacterChoiceAtLevelOne = 1
+
 # IndividualProgression.QuestMoneyAtLevelCap
 #
 #        Description: If enabled, players at the level cap for the current progression stage will receive
