@@ -94,3 +94,6 @@
 	path = modules/mod-transmog
 	url = https://gitlab.thecorehosting.net/root/mod-transmog.git
 
+[submodule "modules/mod-adventure-board"]
+	path = modules/mod-adventure-board
+	url = https://gitlab.thecorehosting.net/root/mod-adventure-board.git
