@@ -20,6 +20,7 @@ mod-guildhouse modules/mod-guildhouse https://gitlab.thecorehosting.net/root/mod
 mod-individual-progression modules/mod-individual-progression https://gitlab.thecorehosting.net/root/mod-individual-progression.git
 mod-instanced-worldbosses modules/mod-instanced-worldbosses https://gitlab.thecorehosting.net/root/mod-instanced-worldbosses.git
 mod-mythic-plus modules/mod-mythic-plus https://gitlab.thecorehosting.net/root/mod-mythic-plus.git
+mod-oldman-assistant modules/mod-oldman-assistant https://gitlab.thecorehosting.net/root/mod-oldman-assistant.git
 mod-ollama-chat modules/mod-ollama-chat https://gitlab.thecorehosting.net/root/mod-ollama-chat.git
 mod-playerbots modules/mod-playerbots https://gitlab.thecorehosting.net/root/mod-playerbot.git
 mod-premium modules/mod-premium https://gitlab.thecorehosting.net/root/mod-premium.git

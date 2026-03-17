@@ -71,30 +71,49 @@ list_modules_from_manifest() {
 ensure_standalone_gitdir() {
   local repo_path="$1"
   local module_name="$2"
+  local repo_url="$3"
 
   if [[ -d "$repo_path/.git" ]]; then
     return 0
   fi
 
-  if [[ ! -f "$repo_path/.git" ]]; then
+  if [[ -f "$repo_path/.git" ]]; then
+    local real_git_dir
+    real_git_dir="$(git -C "$repo_path" rev-parse --git-dir)"
+    real_git_dir="$(cd "$repo_path" && cd "$real_git_dir" && pwd)"
+
+    log "$module_name uses gitfile metadata -> $real_git_dir"
+
+    if [[ "$apply_changes" -eq 0 ]]; then
+      log "$module_name dry-run: would copy $real_git_dir to $repo_path/.git"
+      return 0
+    fi
+
+    rm -f "$repo_path/.git"
+    cp -a "$real_git_dir" "$repo_path/.git"
+    git -C "$repo_path" config --unset core.worktree >/dev/null 2>&1 || true
+    return 0
+  fi
+
+  if [[ -n "$(find "$repo_path" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]]; then
     warn "$module_name has no .git metadata at $repo_path"
     return 1
   fi
 
-  local real_git_dir
-  real_git_dir="$(git -C "$repo_path" rev-parse --git-dir)"
-  real_git_dir="$(cd "$repo_path" && cd "$real_git_dir" && pwd)"
+  if [[ -z "$repo_url" ]]; then
+    warn "$module_name has no .git metadata and no manifest URL"
+    return 1
+  fi
 
-  log "$module_name uses gitfile metadata -> $real_git_dir"
+  log "$module_name has no local git metadata; will clone from $repo_url"
 
   if [[ "$apply_changes" -eq 0 ]]; then
-    log "$module_name dry-run: would copy $real_git_dir to $repo_path/.git"
+    log "$module_name dry-run: would clone $repo_url into $repo_path"
     return 0
   fi
 
-  rm -f "$repo_path/.git"
-  cp -a "$real_git_dir" "$repo_path/.git"
-  git -C "$repo_path" config --unset core.worktree >/dev/null 2>&1 || true
+  rm -rf "$repo_path"
+  git clone "$repo_url" "$repo_path"
 }
 
 remove_gitlink_from_index() {
@@ -128,6 +147,7 @@ remove_gitmodules_entry() {
   fi
 
   git -C "$ROOT_PATH" config --file .gitmodules --remove-section "$section"
+  git -C "$ROOT_PATH" add .gitmodules
 }
 
 print_gitignore_plan() {
@@ -188,17 +208,16 @@ while IFS=$'\t' read -r module_name module_path module_url; do
     continue
   fi
 
-  if ! git -C "$full_path" rev-parse --git-dir >/dev/null 2>&1; then
-    warn "$module_name is not an initialized Git repo at $full_path"
-    continue
-  fi
-
-  if [[ -n "$(git -C "$full_path" status --porcelain)" ]]; then
+  if [[ -d "$full_path/.git" || -f "$full_path/.git" ]]; then
+    if [[ -n "$(git -C "$full_path" status --porcelain)" ]]; then
+      warn "$module_name has local changes; migration does not touch its worktree"
+    fi
+  elif [[ -n "$(find "$full_path" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]]; then
     warn "$module_name has local changes; migration does not touch its worktree"
   fi
 
   log "$module_name -> $module_path ($module_url)"
-  ensure_standalone_gitdir "$full_path" "$module_name"
+  ensure_standalone_gitdir "$full_path" "$module_name" "$module_url"
   remove_gitlink_from_index "$module_path" "$module_name"
   remove_gitmodules_entry "$module_path"
 done < <(list_modules_from_manifest)

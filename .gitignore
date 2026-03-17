@@ -95,13 +95,19 @@ local.properties
 #
 #  CUSTOM
 #
-#  put below your custom ignore rules
-#  for example , if you want to include a
-#  module directly in repositoryyou can do:
-#
-#  !modules/yourmodule
+#  modules are managed as independent repositories.
+#  keep only shared build/support files tracked
+#  by the superproject.
 #
 # ==================
+/modules/*
+!/modules/.gitkeep
+!/modules/CMakeLists.txt
+!/modules/ModulesLoader.cpp.in.cmake
+!/modules/ModulesPCH.h
+!/modules/ModulesScriptLoader.h
+!/modules/create_module.sh
+!/modules/how_to_make_a_module.md
 .cache
 compile_commands.json
 env/logs/Server.log

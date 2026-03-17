@@ -5,7 +5,7 @@
 # README
 #
 # This script is used to automatically update
-# submodules and subrepos included in this project
+# independently tracked modules and subrepos included in this project.
 # Subrepo are updated in bidirectional way (pull + push)
 # because they are intended to be developed by this organization
 #
@@ -16,9 +16,8 @@
 
 set -e
 ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../../"
-# update all submodules
-git submodule update --init --recursive
-git submodule foreach git pull origin master
+# update all module repositories independently
+"$ROOT_PATH/apps/git_tools/independent-repo-update.sh" --modules-only --clone-missing
 # include libraries for git subrepo
 source "$ROOT_PATH/deps/git-subrepo/.rc"
 source "$ROOT_PATH/deps/acore/bash-lib/src/git-utils/subrepo.sh"
