@@ -1,0 +1,9 @@
+APPLY data/sql/custom/db_world/Sandfury Delve.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Sandfury Delve.sql
+
+APPLY data/sql/custom/db_world/Gameobjects.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Gameobjects.sql
+
+FAILURES=0

@@ -1,0 +1,14 @@
+APPLY data/sql/custom/db_world/Arathi Farmland Highlands.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Arathi Farmland Highlands.sql
+
+APPLY data/sql/custom/db_world/Forgotten Gnome Camp.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Forgotten Gnome Camp.sql
+
+APPLY data/sql/custom/db_world/Mustafar.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1062 (23000) at line 51: Duplicate entry '9500643-1' for key 'creature_equip_template.PRIMARY'
+FAILED data/sql/custom/db_world/Mustafar.sql
+
+FAILURES=1

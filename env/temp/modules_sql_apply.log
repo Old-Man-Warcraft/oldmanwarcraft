@@ -1,0 +1,15 @@
+Applying canonical module SQL files
+Total files: 305
+
+APPLY Prestige/data/sql/db-characters/base/base.sql -> acore_characters_dev
+STDERR:
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+APPLY Prestige/data/sql/db-world/base/base.sql -> acore_world_dev
+FAILED Prestige/data/sql/db-world/base/base.sql -> acore_world_dev
+STDOUT:
+
+STDERR:
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1054 (42S22) at line 2: Unknown column 'trainer_type' in 'field list'
+

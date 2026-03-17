@@ -125,4 +125,39 @@
     "C_Cpp.default.compilerPath": "/usr/bin/clang",
     "cmake.sourceDirectory": ["${workspaceFolder}"],
     "cmake.buildDirectory": "${workspaceFolder}/var/build",
+    "Lua.runtime.version": "Lua 5.1",
+    "Lua.runtime.builtin": {
+        "basic": "disable",
+        "debug": "disable",
+        "io": "disable",
+        "math": "disable",
+        "os": "disable",
+        "package": "disable",
+        "string": "disable",
+        "table": "disable",
+        "utf8": "disable"
+    },
+    "Lua.workspace.library": [
+        "~/.vscode-server/extensions/ketho.wow-api-0.22.3/Annotations/Core"
+    ],
+    "Lua.diagnostics.globals": [
+        "STANDARD_TEXT_FONT",
+        "SlashCmdList",
+        "UIDropDownMenu_Initialize",
+        "UIDropDownMenu_SetSelectedValue",
+        "UIDropDownMenu_SetText",
+        "UIDropDownMenu_SetWidth",
+        "UIDropDownMenu_AddButton",
+        "UIDropDownMenu_CreateInfo",
+        "UIDropDownMenu_GetSelectedValue",
+        "ACCEPT",
+        "DEFAULT_CHAT_FRAME",
+        "FauxScrollFrame_Update",
+        "FauxScrollFrame_GetOffset",
+        "FauxScrollFrame_OnVerticalScroll",
+        "ChatFrame_OpenChat"
+    ],
+    "Lua.diagnostics.disable": [
+        "assign-type-mismatch"
+    ],
 }

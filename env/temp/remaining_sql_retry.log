@@ -1,0 +1,19 @@
+APPLY data/sql/custom/db_world/Sandfury Delve.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1062 (23000) at line 782: Duplicate entry '600613-0-0-0' for key 'smart_scripts.PRIMARY'
+FAILED data/sql/custom/db_world/Sandfury Delve.sql
+
+APPLY data/sql/custom/db_world/Stonetalon Logging Camp.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Stonetalon Logging Camp.sql
+
+APPLY data/sql/custom/db_world/creature_template_resistance.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/creature_template_resistance.sql
+
+APPLY data/sql/custom/db_world/Gameobjects.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1062 (23000) at line 25: Duplicate entry '8001910' for key 'gameobject.PRIMARY'
+FAILED data/sql/custom/db_world/Gameobjects.sql
+
+FAILURES=2

@@ -1,0 +1,25 @@
+APPLY data/sql/custom/db_world/creature_model_info_insert.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/creature_model_info_insert.sql
+
+APPLY data/sql/custom/db_world/game_graveyard.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/game_graveyard.sql
+
+APPLY data/sql/custom/db_world/game_tele.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/game_tele.sql
+
+APPLY data/sql/custom/db_world/graveyard_zone.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/graveyard_zone.sql
+
+APPLY data/sql/custom/db_world/instance_template.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/instance_template.sql
+
+APPLY data/sql/custom/db_world/reference_loot_table.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/reference_loot_table.sql
+
+FAILURES=0
