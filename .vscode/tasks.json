@@ -91,6 +91,25 @@
           "panel": "new"
         },
         "problemMatcher": []
+      },
+      {
+        "label": "OldMan Assistant: Sync public knowledge",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "modules/mod-oldman-assistant/tools/run_public_sync.py",
+          "--conf",
+          "env/dist/etc/modules/mod_oldman_assistant.conf",
+          "--config",
+          "modules/mod-oldman-assistant/data/rag/source_sync.example.json",
+          "--cleanup-sources-first"
+        ],
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        },
+        "problemMatcher": []
       }
     ]
   }

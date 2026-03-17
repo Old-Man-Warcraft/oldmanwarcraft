@@ -1,0 +1,3 @@
+APPLY data/sql/custom/db_world/Demon Hunter Cove (WIP).sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Demon Hunter Cove (WIP).sql

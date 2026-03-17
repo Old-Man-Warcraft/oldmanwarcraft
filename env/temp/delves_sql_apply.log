@@ -1,0 +1,64 @@
+APPLY data/sql/custom/db_world/Altar of Storms.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Altar of Storms.sql
+
+APPLY data/sql/custom/db_world/Arathi Farmland Highlands.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1064 (42000) at line 512: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(9001643, 600696, 0, 0, 906, 0, 0, 1, 1, 0, -1917.7, -3990.17, 41.8468, 4.10625,' at line 4
+FAILED data/sql/custom/db_world/Arathi Farmland Highlands.sql
+
+APPLY data/sql/custom/db_world/Blackchar Cave.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1064 (42000) at line 32: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(600637,0,2314,1.0,1.0,12340)(600637,1,2315,1.0,1.0,12340)(600638,0,19905,0.85,1' at line 2
+FAILED data/sql/custom/db_world/Blackchar Cave.sql
+
+APPLY data/sql/custom/db_world/Demon Hunter Cove (WIP).sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Demon Hunter Cove (WIP).sql
+
+APPLY data/sql/custom/db_world/Elwynn Falls.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1064 (42000) at line 37: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(600625,0,17952,1.0,1.0,12340)(600626,0,17953,1.0,1.0,12340)(600627,0,17952,1.0,' at line 2
+FAILED data/sql/custom/db_world/Elwynn Falls.sql
+
+APPLY data/sql/custom/db_world/Forgotten Gnome Camp.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1064 (42000) at line 33: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(600674,0,722,1.0,1.0,12340)(600675,0,723,1.0,1.0,12340)(600676,0,10285,1.0,1.0,' at line 2
+FAILED data/sql/custom/db_world/Forgotten Gnome Camp.sql
+
+APPLY data/sql/custom/db_world/Gameobjects.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Gameobjects.sql
+
+APPLY data/sql/custom/db_world/Mustafar.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1062 (23000) at line 68: Duplicate entry '11502-7078-0-0' for key 'creature_loot_template.PRIMARY'
+FAILED data/sql/custom/db_world/Mustafar.sql
+
+APPLY data/sql/custom/db_world/Newmans Landing.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1064 (42000) at line 32: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(600651,0,3028,1.0,1.0,12340)(600652,0,2000,1.0,1.0,12340)(600653,0,2003,1.0,1.0' at line 2
+FAILED data/sql/custom/db_world/Newmans Landing.sql
+
+APPLY data/sql/custom/db_world/Quelthalas Island.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1064 (42000) at line 32: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(600644,0,796,1.0,1.0,12340)(600644,1,794,1.0,1.0,12340)(600645,0,4461,1.0,1.0,1' at line 2
+FAILED data/sql/custom/db_world/Quelthalas Island.sql
+
+APPLY data/sql/custom/db_world/Sandfury Delve.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Sandfury Delve.sql
+
+APPLY data/sql/custom/db_world/Stonetalon Logging Camp.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Stonetalon Logging Camp.sql
+
+APPLY data/sql/custom/db_world/Stonetalon Ruins.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Stonetalon Ruins.sql
+
+APPLY data/sql/custom/db_world/creature_template_resistance.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/creature_template_resistance.sql
+
+FAILURES=7

@@ -1,0 +1,32 @@
+APPLY data/sql/custom/db_world/Arathi Farmland Highlands.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1062 (23000) at line 1: Duplicate entry '600689' for key 'creature_template.PRIMARY'
+FAILED data/sql/custom/db_world/Arathi Farmland Highlands.sql
+
+APPLY data/sql/custom/db_world/Blackchar Cave.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Blackchar Cave.sql
+
+APPLY data/sql/custom/db_world/Elwynn Falls.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Elwynn Falls.sql
+
+APPLY data/sql/custom/db_world/Forgotten Gnome Camp.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1062 (23000) at line 350: Duplicate entry '9001530' for key 'creature.PRIMARY'
+FAILED data/sql/custom/db_world/Forgotten Gnome Camp.sql
+
+APPLY data/sql/custom/db_world/Mustafar.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1062 (23000) at line 25: Duplicate entry '888432' for key 'creature_template.PRIMARY'
+FAILED data/sql/custom/db_world/Mustafar.sql
+
+APPLY data/sql/custom/db_world/Newmans Landing.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Newmans Landing.sql
+
+APPLY data/sql/custom/db_world/Quelthalas Island.sql -> acore_world_dev
+mysql: [Warning] Using a password on the command line interface can be insecure.
+OK data/sql/custom/db_world/Quelthalas Island.sql
+
+FAILURES=3

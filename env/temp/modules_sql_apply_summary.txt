@@ -1,0 +1,6 @@
+Applied: 299
+Failed: 4
+mod-aoe-loot/data/sql/db-world/base/aoe_loot_module_string.sql -> acore_world_dev :: ERROR 1267 (HY000) at line 4: Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='
+mod-guild-village/data/sql/customs/updates/20251128_gv_updates_add_module.sql -> customs_dev :: ERROR 1146 (42S02) at line 15: Table 'customs_dev.gv_updates' doesn't exist
+mod-ollama-chat/data/sql/characters/base/2025_05_31_personality_template.sql -> acore_characters_dev :: ERROR 1062 (23000) at line 6: Duplicate entry 'GAMER' for key 'mod_ollama_chat_personality_templates.PRIMARY'
+mod-ollama-chat/data/sql/characters/base/2025_11_01_personality_manual_only.sql -> acore_characters_dev :: ERROR 1060 (42S21) at line 2: Duplicate column name 'manual_only'
