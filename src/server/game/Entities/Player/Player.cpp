@@ -10727,6 +10727,14 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorguid, uint32 vendorslot, uin
         }
     }
 
+    uint32 requiredLevel = pProto->RequiredLevel;
+    sScriptMgr->OnPlayerGetItemRequiredLevel(this, pProto, requiredLevel);
+    if (!IsGameMaster() && GetLevel() < requiredLevel)
+    {
+        SendEquipError(EQUIP_ERR_CANT_EQUIP_LEVEL_I, nullptr, nullptr, item);
+        return false;
+    }
+
     if (pProto->RequiredReputationFaction && (uint32(GetReputationRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank))
     {
         SendBuyError(BUY_ERR_REPUTATION_REQUIRE, creature, item, 0);
