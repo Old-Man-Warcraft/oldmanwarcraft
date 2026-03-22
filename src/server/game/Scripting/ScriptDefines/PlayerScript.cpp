@@ -585,6 +585,21 @@ bool ScriptMgr::OnPlayerHasActivePowerType(Player const* player, Powers power)
     CALL_ENABLED_BOOLEAN_HOOKS_WITH_DEFAULT_FALSE(PlayerScript, PLAYERHOOK_ON_PLAYER_HAS_ACTIVE_POWER_TYPE, script->OnPlayerHasActivePowerType(player, power));
 }
 
+void ScriptMgr::OnPlayerGetTrainerSpellRequiredLevel(Player* player, uint32 spellId, uint8& reqLevel)
+{
+    CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_GET_TRAINER_SPELL_REQUIRED_LEVEL, script->OnPlayerGetTrainerSpellRequiredLevel(player, spellId, reqLevel));
+}
+
+void ScriptMgr::OnPlayerGetTrainerSpellMoneyCost(Player* player, uint32 spellId, uint32& moneyCost)
+{
+    CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_GET_TRAINER_SPELL_MONEY_COST, script->OnPlayerGetTrainerSpellMoneyCost(player, spellId, moneyCost));
+}
+
+void ScriptMgr::OnPlayerGetItemRequiredLevel(Player* player, ItemTemplate const* proto, uint32& requiredLevel)
+{
+    CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_GET_ITEM_REQUIRED_LEVEL, script->OnPlayerGetItemRequiredLevel(player, proto, requiredLevel));
+}
+
 void ScriptMgr::OnPlayerUpdateGatheringSkill(Player *player, uint32 skillId, uint32 currentLevel, uint32 gray, uint32 green, uint32 yellow, uint32 &gain)
 {
     CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_UPDATE_GATHERING_SKILL, script->OnPlayerUpdateGatheringSkill(player, skillId, currentLevel, gray, green, yellow, gain));

@@ -4,14 +4,18 @@
 
 /conf/*
 !/conf/dist
-
+/modules/*
+!/modules/*.md
+!/modules/*.sh
+!/modules/CMakeLists.txt
+!/modules/*.h
+!/modules/*.cmake
 /build*/
 /var/*
 !/var/build/.gitkeep
 !/var/ccache/.gitkeep
 /env/dist/*
 !/env/dist/.gitkeep
-
 /env/user/*
 /.env*
 /apps/joiner
@@ -24,14 +28,13 @@
 /*.override.yaml
 
 !.gitkeep
-/env/logs
+
 # default build directory if not specified by CMAKE configuration
 /out/*
 
 #
 #Generic
 #
-Prestige-and-Draft-Mode/
 
 .directory
 .mailmap
@@ -57,8 +60,6 @@ CMakeLists.txt.user
 /.externalToolBuilders/*
 /.vs
 /out
-azerothcore-wotlk.code-workspace
-
 # exclude in all levels
 nbproject/
 .sync.ffs_db
@@ -90,7 +91,7 @@ local.properties
 .loadpath
 .project
 .cproject
-
+/env/dist/etc
 
 # ==================
 #

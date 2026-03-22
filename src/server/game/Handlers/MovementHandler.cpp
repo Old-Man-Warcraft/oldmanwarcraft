@@ -380,6 +380,21 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     movementInfo.guid = guid;
     ReadMovementInfo(recvData, &movementInfo);
 
+    if (plrMover && (opcode == MSG_MOVE_SET_WALK_MODE || opcode == MSG_MOVE_SET_RUN_MODE ||
+        (plrMover->IsMounted() && movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING))))
+    {
+        LOG_INFO("movement",
+            "Player {} movement opcode {} mounted={} currentWalking={} packetWalking={} flags=0x{:X} runSpeed={} walkSpeed={}",
+            plrMover->GetName(),
+            GetOpcodeNameForLogging(static_cast<OpcodeClient>(opcode)),
+            plrMover->IsMounted(),
+            plrMover->IsWalking(),
+            movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING),
+            movementInfo.GetMovementFlags(),
+            plrMover->GetSpeed(MOVE_RUN),
+            plrMover->GetSpeed(MOVE_WALK));
+    }
+
     if (!ProcessMovementInfo(movementInfo, mover, plrMover, recvData))
     {
         recvData.rfinish();                     // prevent warnings spam
@@ -412,6 +427,8 @@ void WorldSession::SynchronizeMovement(MovementInfo& movementInfo)
 void WorldSession::HandleMoverRelocation(MovementInfo& movementInfo, Unit* mover)
 {
     SynchronizeMovement(movementInfo);
+
+    bool const hadWalkingFlag = mover->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING);
 
     mover->UpdatePosition(movementInfo.pos);
     mover->m_movementInfo = movementInfo;
@@ -482,6 +499,22 @@ void WorldSession::HandleMoverRelocation(MovementInfo& movementInfo, Unit* mover
 
     if (Player* plrMover = mover->ToPlayer()) // nothing is charmed, or player charmed
     {
+        bool const hasWalkingFlag = plrMover->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING);
+        if (plrMover->IsMounted() && hadWalkingFlag != hasWalkingFlag)
+        {
+            LOG_INFO("movement",
+                "Player {} mounted walking flag changed {} -> {} flags=0x{:X} runSpeed={} walkSpeed={} position=({}, {}, {})",
+                plrMover->GetName(),
+                hadWalkingFlag,
+                hasWalkingFlag,
+                plrMover->m_movementInfo.GetMovementFlags(),
+                plrMover->GetSpeed(MOVE_RUN),
+                plrMover->GetSpeed(MOVE_WALK),
+                plrMover->GetPositionX(),
+                plrMover->GetPositionY(),
+                plrMover->GetPositionZ());
+        }
+
         if (plrMover->IsSitState() && (movementInfo.flags & (MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_MASK_TURNING)))
             plrMover->SetStandState(UNIT_STAND_STATE_STAND);
 
@@ -728,6 +761,19 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket& recvData)
         default:
             LOG_ERROR("network.opcode", "WorldSession::HandleForceSpeedChangeAck: Unknown move type opcode: {}", opcode);
             return;
+    }
+
+    if (_player->IsMounted() && (move_type == MOVE_WALK || move_type == MOVE_RUN))
+    {
+        LOG_INFO("movement",
+            "Player {} force speed ack {} mounted={} walking={} serverSpeed={} clientSpeed={} flags=0x{:X}",
+            _player->GetName(),
+            GetOpcodeNameForLogging(static_cast<OpcodeClient>(opcode)),
+            _player->IsMounted(),
+            _player->IsWalking(),
+            _player->GetSpeed(move_type),
+            newspeed,
+            movementInfo.GetMovementFlags());
     }
 
     sScriptMgr->AnticheatSetUnderACKmount(_player);

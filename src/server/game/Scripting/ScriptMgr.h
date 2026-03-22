@@ -420,6 +420,9 @@ public: /* PlayerScript */
     std::optional<bool> OnPlayerIsClass(Player const* player, Classes playerClass, ClassContext context);
     void OnPlayerGetMaxSkillValue(Player* player, uint32 skill, int32& result, bool IsPure);
     bool OnPlayerHasActivePowerType(Player const* player, Powers power);
+    void OnPlayerGetTrainerSpellRequiredLevel(Player* player, uint32 spellId, uint8& reqLevel);
+    void OnPlayerGetTrainerSpellMoneyCost(Player* player, uint32 spellId, uint32& moneyCost);
+    void OnPlayerGetItemRequiredLevel(Player* player, ItemTemplate const* proto, uint32& requiredLevel);
     void OnPlayerUpdateGatheringSkill(Player* player, uint32 skillId, uint32 currentLevel, uint32 gray, uint32 green, uint32 yellow, uint32& gain);
     void OnPlayerUpdateCraftingSkill(Player* player, SkillLineAbilityEntry const* skill, uint32 currentLevel, uint32& gain);
     bool OnPlayerUpdateFishingSkill(Player* player, int32 skill, int32 zone_skill, int32 chance, int32 roll);
