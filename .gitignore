@@ -91,7 +91,7 @@ local.properties
 .loadpath
 .project
 .cproject
-
+/env/dist/etc
 
 # ==================
 #
