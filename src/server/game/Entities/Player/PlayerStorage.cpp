@@ -2410,7 +2410,9 @@ InventoryResult Player::CanUseItem(ItemTemplate const* proto) const
         return EQUIP_ERR_NO_REQUIRED_PROFICIENCY;
     }
 
-    if (GetLevel() < proto->RequiredLevel)
+    uint32 requiredLevel = proto->RequiredLevel;
+    sScriptMgr->OnPlayerGetItemRequiredLevel(const_cast<Player*>(this), proto, requiredLevel);
+    if (GetLevel() < requiredLevel)
     {
         return EQUIP_ERR_CANT_EQUIP_LEVEL_I;
     }

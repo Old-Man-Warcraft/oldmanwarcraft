@@ -409,7 +409,9 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
                 ObjectMgr::GetLocaleString(il->Description, loc_idx, Description);
             }
         }
-        // guess size
+        uint32 requiredLevel = pProto->RequiredLevel;
+        sScriptMgr->OnPlayerGetItemRequiredLevel(_player, pProto, requiredLevel);
+
         WorldPacket queryData(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600);
         queryData << pProto->ItemId;
         queryData << pProto->Class;
@@ -429,7 +431,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
         queryData << pProto->AllowableClass;
         queryData << pProto->AllowableRace;
         queryData << pProto->ItemLevel;
-        queryData << pProto->RequiredLevel;
+        queryData << requiredLevel;
         queryData << pProto->RequiredSkill;
         queryData << pProto->RequiredSkillRank;
         queryData << pProto->RequiredSpell;
