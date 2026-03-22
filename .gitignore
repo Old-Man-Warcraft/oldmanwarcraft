@@ -11,8 +11,7 @@
 !/var/ccache/.gitkeep
 /env/dist/*
 !/env/dist/.gitkeep
-!/env/dist/etc/
-!/env/dist/etc/**
+
 /env/user/*
 /.env*
 /apps/joiner
