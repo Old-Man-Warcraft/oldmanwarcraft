@@ -19,6 +19,7 @@
 #include "Creature.h"
 #include "NPCPackets.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 
@@ -65,10 +66,14 @@ namespace Trainer
             WorldPackets::NPC::TrainerListSpell& trainerListSpell = trainerList.Spells.back();
             trainerListSpell.SpellID = trainerSpell.SpellId;
             trainerListSpell.Usable = AsUnderlyingType(GetSpellState(player, &trainerSpell));
-            trainerListSpell.MoneyCost = int32(trainerSpell.MoneyCost * reputationDiscount);
+            uint32 moneyCost = trainerSpell.MoneyCost;
+            sScriptMgr->OnPlayerGetTrainerSpellMoneyCost(player, trainerSpell.SpellId, moneyCost);
+            trainerListSpell.MoneyCost = int32(moneyCost * reputationDiscount);
             trainerListSpell.PointCost[0] = 0; // spells don't cost talent points
             trainerListSpell.PointCost[1] = (primaryProfessionFirstRank ? 1 : 0);
-            trainerListSpell.ReqLevel = trainerSpell.ReqLevel;
+            uint8 reqLevel = trainerSpell.ReqLevel;
+            sScriptMgr->OnPlayerGetTrainerSpellRequiredLevel(player, trainerSpell.SpellId, reqLevel);
+            trainerListSpell.ReqLevel = reqLevel;
             trainerListSpell.ReqSkillLine = trainerSpell.ReqSkillLine;
             trainerListSpell.ReqSkillRank = trainerSpell.ReqSkillRank;
             std::copy(trainerSpell.ReqAbility.begin(), trainerSpell.ReqAbility.end(), trainerListSpell.ReqAbility.begin());
@@ -96,14 +101,16 @@ namespace Trainer
         }
 
         float reputationDiscount = player->GetReputationPriceDiscount(npc);
-        int32 moneyCost = int32(trainerSpell->MoneyCost * reputationDiscount);
-        if (!player->HasEnoughMoney(moneyCost))
+        uint32 moneyCost = trainerSpell->MoneyCost;
+        sScriptMgr->OnPlayerGetTrainerSpellMoneyCost(player, trainerSpell->SpellId, moneyCost);
+        int32 discountedMoneyCost = int32(moneyCost * reputationDiscount);
+        if (!player->HasEnoughMoney(discountedMoneyCost))
         {
             SendTeachFailure(npc, player, spellId, FailReason::NotEnoughMoney);
             return;
         }
 
-        player->ModifyMoney(-moneyCost);
+        player->ModifyMoney(-discountedMoneyCost);
 
         npc->SendPlaySpellVisual(179); // 53 SpellCastDirected
         npc->SendPlaySpellImpact(player->GetGUID(), 362); // 113 EmoteSalute
@@ -169,7 +176,9 @@ namespace Trainer
                 return SpellState::Unavailable;
 
         // check level requirement
-        if (player->GetLevel() < trainerSpell->ReqLevel)
+        uint8 reqLevel = trainerSpell->ReqLevel;
+        sScriptMgr->OnPlayerGetTrainerSpellRequiredLevel(const_cast<Player*>(player), trainerSpell->SpellId, reqLevel);
+        if (player->GetLevel() < reqLevel)
             return SpellState::Unavailable;
 
         // check ranks
