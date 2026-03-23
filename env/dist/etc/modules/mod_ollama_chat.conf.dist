@@ -57,8 +57,8 @@ OllamaChat.Model = gpt-4o-mini
 #     Description: Maximum number of completion tokens to generate.
 #                  0 = omit the field and let the upstream API decide.
 #                  The legacy key OllamaChat.NumPredict is still accepted.
-#     Default:     100
-OllamaChat.MaxTokens = 100
+#     Default:     256
+OllamaChat.MaxTokens = 256
 
 # OllamaChat.Temperature
 #     Description: Controls output randomness.

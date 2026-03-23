@@ -7175,36 +7175,45 @@ void Player::SaveToDB(CharacterDatabaseTransaction trans, bool create, bool logo
     if (!create)
         sScriptMgr->OnPlayerSave(this);
 
+    // Save in consistent table access order to minimize deadlock risk
+    // Core character data first (smallest transaction scope)
     _SaveCharacter(create, trans);
-
-    if (m_mailsUpdated)                                     //save mails only when needed
-        _SaveMail(trans);
-
     _SaveEntryPoint(trans);
-    _SaveInventory(trans);
+    _SaveStats(trans);
+    SaveGoldToDB(trans);
+
+    // Quest and achievement data
     _SaveQuestStatus(trans);
     _SaveDailyQuestStatus(trans);
     _SaveWeeklyQuestStatus(trans);
     _SaveSeasonalQuestStatus(trans);
     _SaveMonthlyQuestStatus(trans);
-    _SaveTalents(trans);
-    _SaveSpells(trans);
-    _SaveSpellCooldowns(trans, logout);
-    _SaveActions(trans);
-    _SaveAuras(trans, logout);
-    _SaveSkills(trans);
     m_achievementMgr->SaveToDB(trans);
     m_reputationMgr->SaveToDB(trans);
-    _SaveEquipmentSets(trans);
-    GetSession()->SaveTutorialsData(trans);                 // changed only while character in game
+
+    // Spell and ability data
+    _SaveSpells(trans);
+    _SaveSpellCooldowns(trans, logout);
+    _SaveTalents(trans);
     _SaveGlyphs(trans);
+    _SaveActions(trans);
+
+    // Aura and skill data
+    _SaveAuras(trans, logout);
+    _SaveSkills(trans);
+
+    // Inventory and equipment (can be large, but grouped together)
+    _SaveInventory(trans);
+    _SaveEquipmentSets(trans);
+
+    // Mail (only if updated)
+    if (m_mailsUpdated)
+        _SaveMail(trans);
+
+    // Session and instance data
+    GetSession()->SaveTutorialsData(trans);
     _SaveInstanceTimeRestrictions(trans);
     _SavePlayerSettings(trans);
-
-    // check if stats should only be saved on logout
-    // save stats can be out of transaction
-    if (m_session->isLogingOut() || !sWorld->getBoolConfig(CONFIG_STATS_SAVE_ONLY_ON_LOGOUT))
-        _SaveStats(trans);
 
     // save pet (hunter pet level and experience and all type pets health/mana).
     if (Pet* pet = GetPet())
