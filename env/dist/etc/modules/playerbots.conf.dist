@@ -566,10 +566,7 @@ AiPlayerbot.AutoGearScoreLimit = 0
 # Default: food, taxi, and raid are enabled
 AiPlayerbot.BotCheats = "food,taxi,raid"
 
-# List of attunement quests (comma-separated list of quest IDs) that are automatically completed for all bots.  
-# While mod-playerbots does not restore removed attunement requirements, although other mods, such as mod-individual-progression, may do so.
-# This is meant to exclude bots from such requirements.
-# 
+# Attunement quests (comma-separated list of quest IDs)
 # Default:
 # Caverns of Time - Part 1
 # - 10279, To The Master's Lair
@@ -595,17 +592,7 @@ AiPlayerbot.BotCheats = "food,taxi,raid"
 #
 # Serpentshrine Cavern
 # - 10901, The Cudgel of Kar'desh
-#
-# The Eye
-# - 10888, Trial of the Naaru: Magtheridon
-#
-# Mount Hyjal
-# - 10445, The Vials of Eternity
-#
-# Black Temple
-# - 10985, A Distraction for Akama
-#
-AiPlayerbot.AttunementQuests = 10279,10277,10282,10283,10284,10285,10296,10297,10298,11481,11482,11488,11490,11492,10901,10888,10445,10985
+AiPlayerbot.AttunementQuests = 10279,10277,10282,10283,10284,10285,10296,10297,10298,11481,11482,11488,11490,11492,10901
 
 #
 #
@@ -809,10 +796,6 @@ AiPlayerbot.LimitGearExpansion = 1
 # Set between 0 (0%) and 1 (100%)
 AiPlayerbot.RandomGearLoweringChance = 0
 
-# Unobtainable or unusable items (comma-separated list of item IDs)
-# Default: Chilton Wand (12468), Totem of the Earthen Ring (46978)
-AiPlayerbot.UnobtainableItems = 12468,46978
-
 # Randombots check player's gearscore level and deny the group invitation if it's too low
 # Default: 0 (disabled)
 AiPlayerbot.GearScoreCheck = 0
@@ -1001,6 +984,10 @@ AiPlayerbot.RpgStatusProbWeight.DoQuest = 60
 AiPlayerbot.RpgStatusProbWeight.TravelFlight = 15
 AiPlayerbot.RpgStatusProbWeight.Farming = 30
 AiPlayerbot.RpgStatusProbWeight.Rest = 5
+
+# Minimum total AH-usage item count (sum of stack counts) required before bots
+# interrupt RPG flow to visit an auctioneer and sell.
+AiPlayerbot.RpgFarmingAuctionThreshold = 20
 
 # Bots' minimum and maximum level when teleporting in and out of a zone, according to the new RPG strategy
 # Format: AiPlayerbot.ZoneBracket.zoneID = minLevel,maxLevel
@@ -2202,14 +2189,9 @@ AiPlayerbot.PremadeAvoidAoe = 62234-4
 AiPlayerbot.MinRandomBotsPriceChangeInterval = 7200
 AiPlayerbot.MaxRandomBotsPriceChangeInterval = 172800
 
-# Master switch for all playerbot auction-house routing, buying, and selling.
-# Default: 0 (disabled) until the new AH flow has broader runtime coverage.
-AiPlayerbot.EnableAuctionHouseBotting = 0
-
 # Auction house pricing for items marked as ITEM_USAGE_AH
-# No effect unless AiPlayerbot.EnableAuctionHouseBotting = 1
 # RandomStackSize = 1 posts a random partial stack when possible, 0 posts the full stack
-# Built-in AH exclusions: gray items, projectile ammo, spell reagents,
+# Built-in AH exclusions: gray items, projectile ammo, reagents,
 # and white non-material items. White materials can still be posted.
 AiPlayerbot.AuctionHouseRandomStackSize = 1
 
