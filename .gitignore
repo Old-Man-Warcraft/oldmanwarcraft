@@ -16,6 +16,10 @@
 !/var/ccache/.gitkeep
 /env/dist/*
 !/env/dist/.gitkeep
+!/env/dist/etc/
+!/env/dist/etc/modules/
+/env/dist/etc/**/*.conf
+/env/dist/etc/**/*.conf.dist
 /env/user/*
 /.env*
 /apps/joiner
@@ -31,7 +35,6 @@
 
 # default build directory if not specified by CMAKE configuration
 /out/*
-
 #
 #Generic
 #
@@ -115,5 +118,4 @@ compile_commands.json
 env/logs/Server.log
 env/logs/Playerbots.log
 env/logs/Errors.log
-env/dist/etc/
 logs/
