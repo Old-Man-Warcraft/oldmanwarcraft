@@ -16,10 +16,7 @@
 !/var/ccache/.gitkeep
 /env/dist/*
 !/env/dist/.gitkeep
-!/env/dist/etc/
-!/env/dist/etc/modules/
-/env/dist/etc/**/*.conf
-/env/dist/etc/**/*.conf.dist
+/env/dist/etc/
 /env/user/*
 /.env*
 /apps/joiner
@@ -94,7 +91,6 @@ local.properties
 .loadpath
 .project
 .cproject
-/env/dist/etc/modules/*
 
 # ==================
 #
