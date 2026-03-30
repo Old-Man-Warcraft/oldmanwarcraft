@@ -1,5 +1,6 @@
 -- Playerbots auction item policy table for DB-driven AH rules.
 
+DROP TABLE IF EXISTS `playerbots_auction_item_policy`;
 CREATE TABLE IF NOT EXISTS `playerbots_auction_item_policy` (
     `item_id` int unsigned NOT NULL,
     `sellable` tinyint(1) unsigned NOT NULL DEFAULT 1,

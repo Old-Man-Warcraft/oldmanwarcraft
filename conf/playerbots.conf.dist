@@ -2231,7 +2231,8 @@ AiPlayerbot.AuctionHouseRandomStackSize = 1
 # Example: 2512,2515
 AiPlayerbot.AuctionHouseExcludedItemIds =
 
-# Minimum opening bid when bots post to the auction house
+# Minimum opening bid in copper when bots post to the auction house
+# Example: 100 = 1 silver
 AiPlayerbot.AuctionHouseMinBidPrice = 100
 
 # Chance in percent to undercut the base item valuation before computing bid and buyout
