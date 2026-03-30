@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # AzerothCore
 #
@@ -32,6 +33,10 @@
 
 # default build directory if not specified by CMAKE configuration
 /out/*
+=======
+!.gitignore
+
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
 #
 #Generic
 #
@@ -40,7 +45,11 @@
 .mailmap
 *.orig
 *.rej
+<<<<<<< HEAD
 *~
+=======
+*.*~
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
 .hg/
 *.kdev*
 .DS_Store
@@ -54,16 +63,24 @@ CMakeLists.txt.user
 *.LOCAL.*
 
 #
+<<<<<<< HEAD
 # IDE & other software
+=======
+# IDE & other softwares
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
 #
 /.settings/
 /.externalToolBuilders/*
 /.vs
+<<<<<<< HEAD
 /out
+=======
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
 # exclude in all levels
 nbproject/
 .sync.ffs_db
 *.kate-swp
+<<<<<<< HEAD
 .browse.VC*
 .idea
 cmake-build-*/*
@@ -75,6 +92,9 @@ coverage-report/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+=======
+reset.sh
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
 
 #
 # Eclipse
@@ -91,6 +111,7 @@ local.properties
 .loadpath
 .project
 .cproject
+<<<<<<< HEAD
 
 # ==================
 #
@@ -115,3 +136,7 @@ env/logs/Server.log
 env/logs/Playerbots.log
 env/logs/Errors.log
 logs/
+=======
+.vscode
+.idea
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean

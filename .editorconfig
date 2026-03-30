@@ -6,6 +6,7 @@ tab_width = 4
 insert_final_newline = true
 trim_trailing_whitespace = true
 max_line_length = 80
+<<<<<<< HEAD
 
 [*.{json,ts,js,yml,sh}]
 charset = utf-8
@@ -15,3 +16,5 @@ tab_width = 2
 insert_final_newline = true
 trim_trailing_whitespace = true
 max_line_length = 80
+=======
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean

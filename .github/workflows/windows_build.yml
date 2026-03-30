@@ -1,6 +1,7 @@
 name: windows-build
 on:
   push:
+<<<<<<< HEAD
     branches: [ "Playerbot" ]
   pull_request:
     branches: [ "Playerbot" ]
@@ -14,6 +15,14 @@ concurrency:
   #   canceling any still-running PR CI.
   # - Branch pushes are isolated by ref.
   group: ${{ github.workflow }}-${{ github.ref }}
+=======
+    branches: [ "master", "test-staging" ]
+  pull_request:
+    branches: [ "master", "test-staging" ]
+
+concurrency:
+  group: "windows-build-${{ github.event.pull_request.number }}"
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
   cancel-in-progress: true
 
 jobs:
@@ -27,17 +36,40 @@ jobs:
     env:
       BOOST_ROOT: C:\local\boost_1_82_0
     steps:
+<<<<<<< HEAD
       - uses: actions/checkout@v4
+=======
+      - name: Checkout AzerothCore
+        uses: actions/checkout@v3
+        with:
+          repository: 'mod-playerbots/azerothcore-wotlk'
+          ref: 'Playerbot'
+          path: 'ac'
+      - name: Checkout Playerbot Module
+        uses: actions/checkout@v3
+        with:
+          repository: 'mod-playerbots/mod-playerbots'
+          #path: 'modules/mod-playerbots'
+          path: ac/modules/mod-playerbots
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.13
       - name: Configure OS
         shell: bash
+<<<<<<< HEAD
+=======
+        working-directory: ac
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
         env:
           CONTINUOUS_INTEGRATION: true
         run: |
           ./acore.sh install-deps
       - name: Build
         shell: bash
+<<<<<<< HEAD
+=======
+        working-directory: ac
+>>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
         run: |
           export CTOOLS_BUILD=all
           ./acore.sh compiler build
