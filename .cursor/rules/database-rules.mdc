@@ -1,6 +1,7 @@
 ---
-trigger: model_decision
 description: Apply when performing database operations, SQL queries, backups, restores, or modifying acore_world/characters/playerbots/auth databases
+alwaysApply: false
+globs: data/sql/**/*.sql
 ---
 # Database Operations Rules
 
@@ -11,7 +12,7 @@ description: Apply when performing database operations, SQL queries, backups, re
 - **acore_characters** (realm-specific): Player data - characters, inventory, quests, skills, spells
 - **acore_playerbots** (realm-specific): Bot configuration - ai_playerbot_config, strategy, tactics
 - **acore_auth** (shared): Account data - accounts, realmlist, permissions
-- Test changes on dev realm first before production
+- **This host is production-only**: validate with backups, transactions, off-peak timing, and off-host or dry-run checks—not a local dev realm
 - Always backup before major changes
 </database_structure>
 
@@ -69,7 +70,7 @@ description: Apply when performing database operations, SQL queries, backups, re
 - **Never** modify shared world database during peak hours
 - **Never** run unverified bulk UPDATE/DELETE queries
 - Always backup before dangerous operations
-- Test on dev realm first
+- On production, use maintenance windows, staged rollout, or off-host verification before bulk changes
 </dangerous_operations>
 
 ## Common Queries

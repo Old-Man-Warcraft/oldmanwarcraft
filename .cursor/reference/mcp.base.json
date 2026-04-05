@@ -1,0 +1,51 @@
+{
+  "mcpServers": {
+    "GitLab-MCP": {
+      "command": "__MCP_WRAP__",
+      "args": ["npx", "-y", "@zereight/mcp-gitlab"],
+      "env": {
+        "GITLAB_API_URL": "https://gitlab.thecorehosting.net/api/v4",
+        "GITLAB_READ_ONLY_MODE": "false",
+        "USE_GITLAB_WIKI": "true",
+        "USE_MILESTONE": "true",
+        "USE_PIPELINE": "true"
+      }
+    },
+    "azerothcore": {
+      "command": "",
+      "disabled": false,
+      "url": "http://localhost:8080/sse"
+    },
+    "deepwiki": {
+      "disabled": false,
+      "serverUrl": "https://mcp.deepwiki.com/mcp"
+    },
+    "exa": {
+      "disabled": false,
+      "serverUrl": "https://mcp.exa.ai/mcp"
+    },
+    "fetch": {
+      "command": "__MCP_WRAP__",
+      "args": ["uvx", "mcp-server-fetch"],
+      "disabled": false
+    },
+    "firecrawl-mcp": {
+      "command": "__MCP_WRAP__",
+      "args": ["npx", "-y", "firecrawl-mcp"],
+      "disabled": false,
+      "env": {}
+    },
+    "oldmanwarcraft-api-remote": {
+      "disabled": false,
+      "headers": {
+        "X-API-Key": ""
+      },
+      "url": "https://oldmanwarcraft.com/api/mcp/http"
+    },
+    "sequential-thinking": {
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "command": "npx",
+      "disabled": false
+    }
+  }
+}

@@ -1,24 +1,42 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for AI-assisted work in this repository (Cursor, Claude Code, and similar tools).
 
-## Project Overview
+## Where standards live
 
-AzerothCore is an open-source MMORPG server emulator for World of Warcraft patch 3.3.5a (Wrath of the Lich King). It's a C++ project built with CMake, using MySQL for data storage. Licensed under GNU GPL v2.
+- **Always-on / safety**: `.cursor/rules/` (especially `azerothcore-standards.mdc`, `playerbots-rules.mdc`).
+- **Workflows & checklists**: `.cursor/skills/` (`workflow-*`, domain references).
+- **Project facts & module list**: `.cursor/reference/PROJECT_SUMMARY.md`.
+- **Crash analysis**: `.cursor/docs/crash-debugging.md`.
 
-## Build Commands
+Keep long-lived facts about **Old Man Warcraft** operations in **Notion** (reference via Notion MCP when configuring or debugging live server behavior).
+
+**MCP credentials**: Do **not** rely on `${env:VAR}` inside `mcp.json` for GUI-launched Cursor. Use **`~/.cursor/mcp.secrets.env`** + **`~/.cursor/mcp-exec-with-secrets.sh`** + **`python3 .cursor/scripts/regenerate_mcp_json.py`** (writes `~/.cursor/mcp.json` from `.cursor/reference/mcp.base.json`). Details: `.cursor/reference/mcp.env.example`, `.cursor/rules/mcp-usage.mdc`.
+
+**MCP routing and tool catalog**: `.cursor/rules/mcp-usage.mdc` and `.cursor/reference/mcp-tools-inventory.md` (grouped `azerothcore`, `omw_*`, GitLab, Notion, fetch, firecrawl, research, browser).
+
+## Project identity
+
+- **Community**: Old Man Warcraft — [oldmanwarcraft.com](https://oldmanwarcraft.com)
+- **Stack**: AzerothCore WotLK 3.3.5a, heavy **custom module** set (see `modules/`), often on a **Playerbot-oriented** branch/fork.
+- **Git**: **GitLab** is the org origin for day-to-day work; **GitHub** is the **upstream** reference for AzerothCore and many modules. `modules/*` are commonly **separate Git repositories** (submodules or nested clones)—treat upstream sync per subtree, not only the root remote.
+- **This deployment**: **Production-only** on this host (no local dev realm). Favor backups, maintenance windows, and off-host or tooling validation instead of “test on 8086 first.”
+
+## Project overview (technical)
+
+AzerothCore is an open-source MMORPG server emulator for World of Warcraft patch 3.3.5a (Wrath of the Lich King). C++ with CMake, MySQL for data. Licensed under GNU GPL v2.
+
+## Build commands
 
 ### Configure and build (out-of-source build required)
 
 - Skip building unless explicitly requested.
 
 ```bash
-# Create build directory and configure
 mkdir -p build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/azeroth-server -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DSCRIPTS=static -DMODULES=static
 
-# Build (use appropriate core count)
 make -j$(nproc)
 make install
 ```
@@ -35,11 +53,8 @@ make install
 ### Unit tests
 
 ```bash
-# Configure with testing enabled
 cmake .. -DBUILD_TESTING=ON
 make -j$(nproc)
-
-# Run tests
 ./src/test/unit_tests
 # or
 ctest
@@ -50,77 +65,84 @@ Tests use Google Test and live in `src/test/`. The test binary links against the
 ## Architecture
 
 ### Two server executables
-- **authserver** (`src/server/apps/authserver/`): Handles authentication and realm selection (port 3724)
-- **worldserver** (`src/server/apps/worldserver/`): Main game server handling all gameplay (port 8085)
+
+- **authserver** (`src/server/apps/authserver/`): Authentication and realm selection (port 3724)
+- **worldserver** (`src/server/apps/worldserver/`): Gameplay (default game port **8085** in stock configs)
 
 ### Source layout (`src/`)
 
-- **`src/common/`** - Shared libraries: networking (Asio), cryptography, configuration, logging, threading, collision detection, utilities
-- **`src/server/game/`** - Core game logic (~52 subsystems), the heart of the worldserver
-- **`src/server/scripts/`** - Content scripts (bosses, spells, commands, instances)
-- **`src/server/database/`** - Database abstraction layer and schema updater
-- **`src/server/shared/`** - Code shared between auth and world servers (packets, network, realm definitions)
-- **`src/test/`** - Unit tests (Google Test)
+- **`src/common/`** — Shared libraries: networking (Asio), crypto, configuration, logging, threading, collision, utilities
+- **`src/server/game/`** — Core game logic (~52 subsystems)
+- **`src/server/scripts/`** — Content scripts (bosses, spells, commands, instances)
+- **`src/server/database/`** — Database abstraction and schema updater
+- **`src/server/shared/`** — Shared between auth and world (packets, realm definitions)
+- **`src/test/`** — Unit tests (Google Test)
 
 ### Key game subsystems (`src/server/game/`)
 
-- **Entities/** - Core game objects: `Player`, `Creature`, `Unit`, `Item`, `GameObject`
-- **Spells/** - Spell mechanics, aura system, spell effects
-- **Maps/** - Map management, grid system, instancing
-- **Handlers/** - Client packet handlers (one file per system: `MovementHandler.cpp`, `SpellHandler.cpp`, etc.). These are methods on `WorldSession`
-- **AI/** - Creature AI framework
-- **Scripting/** - Script system with typed base classes (`ScriptObject` subclasses: `CreatureScript`, `SpellScript`, `InstanceMapScript`, `GameObjectScript`, `CommandScript`, etc.)
-- **Server/** - `WorldSession` (per-player connection), `World` (global state), opcode definitions
+- **Entities/** — `Player`, `Creature`, `Unit`, `Item`, `GameObject`
+- **Spells/** — Spell mechanics, auras, effects
+- **Maps/** — Maps, grids, instances
+- **Handlers/** — Packet handlers on `WorldSession`
+- **AI/** — Creature AI
+- **Scripting/** — `ScriptObject` subclasses (`CreatureScript`, `SpellScript`, etc.)
+- **Server/** — `WorldSession`, `World`, opcodes
 
 ### Scripting system
 
-Scripts follow a registration pattern:
-1. Define a class inheriting from `SpellScript`, `CreatureScript`, etc.
-2. Implement an `AddSC_*()` function that calls `RegisterSpellScript(ClassName)` (or similar)
-3. The `AddSC_*()` is declared and called from the regional `*_script_loader.cpp`
-4. Script loaders per region: `spells_script_loader.cpp`, `eastern_kingdoms_script_loader.cpp`, `northrend_script_loader.cpp`, etc.
-5. Spell script files are organized by class: `spell_dk.cpp`, `spell_mage.cpp`, `spell_generic.cpp`, etc.
+1. Class inheriting `SpellScript`, `CreatureScript`, etc.
+2. `AddSC_*()` calling `RegisterSpellScript(ClassName)` (or equivalent)
+3. `AddSC_*` wired in regional `*_script_loader.cpp`
+4. Regional loaders: `spells_script_loader.cpp`, `eastern_kingdoms_script_loader.cpp`, etc.
+5. Spell scripts often grouped by class: `spell_dk.cpp`, `spell_mage.cpp`, `spell_generic.cpp`, …
 
-### Three databases
-- **acore_auth** - Accounts, realm list, bans (`data/sql/base/db_auth/`)
-- **acore_characters** - Character data, inventories, progress (`data/sql/base/db_characters/`)
-- **acore_world** - Game content: creatures, items, quests, spells, loot (`data/sql/base/db_world/`)
+### Databases
 
-- SQL updates go in `data/sql/updates/pending_*` with separate subdirectories per database until pull request is merged. Pending SQL files are assigned random names.
-- SQL updates go in `data/sql/updates/` with separate subdirectories per database after their pull request is merged.
-- SQL files outside the `data/sql/updates/pending_*` folders should never be updated.
+- **acore_auth** — Accounts, realm list, bans (`data/sql/base/db_auth/`)
+- **acore_characters** — Characters, inventories, progress (`data/sql/base/db_characters/`)
+- **acore_world** — Content: creatures, items, quests, spells, loot (`data/sql/base/db_world/`)
+
+SQL updates: `data/sql/updates/pending_*` (per DB) until merged upstream; after merge, under `data/sql/updates/` with DB subdirs. Do not edit SQL files outside the intended update workflow.
+
+Playerbots and other modules may add **acore_playerbots** and extra tables—see module SQL under `modules/*/data/sql/`.
 
 ### Module system
 
-External modules are loaded from the `modules/` directory. Each module is a subdirectory with its own `CMakeLists.txt`. Disable specific modules with `-DDISABLED_AC_MODULES="mod1;mod2"`. Module skeleton: https://github.com/azerothcore/skeleton-module/
+Modules live under `modules/`, each with its own `CMakeLists.txt`. Disable with `-DDISABLED_AC_MODULES="mod1;mod2"`. Upstream skeleton: https://github.com/azerothcore/skeleton-module/
 
 ### Dependencies
 
-Bundled in `deps/`: boost, MySQL client, OpenSSL, zlib, recastnavigation (pathfinding), g3dlite (geometry), fmt, argon2, jemalloc, and others.
+Bundled in `deps/`: Boost, MySQL client, OpenSSL, zlib, recastnavigation, g3dlite, fmt, argon2, jemalloc, and others.
 
-## Commit Message Format
+## Staying current with upstream
 
-Uses Conventional Commits:
+- Prefer **small, reversible commits** for local customization so merges/rebases stay tractable.
+- For **core**: fetch/compare **GitHub AzerothCore** (or your chosen upstream branch) against **GitLab**; resolve conflicts in favor of upstream behavior unless a documented OMW override requires keeping a patch.
+- For **each module**: same pattern inside `modules/<name>`—that directory may have its own `origin` (GitLab) and `upstream` (GitHub).
+- After upstream pulls: **full compile**, apply **SQL updates** in order, smoke-test critical paths, watch **Server.log / Errors.log**.
+
+## Commit message format
+
+Conventional Commits:
+
 ```
 Type(Scope/Subscope): Short description (max 50 chars)
 ```
 
 - **Types**: feat, fix, refactor, style, docs, test, chore
-- **Scopes**: Core (C++ changes), DB (SQL changes)
+- **Scopes**: Core (C++), DB (SQL), etc.
 - **Examples**: `fix(Core/Spells): Fix damage calculation for Fireball`, `fix(DB/SAI): Missing spell to NPC Hogger`
 
-## Code Style
+## Code style (aligned with `.cursor/rules`)
 
-- 4-space indentation for C++ (no tabs)
-- 2-space indentation for JSON, YAML, shell scripts
-- UTF-8 encoding, LF line endings
-- Max 80 character line length
-- No braces around single-line statements
-- Use {} to parse variables into output instead of %u etc.
-- CI enforces code style checks and compiles with `-Werror`
+- **C++**: 4 spaces, no tabs; **max 120** character lines; **Allman** braces; naming per AzerothCore conventions (PascalCase classes, camelCase functions/variables).
+- **JSON / YAML / shell**: 2-space indent where applicable.
+- UTF-8, LF line endings.
+- Prefer `{}`-style format strings over printf-style `%u` in new code where the codebase already does.
+- CI may enforce additional formatting; build with `-Werror` in clean configurations.
 
-## PR Requirements
+## PR / review expectations
 
-- AI tool usage must be disclosed in PRs
-- In-game testing expected
-- Changes to generic code require regression testing of related systems
+- Disclose AI assistance in PRs when required by policy.
+- In-game or server-log validation for gameplay-impacting changes.
+- Generic core changes need regression thought for related systems (spells, maps, handlers).

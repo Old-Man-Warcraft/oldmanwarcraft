@@ -1,6 +1,7 @@
 ---
-trigger: model_decision
 description: Apply when creating or modifying AzerothCore modules, CMakeLists.txt, module configuration, or module database schemas
+alwaysApply: false
+globs: modules/**/*
 ---
 # Module Development Rules
 
@@ -81,7 +82,7 @@ description: Apply when creating or modifying AzerothCore modules, CMakeLists.tx
 <testing_rules>
 - Module must compile without errors
 - Module must compile without warnings (if possible)
-- Test on development realm (8086) first
+- Validate on production with backups and rollback plan, or on a separate staging machine if you maintain one
 - Verify module loads on startup
 - Check logs for initialization messages
 - Test all configuration options
@@ -98,7 +99,7 @@ description: Apply when creating or modifying AzerothCore modules, CMakeLists.tx
 - Compile: `make -j$(nproc)`
 - Check for errors and warnings
 - Verify all source files compiled
-- Test on development realm before production
+- Deploy using the same production-safe practices as core changes
 </compilation_rules>
 
 ## Common Issues

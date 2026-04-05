@@ -97,6 +97,9 @@ local.properties
 .project
 .cproject
 
+# Local MCP secrets (if copied next to repo docs by mistake)
+.cursor/mcp.secrets.env
+
 # ==================
 #
 #  CUSTOM

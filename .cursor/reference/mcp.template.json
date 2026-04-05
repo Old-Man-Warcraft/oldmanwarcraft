@@ -1,0 +1,3 @@
+{
+  "_deprecated_use_instead": "Use mcp.base.json + .cursor/scripts/regenerate_mcp_json.py + ~/.cursor/mcp-exec-with-secrets.sh. See mcp.env.example and mcp-usage.mdc. Plain ${env:VAR} in mcp.json is unreliable in GUI Cursor."
+}

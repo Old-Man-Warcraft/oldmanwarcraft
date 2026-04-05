@@ -1,6 +1,7 @@
 ---
-trigger: model_decision
 description: Apply when configuring spell procs, spell_proc table, proc flags, proc attributes, or debugging spell trigger behavior
+alwaysApply: false
+globs: data/sql/**/*.sql
 ---
 # Spell Proc Configuration Rules
 
@@ -73,7 +74,7 @@ description: Apply when configuring spell procs, spell_proc table, proc flags, p
 ## Testing Proc Configuration
 
 <testing_rules>
-- Test on development realm (8086) first
+- Validate on production with combat-log review and rollback plan, or on staging if maintained separately
 - Enable combat logging: `.debug on`
 - Check spell exists: `.spell <spell_id>`
 - Verify spell_proc entry: Query database

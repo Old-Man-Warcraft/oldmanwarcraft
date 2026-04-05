@@ -1,6 +1,7 @@
 ---
-trigger: model_decision
 description: Apply when working with mod-playerbots, bot AI, bot commands, bot configuration, or bot performance optimization
+alwaysApply: false
+globs: modules/mod-playerbots*/**/*
 ---
 # Playerbots Module Rules
 
@@ -84,11 +85,11 @@ description: Apply when working with mod-playerbots, bot AI, bot commands, bot c
 ## Testing & Debugging
 
 <testing_rules>
-- Test on development realm (8086) first
+- Validate bot changes with backups and log monitoring on production, or on a separate staging stack if available
 - Use `.bot count` to check active bots
 - Use `.bot stats` for performance metrics
 - Enable debug logging: `.debug on`
-- Check logs: `tail -f env/dist/logs-dev/Server.log | grep -i bot`
+- Check logs: `tail -f env/dist/logs/Server.log | grep -i bot` (adjust path if logs use `/data/logs/`)
 - Test bot behavior in different scenarios (combat, movement, healing)
 - Verify no conflicts with other modules
 - Monitor bot performance during testing
@@ -141,78 +142,104 @@ description: Apply when working with mod-playerbots, bot AI, bot commands, bot c
 - Use LLM integration for advanced behavior (optional)
 </best_practices>
 
-## Critical Safety Issues (2026-02-04)
+## Raid & Dungeon Support
 
-### Known Race Conditions in Group Operations
+<raid_support>
+### Supported Raid Instances
+- **Icecrown Citadel (ICC)**: Rotface, Saurfang, and other boss mechanics
+- **Trial of the Champion (ToC)**: Ground combat mechanics with Black Knight, Desecration, Paletress
+- **Hyjal Summit**: Elemental boss mechanics
+- **Ulduar**: Complex boss mechanics
+- **Naxxramas**: Classic raid mechanics
 
-**Arena Group Formation** (PlayerbotOperations.h line 319-330)
-- **Issue**: Time-of-check-to-time-of-use race condition
-- **Symptom**: Crashes when forming arena groups with bots
-- **Root Cause**: Player can disconnect between `ObjectAccessor::FindPlayer()` and `newGroup->AddMember(member)`
-- **Mitigation**: 
-  - Always check `member->IsInWorld()` before AddMember
-  - Verify player still valid after FindPlayer call
-  - Add defensive null checks around group operations
-- **Status**: KNOWN ISSUE - Use caution with arena group operations
+### Bot Raid Capabilities
+- Multiple strategies per boss for different roles (tank/dps/heal)
+- Threat management and positioning
+- Spell rotation optimization for raid encounters
+- Healing priority and mana management
+- Crowd control and debuff handling
+- Loot distribution among party members
 
-### Unsafe Guild Operations
+### Raid Testing Best Practices
+- Test bot behavior in a controlled way (staging or low-impact production window with rollback)
+- Verify bot positioning and movement
+- Check threat management and aggro handling
+- Monitor bot spell rotation and cooldown usage
+- Test healing coverage and mana management
+- Verify no conflicts with other raid mechanics
+</raid_support>
 
-**Guild Member Access** (GuildManagementActions.cpp line 87)
-- **Issue**: Missing null checks on guild and member pointers
-- **Symptom**: Crashes when bots interact with guild systems
-- **Root Cause**: `GetGuildById()` or `GetMember()` can return nullptr
-- **Mitigation**:
-  - Always check guild pointer before access: `if (!guild) return;`
-  - Always check member pointer before access: `if (!guildMember) return;`
-  - Never chain method calls without intermediate null checks
-- **Status**: KNOWN ISSUE - Avoid guild operations with bots until patched
+## Bot Movement & Navigation
 
-### Bot Session Validation
+<movement_mechanics>
+### Pathfinding System
+- Terrain-aware pathfinding with collision detection
+- Distance-based update frequency optimization
+- Waypoint following for quest and patrol routes
+- Combat movement with threat-based positioning
 
-**Session Null Checks**
-- **Issue**: Bot players may have null or invalid sessions
-- **Symptom**: Crashes in session-dependent operations
-- **Root Cause**: Bots don't have real client sessions
-- **Mitigation**:
-  - Use `member->IsInWorld()` to verify bot is active
-  - Check `member->GetSession()` before accessing session data
-  - Combine checks: `if (!member->IsInWorld() || !member->GetSession()) continue;`
-- **Status**: KNOWN ISSUE - Apply defensive checks in all bot group operations
+### Flying Mount Mechanics
+- **Active Descent**: Prevents hovering in TBC/WotLK zones
+- **Terrain Clearance**: Avoids collision with terrain
+- **Zone Restrictions**: Flying only in map 530 (Outland) and 571 (Northrend)
+- **Classic Zones**: Ground pathfinding even with flying mounts
+- **Mount Selection**: Automatic selection based on zone and speed requirements
 
-### Safe Group Operation Patterns
+### Movement Optimization
+- Cache frequently used paths
+- Limit pathfinding distance for distant targets
+- Batch pathfinding updates
+- Monitor pathfinding cache hit rate
+- Reduce update frequency for distant bots
+</movement_mechanics>
 
-✓ **Safe**: Use GUID-based removal with ObjectAccessor
-```cpp
-group->RemoveMember(player->GetGUID(), GROUP_REMOVEMETHOD_LEAVE);
-```
+## LLM Integration Details
 
-✓ **Safe**: GroupReference iteration with null checks
-```cpp
-for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next()) {
-    Player* member = gref->GetSource();
-    if (!member) continue;
-    // Safe to use member
-}
-```
+<llm_features>
+### mod-playerbots-llm Configuration
+- **Providers**: OpenAI (gpt-4 default), Claude, Ollama, custom providers
+- **Vector Database**: Qdrant at http://localhost:6333
+- **Embedding Model**: text-embedding-ada-002 (1536 dimensions)
+- **Game Data Indexing**: 31k+ items, 3k+ quests, 100k+ creatures, 30k+ spells
+- **Chat Features**: Whisper, party/raid, guild, say/yell with personalities
+- **Conversation Memory**: 20 messages max history with 300s timeout
+- **Response Delay**: 500-3000ms to simulate natural typing
+- **Temperature**: 0.8 for creative responses, max 150 tokens per response
 
-✓ **Safe**: AddMember validates player pointer
-```cpp
-if (group->AddMember(player)) {
-    // Success - player was valid
-}
-```
+### LLM Performance Tuning
+- **Worker Threads**: 4 LLM workers, 8 HTTP workers
+- **Concurrent Requests**: Max 5 concurrent LLM requests
+- **Async Operations**: All vector DB operations are async
+- **Deferred Loading**: Knowledge loading deferred to prevent startup blocking
+- **WoW Lore Context**: Enabled for era-appropriate responses
 
-❌ **Unsafe**: Direct pointer dereference without checks
-```cpp
-Player* member = ObjectAccessor::FindPlayer(guid);
-member->DoSomething();  // CRASH if member is nullptr
-```
+### Learning System
+- **HeuristicLearner**: Pattern learning from interactions
+- **Pattern Sync**: Every 5 seconds
+- **Personality Adaptation**: Dynamic strategy adjustment
+- **Memory Persistence**: Semantic memory in vector database
+</llm_features>
 
-### Testing Recommendations
+## Architectural Considerations
 
-- Test bot group formation/disbanding extensively
-- Monitor logs for race condition symptoms
-- Use development realm (8086) for all bot group testing
-- Enable debug logging during group operations
-- Check for crashes in arena group formation scenarios
-- Verify guild operations don't crash with bot participation
+<architecture>
+### Group Operations Safety
+- Arena group formation requires careful null checking
+- Guild operations need defensive member validation
+- Bot session validation essential for group operations
+- Safe patterns: Group::RemoveMember uses GUID-based lookup, PlayerbotAI shutdown properly removes from groups
+
+### Performance Tuning
+- Bot count: 100-200 recommended per 4-core server
+- Update interval: Default 100ms, adjustable for responsiveness
+- SmartAI UPDATE_IC/OOC events impact CPU usage
+- Spell proc checks on every damage event—keep efficient
+- Pathfinding cache hit rate important for movement performance
+
+### Spell & Ability System
+- Class-specific spell rotations per specialization
+- Cooldown management and resource tracking
+- Threat-based ability selection
+- Proc flag verification for triggered spells
+- Spell family mask matching for class filtering
+</architecture>

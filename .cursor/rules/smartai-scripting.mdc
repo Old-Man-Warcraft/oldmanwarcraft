@@ -1,6 +1,7 @@
 ---
-trigger: model_decision
 description: Apply when creating or debugging SmartAI scripts, smart_scripts table, creature events, actions, targets, or phase management
+alwaysApply: false
+globs: data/sql/**/*.sql
 ---
 # SmartAI Scripting Rules
 
@@ -87,10 +88,10 @@ description: Apply when creating or debugging SmartAI scripts, smart_scripts tab
 ## Testing & Debugging
 
 <testing_rules>
-- Test on development realm (8086) first
+- Validate on production with backups and `.reload` / restart discipline, or on off-host staging if you use it
 - Use `.go creature <entry>` to spawn test creature
 - Enable debug logging: `.debug on`
-- Check server logs: `tail -f env/dist/logs-dev/Server.log`
+- Check server logs: `tail -f env/dist/logs/Server.log` (or `/data/logs/Server.log` if logs are bound there)
 - Reload scripts: `.reload smart_scripts`
 - Test with fresh creature spawn after changes
 - Verify no infinite loops in phase transitions

@@ -1,0 +1,114 @@
+---
+description: Apply when deploying changes, testing on the live server, starting/stopping servers, applying database updates, or performing rollbacks
+alwaysApply: false
+---
+# Deployment and testing rules (production)
+
+This host runs **production only**. There is no local development realm—treat every deploy as production-facing. Use backups, maintenance windows, and off-host validation when you need isolated experimentation.
+
+## MCP (operations)
+
+- **Notion**: Before assuming service names, log directories (e.g. under `/data/logs` vs `env/dist/logs`), or restart procedures, use **`notion-search`** / **`notion-fetch`** (see `.cursor/rules/mcp-usage.mdc`, `.cursor/reference/mcp-tools-inventory.md`).
+- **azerothcore**: **`soap_check_connection`**, **`soap_server_info`** after restarts; **`soap_reload_table`** / **`soap_execute_command`** only when policy allows and SOAP is not exposed to untrusted networks.
+- **oldmanwarcraft-api-remote**: **`omw_get_server_status`**, **`omw_health_check`**, **`omw_get_server_population`** for site/API view of live state—**not** a substitute for SSH/systemd runbooks; use with user approval for write/API-heavy tools.
+- **fetch** / **firecrawl** / **exa** / **deepwiki**: External docs and troubleshooting; cross-check with Notion + repo.
+
+## Pre-deployment checklist
+
+<pre_deployment>
+- Code compiles without errors and warnings (or known-acceptable warnings documented)
+- Database backups taken and verified (world, characters, playerbots as applicable)
+- SQL reviewed for shared `acore_world` impact and rollback path
+- SmartAI / proc / condition changes sanity-checked (queries, phase masks, links)
+- Maintenance window or player impact considered for restarts and long migrations
+- Documentation or Notion runbook updated if operational steps change
+</pre_deployment>
+
+## Backup procedures
+
+<backup_rules>
+- Backup world: `mysqldump -uacore -pacore acore_world > backup_world_$(date +%Y%m%d_%H%M%S).sql`
+- Backup characters: `mysqldump -uacore -pacore acore_characters > backup_characters_$(date +%Y%m%d_%H%M%S).sql`
+- Backup playerbots: `mysqldump -uacore -pacore acore_playerbots > backup_playerbots_$(date +%Y%m%d_%H%M%S).sql`
+- Compress: `gzip backup_*.sql`
+- Verify: `ls -lh backup_*.sql`
+- Store copies off the hot path; test restore periodically
+</backup_rules>
+
+## Database updates
+
+<database_update>
+- Schedule writes during agreed low-impact windows when possible
+- Stop worldserver (or use your approved online migration process): e.g. `service ac-worldserver stop`
+- Verify stopped: `systemctl status ac-worldserver`
+- Apply: `mysql -uacore -pacore acore_world < update.sql`
+- Verify: `mysql -uacore -pacore acore_world -e "SELECT COUNT(*) FROM <table>"`
+- Check CLI output for errors
+- Start server and confirm clean startup logs
+</database_update>
+
+## Code deployment
+
+<code_deployment>
+- Rebuild when C++ changed: `cd build && cmake .. && make -j$(nproc)` (adjust paths to your tree)
+- Install/restart per your layout (`make install`, rsync, container rebuild, etc.)
+- Ensure module list and configs match what production expects
+</code_deployment>
+
+## Configuration updates
+
+<config_update>
+- Compare dist to live: e.g. `cp conf/dist/modules/<module>.conf.dist env/dist/etc/modules/<module>.conf` then merge edits
+- Validate non-comment lines have sensible values
+- Restart or reload per module requirements; watch startup logs
+</config_update>
+
+## Server startup
+
+<startup_rules>
+- Start: `service ac-worldserver start` (or docker compose / your unit)
+- Monitor: `systemctl status ac-worldserver`
+- Logs: often `env/dist/logs/Server.log` or a mounted path such as `/data/logs/Server.log`—use the path your deployment actually uses
+- Confirm modules loaded; spot-check one critical feature
+</startup_rules>
+
+## Verification
+
+<verification_rules>
+- `grep -iE "error|critical|fatal"` on recent log files
+- Confirm expected “loaded” lines for custom modules
+- In-game or GM checks for the changed behavior
+- Watch for player reports and metric spikes after deploy
+</verification_rules>
+
+## Rollback procedure
+
+<rollback_rules>
+- Stop server
+- Restore DB from known-good dump if data migration was involved
+- Revert Git / redeploy previous artifact: `git revert <commit>` or redeploy last image
+- Rebuild/restart
+- Monitor logs; document cause and follow-up
+</rollback_rules>
+
+## Optional staging elsewhere
+
+If you maintain a **separate** dev/staging host or container stack (not on this machine), run experimental SQL, ASan builds, and destructive tests **there** first. This rule file does not assume that stack exists.
+
+## Post-deployment monitoring
+
+<monitoring_rules>
+- Daily: service health, error log tail, disk space
+- Weekly: broader log review, backup success, obvious DB bloat
+- Monthly: dependency/upstream merge planning, security patches, module compatibility after upstream pulls
+</monitoring_rules>
+
+## Useful commands
+
+<useful_commands>
+- Status: `systemctl status ac-worldserver`
+- Logs: `tail -f env/dist/logs/Server.log` or `tail -f /data/logs/Server.log` as appropriate
+- Backup: `mysqldump -uacore -pacore acore_world > backup.sql`
+- Restore: `mysql -uacore -pacore acore_world < backup.sql`
+- In-game reloads when supported: `.reload smart_scripts`, `.reload spell_proc`, `.reload conditions`
+</useful_commands>

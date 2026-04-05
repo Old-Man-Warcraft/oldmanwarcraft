@@ -1,0 +1,54 @@
+---
+description: >-
+  Guidance for persisting project context using Cursor Memories, repo docs, and
+  .cursor/reference. Use when the user asks to remember something, when
+  documenting architecture, or before risky bot/database changes.
+alwaysApply: false
+---
+
+# Project context and memory (Cursor)
+
+## What to persist
+
+Use durable project knowledge when it should survive a single chat:
+
+- **Architecture**: Realms, databases, module layout, integration points
+- **Critical issues**: Race conditions, null-check hazards, production safety
+- **Patterns**: How this fork deploys, tests, and rolls back
+- **User preferences**: Explicit “always do X” requests
+
+## Where it lives in Cursor
+
+- **Cursor Memories** (user-level): Stable facts the user asks you to remember across projects/sessions
+- **This repository**: `.cursor/rules/` (standards), `.cursor/reference/` (archives and summaries), module `README.md` files, and SQL/C++ comments for implementation detail
+- **Notion (Old Man Warcraft)**: Server topology, runbooks, and operational detail—**use the Notion MCP** (`notion-search`, `notion-fetch`) instead of guessing ports, hostnames, or procedures
+- **AzerothCore MCP** (`user-azerothcore`): Live DB/SOAP/wiki helpers for SmartAI, spells, conditions, quests—use for data-backed debugging when the server is reachable (see `.cursor/rules/mcp-usage.mdc`)
+- **Other MCP servers** (GitLab, GitHub, OMW API, fetch, deepwiki, exa, firecrawl, sequential-thinking, browser): Use per `.cursor/rules/mcp-usage.mdc` and **`.cursor/reference/mcp-tools-inventory.md`**; never substitute them for secrets stored outside the repo
+
+## Before high-risk work
+
+Search or recall context for:
+
+- Playerbot group, arena, and guild code paths
+- Production database or shared `acore_world` changes
+- SmartAI phase chains and spell proc interactions
+
+If nothing is documented yet, add a short note in the repo (for example under `.cursor/reference/` or the relevant module docs) instead of relying only on chat history.
+
+## Knowledge shape (if using a graph-style store)
+
+When storing structured knowledge elsewhere, prefer:
+
+- **Clear names**: e.g. `mod-playerbots-llm Module`, not vague `LLM module`
+- **Atomic facts**: One observation per fact; no speculation
+- **Relations**: `depends_on`, `integrates_with`, `uses`, etc., when they add clarity
+- **Safety first**: Document race conditions and production constraints immediately
+
+## Maintenance
+
+- Refresh or remove stale notes after major refactors or module additions
+- Keep “critical safety” items aligned with code and `.cursor/rules/playerbots-rules.mdc`
+
+## Integration with migrated Windsurf material
+
+Static guidance lives in `.cursor/rules/` (formerly `.windsurf/rules/`). Long-form archive: `.cursor/reference/windsurf-rules-archive.md`. Workflows and references are under `.cursor/skills/` and `.cursor/docs/`. The `.augment/` tree was removed intentionally; use `.cursor/` as canonical.

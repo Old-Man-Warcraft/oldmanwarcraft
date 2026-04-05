@@ -1,6 +1,7 @@
 ---
-trigger: model_decision
 description: Apply when working with AzerothCore conditions system, condition_source_type, condition types, or filtering SmartAI/spell/loot/quest triggers
+alwaysApply: false
+globs: data/sql/**/*.sql
 ---
 # Conditions System Rules
 
@@ -60,7 +61,7 @@ description: Apply when working with AzerothCore conditions system, condition_so
 ## Testing Conditions
 
 <testing_rules>
-- Test on development realm (8086) first
+- Validate on production with targeted checks and rollback, or on off-host staging
 - Verify conditions are satisfied before testing
 - Test with multiple character states (level, class, race, quest status)
 - Check server logs for condition evaluation

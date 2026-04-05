@@ -1,0 +1,112 @@
+---
+description: AzerothCore Development Standards (Old Man Warcraft production fork)
+alwaysApply: true
+---
+# AzerothCore Development Standards
+
+## Project context
+
+- **Community / server**: Old Man Warcraft — oldmanwarcraft.com; production WoW WotLK 3.3.5a private server.
+- **Framework**: AzerothCore WotLK 3.3.5a; this tree is a **custom fork** with additional modules and patches.
+- **Primary module focus**: mod-playerbots (AI-driven bots); many other custom modules live under `modules/`.
+- **Languages**: C++ (core), SQL (database), Lua (where modules use it).
+- **Databases**: acore_world (shared content), acore_characters (per realm), acore_playerbots (per realm, if used), acore_auth (shared)—plus any module-specific tables.
+- **Git remotes**: **GitLab** = org **origin** for daily work; **GitHub** = **upstream** for AzerothCore and many stock modules. Paths under `modules/` are often **separate Git repositories**—sync and merge **per module** as well as for the core repo.
+- **This host**: **Production only** (no local development realm). Validate with backups, maintenance windows, off-host testing, dry runs, and log review—not “always test on 8086 first.”
+- **Operational documentation**: **Notion** holds server/runbook-style detail; use the **Notion MCP** to **look up** host-specific facts instead of guessing (see `.cursor/rules/mcp-usage.mdc`).
+- **Live data / SOAP / wiki helpers**: When the **azerothcore** MCP is connected, prefer it for spell proc diagnosis, SmartAI traces, DB queries, and wiki search—**after** checking production safety and SOAP policy.
+- **MCP catalog**: Use **all** configured MCP tools where they fit the task (GitLab, Notion, OMW `omw_*`, fetch, firecrawl, exa, deepwiki, sequential-thinking, browser)—see `.cursor/reference/mcp-tools-inventory.md` and `.cursor/rules/mcp-usage.mdc`.
+- **More detail**: `.cursor/reference/PROJECT_SUMMARY.md`, `.cursor/skills/`, `CLAUDE.md`.
+
+## C++ code standards
+
+<cpp_standards>
+- Follow AzerothCore C++ conventions for this fork
+- **Naming**: Classes=PascalCase, Functions=camelCase, Variables=camelCase, Constants=UPPER_SNAKE_CASE
+- **Indentation**: 4 spaces (no tabs)
+- **Line length**: Max 120 characters
+- **Braces**: Allman style (opening brace on new line)
+- **Memory**: Use std::unique_ptr/std::shared_ptr; avoid raw owning pointers
+- **Error handling**: Assertions for logic errors; exceptions where the codebase already uses them for recoverable cases
+- **Comments**: Doxygen-style for public APIs; explain WHY not WHAT
+</cpp_standards>
+
+## Database rules
+
+<database_rules>
+- **World database** (`acore_world`): Shared—changes affect all realms using it. Schedule invasive work off-peak; backup first; use transactions for multi-step changes.
+- **Character / playerbots DBs**: Realm-specific—avoid hand-editing; prefer in-game flows and supported tools unless you fully understand the schema.
+- **Always backup** before major schema or bulk data changes (`mysqldump` or your standard procedure).
+- **Use transactions** for multi-table updates: START TRANSACTION / COMMIT.
+- **Document** non-obvious SQL (comments, changelog, or module README).
+- **Verify integrity** after bulk updates (counts, spot checks, logs).
+</database_rules>
+
+## SmartAI scripting
+
+<smartai_rules>
+- Use `SMART_EVENT_JUST_CREATED` (63) for initialization, not RESPAWN
+- Minimize `SMART_EVENT_UPDATE_IC` (0) and `SMART_EVENT_UPDATE_OOC` (1) — they fire every update
+- Always set `event_phase_mask >= 1` (0 means never triggers)
+- Always set `event_chance > 0` (0 means never triggers)
+- Use conditions to filter unnecessary event triggers
+- Document event phases in comments for complex scripts
+- Test phase transitions thoroughly — bugs cause infinite loops
+- Use `SMART_EVENT_LINK` (61) for sequential actions
+</smartai_rules>
+
+## Spell configuration
+
+<spell_rules>
+- Verify proc flags match spell intent — incorrect flags cause unintended triggers
+- Use `PROC_SPELL_PHASE_HIT` (0x2) for damage procs, `PROC_SPELL_PHASE_CAST` (0x1) for cast-time effects
+- Spell family masks must match class/school for spellmod interactions
+- Test proc interactions with triggered spells — some have restrictions
+- Document proc conditions in spell_proc comments
+- Check for conflicting proc configurations before deployment
+</spell_rules>
+
+## Module development
+
+<module_rules>
+- Proper `CMakeLists.txt` listing all sources/headers
+- Configuration: safe defaults (usually disabled), documented in `.conf.dist`
+- Database schema in `data/sql/base/`, updates in `data/sql/updates/`
+- Update script naming: `YYYY_MM_DD_XX_description.sql`
+- Module must compile without warnings where feasible
+- Validate on **this production stack** with care: backup, rollback plan, and log monitoring (or validate off-host when possible)
+- Document features in README.md
+</module_rules>
+
+## Testing and deployment (production host)
+
+<testing_rules>
+- **No local dev realm on this host** — use backups, staged SQL, maintenance windows, and post-deploy log checks (`Server.log`, `Errors.log`, and paths your layout uses e.g. `/data/logs` if bound there).
+- Prefer **low-risk ordering**: compile → apply SQL → restart during agreed window → monitor.
+- **Never** treat production character data as disposable; **never** skip rollback planning for shared `acore_world` changes.
+- After deploy: grep logs for errors, verify modules loaded, spot-check critical in-game flows.
+- Rollback: stop server → restore DB backup if needed → revert binary/config → document incident.
+</testing_rules>
+
+## Safety and stability
+
+<safety_rules>
+- **Never** modify `creature_template` directly — use `UPDATE_TEMPLATE` action
+- **Never** delete rows without understanding dependencies
+- **Never** change primary keys in existing records casually
+- **Never** run heavy or risky `acore_world` work during peak hours without agreement
+- **Never** enable noisy debug logging in production without reason
+- Document dangerous operations
+- **CRITICAL**: Defensive null checks in all bot group operations (see `playerbots-rules.mdc`)
+- **CRITICAL**: Avoid arena group formation with bots until race condition is fixed
+- **CRITICAL**: Avoid guild operations with bots until null check issues are patched
+</safety_rules>
+
+## Memory and context
+
+<memory_usage>
+- **Cursor Memories**: user-stable preferences across chats
+- **Repo**: `.cursor/rules/`, `.cursor/reference/`, module READMEs, SQL/C++ comments
+- **Notion**: server topology, ports, runbooks—**query via MCP** instead of inventing infra details
+- See **memory-usage.mdc** for persistence patterns
+</memory_usage>
