@@ -260,8 +260,4 @@ def misc_codestyle_check(file: io, file_path: str) -> None:
         results["Misc codestyle check"] = "Failed"
 
 # Main function
-<<<<<<< HEAD
 parsing_file(src_directory)
-=======
-parsing_file(src_directory)
->>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean

@@ -1,7 +1,6 @@
 name: macos-build
 on:
   push:
-<<<<<<< HEAD
     branches: [ "Playerbot" ]
   pull_request:
     branches: [ "Playerbot" ]
@@ -14,16 +13,6 @@ permissions:
   actions: write
   contents: read
 
-=======
-    branches: [ "master", "test-staging" ]
-  pull_request:
-    branches: [ "master", "test-staging" ]
-
-concurrency:
-  group: "macos-build-${{ github.event.pull_request.number }}"
-  cancel-in-progress: true
-
->>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
 jobs:
   macos-build:
     strategy:
@@ -34,25 +23,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }}
     steps:
-<<<<<<< HEAD
       - uses: actions/checkout@v4
-=======
-      - name: Checkout AzerothCore
-        uses: actions/checkout@v4
-        with:
-          repository: 'mod-playerbots/azerothcore-wotlk'
-          ref: 'Playerbot'
-      - name: Checkout Playerbot Module
-        uses: actions/checkout@v4
-        with:
-          repository: 'mod-playerbots/mod-playerbots'
-          path: 'modules/mod-playerbots'
->>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
       - name: Cache
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ccache
-<<<<<<< HEAD
           key: ccache:${{ matrix.os }}:${{ github.ref_name }}
           restore-keys: |
             ccache:${{ matrix.os }}:${{ github.ref_name }}
@@ -60,21 +35,12 @@ jobs:
       - name: reset ccache stats
         shell: bash
         run: ccache -z || true
-=======
-          key: ccache:${{ matrix.os }}:${{ github.ref }}:${{ github.sha }}
-          restore-keys: |
-            ccache:${{ matrix.os }}:${{ github.ref }}
-            ccache:${{ matrix.os }}
->>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
       - name: Install latest bash
         run: brew install bash
       - name: Configure OS
         run: source ./acore.sh install-deps
       - name: Build
         run: source ./apps/ci/mac/ci-compile.sh
-<<<<<<< HEAD
       - name: ccache stats
         shell: bash
         run: ccache -s || true
-=======
->>>>>>> refs/remotes/scarecr0w12/feature-playerbot-ah-clean
