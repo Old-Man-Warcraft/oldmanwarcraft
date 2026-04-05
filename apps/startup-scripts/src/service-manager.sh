@@ -1243,6 +1243,11 @@ function systemd_create_service() {
     if [ "$session_manager" = "tmux" ] || [ "$session_manager" = "screen" ]; then
         service_type="forking"
     fi
+
+    local core_limit_directive=""
+    if [ "$gdb_enabled" = "1" ]; then
+        core_limit_directive="LimitCORE=infinity"
+    fi
     
     # Create service file
     echo -e "${YELLOW}Creating systemd service: $service_name${NC}"
@@ -1269,6 +1274,7 @@ Group=$(id -gn)
 WorkingDirectory=$bin_path
 StandardOutput=journal+console
 StandardError=journal+console
+$core_limit_directive
 
 [Install]
 WantedBy=multi-user.target
@@ -1288,6 +1294,7 @@ RestartSec=3
 WorkingDirectory=$bin_path
 StandardOutput=journal+console
 StandardError=journal+console
+$core_limit_directive
 
 [Install]
 WantedBy=default.target
