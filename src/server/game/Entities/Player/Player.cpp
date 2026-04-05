@@ -10718,14 +10718,6 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorguid, uint32 vendorslot, uin
         }
     }
 
-    uint32 requiredLevel = pProto->RequiredLevel;
-    sScriptMgr->OnPlayerGetItemRequiredLevel(this, pProto, requiredLevel);
-    if (!IsGameMaster() && GetLevel() < requiredLevel)
-    {
-        SendEquipError(EQUIP_ERR_CANT_EQUIP_LEVEL_I, nullptr, nullptr, item);
-        return false;
-    }
-
     if (pProto->RequiredReputationFaction && (uint32(GetReputationRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank))
     {
         SendBuyError(BUY_ERR_REPUTATION_REQUIRE, creature, item, 0);
@@ -11850,19 +11842,15 @@ void Player::LearnDefaultSkills()
 void Player::LearnDefaultSkill(uint32 skillId, uint16 rank)
 {
     SkillRaceClassInfoEntry const* rcInfo = GetSkillRaceClassInfo(skillId, getRace(), getClass());
-    if (!rcInfo && !IsLanguageSkill(skillId))
+    if (!rcInfo)
         return;
 
     LOG_DEBUG("entities.player.loading", "PLAYER (Class: {} Race: {}): Adding initial skill, id = {}", uint32(getClass()), uint32(getRace()), skillId);
-
-    if (IsLanguageSkill(skillId))
-    {
-        SetSkill(skillId, 0, 300, 300);
-        return;
-    }
-
     switch (GetSkillRangeType(rcInfo))
     {
+        case SKILL_RANGE_LANGUAGE:
+            SetSkill(skillId, 0, 300, 300);
+            break;
         case SKILL_RANGE_LEVEL:
         {
             uint16 skillValue = 1;
@@ -13725,9 +13713,8 @@ void Player::_LoadSkills(PreparedQueryResult result)
             uint16 value    = fields[1].Get<uint16>();
             uint16 max      = fields[2].Get<uint16>();
 
-            bool isLanguageSkill = IsLanguageSkill(skill);
             SkillRaceClassInfoEntry const* rcEntry = GetSkillRaceClassInfo(skill, getRace(), getClass());
-            if (!rcEntry && !isLanguageSkill)
+            if (!rcEntry)
             {
                 LOG_ERROR("entities.player", "Player {} (GUID: {}), has skill ({}) that is invalid for the race/class combination (Race: {}, Class: {}). Will be deleted.",
                     GetName(), GetGUID().GetCounter(), skill, getRace(), getClass());
@@ -13738,7 +13725,7 @@ void Player::_LoadSkills(PreparedQueryResult result)
             }
 
             // set fixed skill ranges
-            switch (isLanguageSkill ? SKILL_RANGE_LANGUAGE : GetSkillRangeType(rcEntry))
+            switch (GetSkillRangeType(rcEntry))
             {
                 case SKILL_RANGE_LANGUAGE:                      // 300..300
                     value = max = 300;
@@ -13768,17 +13755,14 @@ void Player::_LoadSkills(PreparedQueryResult result)
             }
 
             uint16 skillStep = 0;
-            if (rcEntry)
+            if (SkillTiersEntry const* skillTier = sSkillTiersStore.LookupEntry(rcEntry->SkillTierID))
             {
-                if (SkillTiersEntry const* skillTier = sSkillTiersStore.LookupEntry(rcEntry->SkillTierID))
+                for (uint32 i = 0; i < MAX_SKILL_STEP; ++i)
                 {
-                    for (uint32 i = 0; i < MAX_SKILL_STEP; ++i)
+                    if (skillTier->Value[skillStep] == max)
                     {
-                        if (skillTier->Value[skillStep] == max)
-                        {
-                            skillStep = i + 1;
-                            break;
-                        }
+                        skillStep = i + 1;
+                        break;
                     }
                 }
             }

@@ -515,22 +515,7 @@ void DBUpdater<T>::ApplyFile(DatabaseWorkerPool<T>& pool, std::string const& hos
 
     std::string confFileName = "mysql_ac.conf";
 
-    std::error_code error;
-    std::filesystem::create_directories(tempDir, error);
-
-    if (error)
-    {
-        LOG_ERROR("sql.updates", "Unable to create TempDir '{}': {}", tempDir, error.message());
-        throw UpdateException("Unable to prepare temporary MySQL client config file.");
-    }
-
     std::ofstream outfile (tempDir + confFileName);
-
-    if (!outfile.is_open())
-    {
-        LOG_ERROR("sql.updates", "Unable to open temporary MySQL client config '{}'.", tempDir + confFileName);
-        throw UpdateException("Unable to prepare temporary MySQL client config file.");
-    }
 
     outfile << "[client]\npassword = \"" << password << '"' << std::endl;
 

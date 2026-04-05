@@ -11098,7 +11098,6 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
     int32 main_speed_mod  = 0;
     float stack_bonus     = 1.0f;
     float non_stack_bonus = 1.0f;
-    bool wasMountedForRun = false;
 
     switch (mtype)
     {
@@ -11112,7 +11111,6 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
             {
                 if (IsMounted()) // Use on mount auras
                 {
-                    wasMountedForRun = true;
                     main_speed_mod  = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
                     stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS);
                     non_stack_bonus += GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MOUNTED_SPEED_NOT_STACK) / 100.0f;
@@ -11259,41 +11257,12 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
     if (slow)
         AddPct(speed, slow);
 
-    float minSpeedMod = (float)GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MINIMUM_SPEED);
-    if (minSpeedMod)
+    if (float minSpeedMod = (float)GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MINIMUM_SPEED))
     {
         float base_speed = (IsCreature() ? ToCreature()->GetCreatureTemplate()->speed_run : 1.0f);
         float min_speed = base_speed * (minSpeedMod / 100.0f);
         if (speed < min_speed)
             speed = min_speed;
-    }
-
-    if (mtype == MOVE_RUN)
-    {
-        if (Player* player = ToPlayer())
-        {
-            int32 const mountedSpeedMod = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
-            float const mountedAlways = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS);
-            int32 const mountedNotStack = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MOUNTED_SPEED_NOT_STACK);
-            int32 const normalSpeed = GetMaxPositiveAuraModifier(SPELL_AURA_USE_NORMAL_MOVEMENT_SPEED);
-
-            if (player->IsMounted() || wasMountedForRun || mountedSpeedMod || normalSpeed || slow || minSpeedMod)
-            {
-                LOG_INFO("movement",
-                    "Player {} UpdateSpeed MOVE_RUN mounted={} forced={} mountedMod={} mountedAlways={} mountedNotStack={} normalSpeed={} slow={} minSpeed={} resultRate={} resultSpeed={}",
-                    player->GetName(),
-                    player->IsMounted(),
-                    forced,
-                    mountedSpeedMod,
-                    mountedAlways,
-                    mountedNotStack,
-                    normalSpeed,
-                    slow,
-                    minSpeedMod,
-                    speed,
-                    speed * playerBaseMoveSpeed[MOVE_RUN]);
-            }
-        }
     }
 
     SetSpeed(mtype, speed, forced);
@@ -11308,25 +11277,6 @@ void Unit::SetSpeed(UnitMoveType mtype, float rate, bool forced)
 {
     if (rate < 0)
         rate = 0.0f;
-
-    if (mtype == MOVE_RUN)
-    {
-        if (Player* player = ToPlayer())
-        {
-            if (player->IsMounted() || rate == 1.0f || forced)
-            {
-                LOG_INFO("movement",
-                    "Player {} SetSpeed MOVE_RUN mounted={} forced={} oldRate={} newRate={} oldSpeed={} newSpeed={}",
-                    player->GetName(),
-                    player->IsMounted(),
-                    forced,
-                    m_speed_rate[mtype],
-                    rate,
-                    GetSpeed(mtype),
-                    rate * playerBaseMoveSpeed[mtype]);
-            }
-        }
-    }
 
     // Update speed only on change
     if (m_speed_rate[mtype] == rate)

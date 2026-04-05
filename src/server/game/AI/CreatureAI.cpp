@@ -439,13 +439,6 @@ void CreatureAI::MoveCircleChecks()
 {
     Unit *victim = me->GetVictim();
 
-    // Temporary summons can despawn while combat links are changing, so avoid
-    // circle-reposition logic that scans victim attacker pointers.
-    if (me->IsSummon())
-    {
-        return;
-    }
-
     if (
         !victim ||
         !me->IsFreeToMove() || me->HasUnitMovementFlag(MOVEMENTFLAG_ROOT) ||

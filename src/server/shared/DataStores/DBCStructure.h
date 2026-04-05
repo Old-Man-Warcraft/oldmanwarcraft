@@ -2185,7 +2185,7 @@ struct WorldMapAreaEntry
     //uint32  ID;                                           // 0
     uint32  map_id;                                         // 1
     uint32  area_id;                                        // 2 index (continent 0 areas ignored)
-    //char const* internal_name;                              // 3
+    //char const* internal_name                             // 3
     float   y1;                                             // 4
     float   y2;                                             // 5
     float   x1;                                             // 6

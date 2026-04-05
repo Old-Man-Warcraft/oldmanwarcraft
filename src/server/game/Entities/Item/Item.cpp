@@ -20,7 +20,6 @@
 #include "DatabaseEnv.h"
 #include "GameTime.h"
 #include "ItemEnchantmentMgr.h"
-#include "MapMgr.h"
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "ScriptMgr.h"
@@ -268,9 +267,6 @@ Item::Item()
 
     m_valuesCount = ITEM_END;
     m_slot = 0;
-    m_updateMapId = 0;
-    m_updateInstanceId = 0;
-    m_hasStoredUpdateMap = false;
     uState = ITEM_NEW;
     uQueuePos = -1;
     m_container = nullptr;
@@ -1165,30 +1161,13 @@ void Item::BuildUpdate(UpdateDataMapType& data_map)
 void Item::AddToObjectUpdate()
 {
     if (Player* owner = GetOwner())
-    {
-        m_updateMapId = owner->GetMapId();
-        m_updateInstanceId = owner->GetInstanceId();
-        m_hasStoredUpdateMap = true;
         owner->GetMap()->AddUpdateObject(this);
-    }
 }
 
 void Item::RemoveFromObjectUpdate()
 {
     if (Player* owner = GetOwner())
-    {
         owner->GetMap()->RemoveUpdateObject(this);
-        m_hasStoredUpdateMap = false;
-        return;
-    }
-
-    if (m_hasStoredUpdateMap)
-    {
-        if (Map* map = sMapMgr->FindMap(m_updateMapId, m_updateInstanceId))
-            map->RemoveUpdateObject(this);
-
-        m_hasStoredUpdateMap = false;
-    }
 }
 
 void Item::SaveRefundDataToDB()

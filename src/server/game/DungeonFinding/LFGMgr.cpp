@@ -1796,7 +1796,6 @@ namespace lfg
 
         // Select a player inside to be teleported to
         WorldLocation const* teleportLocation = nullptr;
-        uint32 teleportInstanceId = 0;
         bool leaderTeleportIncluded = false;
         for (GroupReference* itr = grp->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
@@ -1810,7 +1809,6 @@ namespace lfg
                 if (plr->GetMapId() == uint32(dungeon->map) && !proposal.isNew)
                 {
                     teleportLocation = plr;
-                    teleportInstanceId = plr->GetInstanceId();
                     break;
                 }
 
@@ -1882,7 +1880,7 @@ namespace lfg
 
         for (Player* player : playersTeleported)
         {
-            TeleportPlayer(player, false, teleportLocation, teleportInstanceId);
+            TeleportPlayer(player, false, teleportLocation);
         }
 
         if (randomDungeon)
@@ -2217,7 +2215,7 @@ namespace lfg
        @param[in]     out Teleport out (true) or in (false)
        @param[in]     fromOpcode Function called from opcode handlers? (Default false)
     */
-    void LFGMgr::TeleportPlayer(Player* player, bool out, WorldLocation const* teleportLocation /*= nullptr*/, uint32 teleportInstanceId /*= 0*/)
+    void LFGMgr::TeleportPlayer(Player* player, bool out, WorldLocation const* teleportLocation /*= nullptr*/)
     {
         LFGDungeonData const* dungeon = nullptr;
         Group* group = player->GetGroup();
@@ -2267,16 +2265,10 @@ namespace lfg
             float y = dungeon->y;
             float z = dungeon->z;
             float orientation = dungeon->o;
-            bool newInstance = mapid == player->GetMapId();
 
             if (teleportLocation)
             {
                 teleportLocation->GetWorldLocation(mapid, x, y, z, orientation);
-
-                // If RDF targets a player already inside the destination instance,
-                // treat it as an in-instance reposition instead of a fresh worldport.
-                if (newInstance && teleportInstanceId != 0 && teleportInstanceId == player->GetInstanceId())
-                    newInstance = false;
             }
 
             if (!player->GetMap()->IsDungeon() || player->GetEntryPoint().GetMapId() == MAPID_INVALID)
@@ -2284,7 +2276,7 @@ namespace lfg
                 player->SetEntryPoint();
             }
 
-            if (!player->TeleportTo(mapid, x, y, z, orientation, 0, nullptr, newInstance))
+            if (!player->TeleportTo(mapid, x, y, z, orientation, 0, nullptr, mapid == player->GetMapId()))
             {
                 error = LFG_TELEPORTERROR_INVALID_LOCATION;
             }

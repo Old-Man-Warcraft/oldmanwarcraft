@@ -74,11 +74,6 @@ public:
         _outMessage(filter, level, Acore::StringFormat(fmt, std::forward<Args>(args)...));
     }
 
-    inline void outMessage(std::string const& filter, LogLevel const level, std::string_view message)
-    {
-        _outMessage(filter, level, message);
-    }
-
     template<typename... Args>
     void outCommand(uint32 account, Acore::FormatString<Args...> fmt, Args&&... args)
     {

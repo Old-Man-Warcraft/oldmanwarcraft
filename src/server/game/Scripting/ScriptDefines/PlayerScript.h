@@ -196,9 +196,6 @@ enum PlayerHook
     PLAYERHOOK_ON_PLAYER_ENTER_COMBAT,
     PLAYERHOOK_ON_PLAYER_LEAVE_COMBAT,
     PLAYERHOOK_ON_QUEST_ABANDON,
-    PLAYERHOOK_ON_GET_TRAINER_SPELL_REQUIRED_LEVEL,
-    PLAYERHOOK_ON_GET_TRAINER_SPELL_MONEY_COST,
-    PLAYERHOOK_ON_GET_ITEM_REQUIRED_LEVEL,
     PLAYERHOOK_ON_GET_QUEST_RATE,
     PLAYERHOOK_ON_CAN_PLAYER_FLY_IN_ZONE,
     PLAYERHOOK_ANTICHEAT_SET_CAN_FLY_BY_SERVER,
@@ -523,12 +520,6 @@ public:
     virtual void OnPlayerGetMaxSkillValue(Player* /*player*/, uint32 /*skill*/, int32& /*result*/, bool /*IsPure*/) { }
 
     [[nodiscard]] virtual bool OnPlayerHasActivePowerType(Player const* /*player*/, Powers /*power*/) { return false; }
-
-    virtual void OnPlayerGetTrainerSpellRequiredLevel(Player* /*player*/, uint32 /*spellId*/, uint8& /*reqLevel*/) { }
-
-    virtual void OnPlayerGetTrainerSpellMoneyCost(Player* /*player*/, uint32 /*spellId*/, uint32& /*moneyCost*/) { }
-
-    virtual void OnPlayerGetItemRequiredLevel(Player* /*player*/, ItemTemplate const* /*proto*/, uint32& /*requiredLevel*/) { }
 
     /**
      * @brief This hook called before gathering skill gain is applied to the character.
