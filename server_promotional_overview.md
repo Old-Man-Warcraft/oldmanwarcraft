@@ -1,169 +1,159 @@
 # Welcome to Old Man Warcraft: WotLK, Reimagined for Adults
 
-We built **Old Man Warcraft** for players who still love Wrath of the Lich King, but no longer have the time or patience for the parts of MMO life that get in the way of actually having fun. This is a custom 3.3.5a experience designed around flexibility, accessibility, and long-term progression without sacrificing the spirit of classic World of Warcraft.
+**Old Man Warcraft** is a custom **3.3.5a (Wrath of the Lich King)** realm for people who still love that era of WoW but want less friction around scheduling, grouping, and progression. The goal is a Wrath-shaped world with **quality-of-life and systems that respect real-life constraints**, without pretending to be official Blizzard service.
 
-Whether you log in for thirty minutes after work or spend an entire weekend pushing progression, the server is built to support the way adults actually play. You can level steadily, tackle dungeons and raids without waiting on a perfect roster, enjoy meaningful character progression through multiple eras of content, and experience a world that still feels social and alive even during off-hours.
+Whether you play in short sessions or longer blocks, the realm is aimed at **steady progression**, **reachable group content** (including with AI companions when humans are scarce), and **long-term goals** that do not require a perfect raid roster every night.
 
-Old Man Warcraft combines the nostalgia of original WoW with a curated set of modern systems: advanced playerbots, AI-powered conversations, scalable group content, personal progression, account-friendly quality-of-life features, and a server philosophy centered on respecting your time.
+The experience blends classic Wrath gameplay with curated additions—**playerbots**, **LLM-assisted chat (on for everyone)**, **scaling group content**, **individual progression through content eras**, **account-friendly conveniences**, and a tone that favors adults and returning players.
 
-Come check us out at [oldmanwarcraft.com](https://oldmanwarcraft.com) or [Discord](https://discord.gg/thecgn)!
+**Links:** [oldmanwarcraft.com](https://oldmanwarcraft.com) · [Discord](https://discord.gg/thecgn)
 
 ---
 
-## Why Old Man Warcraft Exists
+## Why This Realm Exists
 
-Most Wrath servers ask you to fit your life around the game.
+Many private servers implicitly optimize for people who can be online at peak hours and commit to fixed rosters. Old Man Warcraft is aimed at the opposite problem: **you should be able to log in, make progress, and enjoy the game without your session disappearing into logistics.**
 
-We built Old Man Warcraft to do the opposite.
+This realm is a good fit if you:
 
-This server is for:
+- Miss WotLK’s classes, world, and pacing, but not the old “stand in city for an hour forming a group” loop  
+- Have limited or unpredictable play time (work, family, time zones)  
+- Want to run dungeons and raids **solo, in pairs, or in small groups** as well as in full groups  
+- Prefer **phased or staged progression** over “everything unlocked day one”  
+- Like **long-term character investment** without requiring a hardcore guild schedule
 
-- Players who miss the world, class design, and pacing of WotLK
-- Adults with jobs, families, and limited play windows
-- Solo players who still want to experience group content
-- Small friend groups who want to raid without recruiting 20 more people
-- Long-term MMO players who want progression to feel meaningful again
+---
 
-You should be able to log in, make progress, and have a good time without spending your entire session forming a group, traveling across the world for basic convenience, or feeling locked out because the server population is in a different time zone.
+## Individual Progression Through Content Eras
 
-## True Individual Progression
-Experience the full Warcraft journey from the original game through The Burning Crusade and into Wrath of the Lich King at your own pace.
+The realm uses **per-character progression**: **each character has their own progression line** through **Vanilla → The Burning Crusade → Wrath**, all the way to **tier 18**—not a single server-wide phase where everyone is forced into the same patch tier at once.
 
-Instead of rushing everyone to the same final patch endgame, Old Man Warcraft gives your character an **individual progression path** through the major eras of content. That means older raids, dungeons, and zones matter again. Your journey feels like an actual adventure rather than a race to skip straight to the last tier.
+In practice that means:
 
-*   **Progressive Eras:** You move through Vanilla, TBC, and WotLK in sequence, unlocking content as your character advances rather than starting at the finish line.
-*   **Phased Content:** NPCs, drops, encounters, and world states react to *your* progression level, creating a more personalized world.
-*   **Relevant Legacy Content:** Classic dungeons, raids, and elite outdoor zones remain meaningful and appropriately tuned for the era you're currently playing.
-*   **Play Together Your Way:** Friends can move through progression at different speeds while still sharing the same world, grouping together when it makes sense and using bots to fill the gaps when needed.
+- **Your tier, your world:** NPCs, objects, and visibility can reflect **your** current progression tier, so the world lines up with where **you** are on the track to tier 18.  
+- **Legacy content stays relevant:** Older dungeons, raids, and outdoor content matter for **your** bracket—not only as skipped stepping stones to “the real game.”  
+- **No server-wide rush to one finish line:** Friends can be on different tiers and still share the same realm; **playerbots** and scaling systems help fill groups when schedules do not line up.
 
-This system makes the entire game world matter again, not just the latest raid tier.
+---
 
-## A World That Actually Feels Alive
-The hardest part of many private servers is not the content. It is finding people at the exact moment you want to play.
+## A World That Feels More Alive Off-Peak
 
-Old Man Warcraft solves that by making the world feel active, responsive, and social even when your guild is offline.
+**Playerbots** help parties and raids stay viable when population or time zones work against you. Bots can tank, heal, or DPS, follow instructions, and participate in real content instead of only decorating the world.
 
-*   **Intelligent Playerbots:** Fill parties and raids with capable AI companions that can tank, heal, DPS, follow commands, and help you run real content on demand.
-*   **Bots That Grow With You:** Your companions level, gear, and adventure alongside you, making them feel like part of your ongoing journey instead of disposable placeholders.
-*   **Next-Gen AI Chat:** Powered by real LLMs, bots and NPCs can communicate in much more natural ways. Ask for directions, strategy advice, roleplay responses, or simple conversation.
-*   **Always-On Economy:** An active Auction House bot keeps the market moving so crafting and trading stay useful regardless of time zone or population spikes.
-*   **Global Cross-Faction Chat:** The community stays connected across faction lines, helping the server feel like one living world instead of multiple isolated groups.
+**LLM chat:** **Large language model** dialogue is **enabled for all players**—more natural bot and NPC conversation, directions, strategy banter, or roleplay-style replies, depending on how you use it in game.
 
-The result is a server where you can be self-sufficient without feeling alone.
+**Auction house support:** Automated listing activity helps keep a **usable economy** when player-driven supply dips—especially valuable for professions and trade at odd hours.
 
-## Raids & Dungeons on Your Terms
-Old Man Warcraft is built around the idea that content should be playable when *you* are ready for it, not only when the perfect number of players happens to be online.
+**Cross-faction community:** A shared channel helps Horde and Alliance players **coordinate and socialize** without splitting the community down the middle.
 
-All major group content has been enhanced to give you more options without trivializing the challenge.
+**Weekend XP:** Extra **experience on weekends** on top of the base rate.
 
-*   **Flex Autobalance:** Raids and dungeons scale around your real group size and composition. If you only have a few people online, the content can still be viable.
-*   **Small Group, Big Ambitions:** Want to step into content designed for much larger groups? Bring friends, bring bots, and take it on anyway.
-*   **Mythic+ and Challenge Modes:** Modern-style scaling difficulty, affixes, and timed dungeon progression bring long-term replayability to familiar Wrath content.
-*   **Scaled Rewards:** More difficult content earns more meaningful rewards, giving skilled and organized players room to push higher.
-*   **Instanced World Bosses:** World boss progression happens without open-world griefing, tag wars, or performance issues caused by overcrowding.
+**Twitch XP bonus:** **Additional XP while you are live on Twitch** (with account linking as set up on the server)—separate from the weekend bonus; see in-game or site docs for how bonuses combine with the **1.5x** base.
 
-This creates an endgame that is more flexible, more replayable, and far less dependent on perfect scheduling.
+Together, these systems support **self-sufficient play** that still feels **connected**, not isolated.
 
-## A Better Fit for Solo Players and Small Groups
+---
 
-You do not need to join a giant raid guild just to see the best parts of the game.
+## Dungeons and Raids on Your Terms
 
-Old Man Warcraft is ideal for:
+**Instance scaling:** Dungeon and raid enemies scale with **party size** (health, damage, and related tuning). Smaller groups can attempt content that was originally sized for larger rosters, within the limits of tuning and player skill.
 
-- Solo players who still want access to dungeons, raids, and progression systems
-- Couples or small groups who want to play together without waiting on a full roster
-- Returning veterans who know the content but do not want to commit to rigid schedules
-- Completionists who want old and new content to remain worthwhile
+**Playerbots and small groups:** You can bring **friends plus bots** to tackle content when you do not have a full guild run online.
 
-If you want the satisfaction of RPG progression without the logistical frustration of traditional MMO group formation, this server is built for you.
+**Mythic-style dungeons:** **Mythic Plus–style** difficulty, **affixes**, **timers**, and **keystone** flow add repeatable, scaling challenge on supported instances (many players just call it **M+**).
 
-## Rates That Respect Your Time
-We are not interested in turning progression into a meaningless blur, but we also do not think adult players should be forced into the slowest possible grind just to prove dedication.
+**Challenge characters:** Optional **hardcore**, **ironman-style**, **slow-XP**, and other rule sets for players who want a different risk/reward profile.
 
-Our rates are tuned to preserve the feeling of earned progression while cutting out unnecessary drag.
+**World bosses in instances:** World boss style encounters can be **instanced** to reduce open-world crowding, tagging friction, and performance spikes.
 
-*   **Experience and Reputation:** `1.5x` rates keep character growth moving at a satisfying pace without making the journey feel disposable.
-*   **Weekend XP Boosts:** Because weekends are when many players finally have time to settle in and play.
-*   **Blizzlike Economy and Drops:** Core drop rates remain meaningful so professions, farming, and loot progression still matter.
-*   **Steady, Sustainable Progression:** The goal is not instant gratification. The goal is a healthier pace for real-world schedules.
+---
 
-## PvP Without the Hassle
-Competitive players still have plenty to chase, but without some of the usual barriers that stop people from participating.
+## Solo Players and Small Groups
 
-*   **Solo Queue 3v3:** Queue without maintaining a permanent roster and still get matched into meaningful arena games.
-*   **1v1 Arenas:** Practice, compete, settle rivalries, and push your class knowledge in a dedicated rated bracket.
-*   **City Sieges and Dynamic PvP Events:** Large-scale custom faction conflict adds spectacle and server identity beyond standard battleground rotations.
-*   **Custom PvP Titles and Recognition:** Stand out through performance and participation, not just raw playtime.
+You do not need a mega-guild to see core content.
 
-Whether you are a hardcore PvPer or just like the occasional competitive session, there is room for you here.
+- **Solo players** who still want dungeons, raids, and progression systems  
+- **Couples and trios** who want to play together without pugging every slot  
+- **Returning players** who know the content but want **flexible scheduling**  
+- **Completionists** who want multiple tiers of content to stay worthwhile over time  
 
-## A Nemesis System That Creates Real Rivalries
-Some of the best MMO memories come from the players and enemies you learn to hate.
+If you want RPG progression **without** constant “LF1M tank 30 min” sessions, this design direction is intentional.
 
-Our custom **Nemesis System** adds a layer of ongoing rivalry to your adventure by tracking the enemies and encounters that matter most. The world remembers who has beaten you, who you have conquered, and which threats have earned a reputation.
+---
 
-*   **Persistent Rivalries:** Recurring enemies and standout encounters become part of your personal story instead of disappearing into the usual grind.
-*   **More Meaningful Open-World Danger:** The creatures and foes that give you trouble can become memorable threats worth hunting down later.
-*   **Personal Stories Through Gameplay:** Revenge runs, comeback moments, and hard-fought victories become part of your character's journey.
-*   **More Variety in Moment-to-Moment Play:** Routine world content feels less disposable when the game can turn a random fight into a future score to settle.
+## Rates and Time Savers
 
-It is one more way Old Man Warcraft makes the world feel reactive, memorable, and uniquely yours.
+- **Experience and reputation:** **1.5x**—progress moves faster than strict Blizzlike **1x**, without turning leveling into a blur.  
+- **Loot and economy:** Drop and gold tuning stays **meaningful** for professions, farming, and gear so the world still feels like Warcraft, not a loot piñata.  
+- **Weekends:** A **weekend XP boost** stacks on top of **1.5x**.  
+- **Streaming:** **Extra XP while live on Twitch** when linked (see in-game or site docs).
 
-## The Quality of Life You Deserve
-We added the features many players wish classic WoW had from the beginning, while still keeping the core gameplay recognizable.
+---
 
-*   **AoE Looting:** Spend less time clicking corpses and more time actually playing.
-*   **Account-Wide Achievements and Storage:** Your account feels connected, your alts benefit from your progress, and moving materials around is dramatically easier.
-*   **Guild Villages and Housing:** Invest in shared spaces with real functionality, identity, and long-term value for your group.
-*   **Transmog:** Build the look you want without sacrificing character power.
-*   **Modern Convenience Without Retail Bloat:** The server smooths away dated friction points while preserving the pace and feel of Wrath.
-*   **Robust Anticheat:** Fair play matters. Competitive integrity and a stable community are part of the server's foundation.
+## PvP
 
-These systems are not just conveniences. They are part of what makes the server sustainable and enjoyable over the long term.
+**Custom PvP and world events are enabled**—you do not have to wait for a special season for the server’s signature systems to exist.
 
-## Community, Philosophy, and Long-Term Vision
+- **3v3 solo queue:** Queue for **3v3-style** arenas **without a fixed team**—get matches and rating-style progression on your schedule.  
+- **1v1 arena:** **Rated 1v1** bracket for practice, duels that matter, and class-on-class competition.  
+- **City sieges:** **Large-scale faction clashes** in the open world for spectacle and server identity beyond default battleground rotations.  
+- **Titles and recognition:** Earn **standout PvP and participation titles** through the server’s reward paths.
 
-Old Man Warcraft is not trying to be the loudest or most disposable seasonal server.
+---
 
-The goal is to build a stable, feature-rich home for players who want a long-term Wrath experience with modern improvements and a mature community culture. That means valuing progression, reducing busywork, supporting different playstyles, and making sure the server remains fun whether you are online at peak time or off-hours.
+## Nemesis System
 
-We want the game to feel:
+The **Nemesis** system turns certain defeats into **persistent, scaling threats**: enemies that “remember” you can become **Nemeses**, gain **ranks**, and create **bounty-hunter and revenge** style gameplay loops.
 
-- Welcoming to returning players
-- Friendly to adults with limited time
-- Deep enough for grinders and min-maxers
-- Flexible enough for solo players
-- Social without being logistically exhausting
+This is meant to make **open-world friction** occasionally **memorable**, not only repetitive.
 
-If that sounds like the kind of server you have been waiting for, you will probably feel at home here.
+---
+
+## Quality of Life and Fair Play
+
+- **AoE looting:** Less corpse-by-corpse looting busywork.  
+- **Transmog:** Appearance collection without giving up power choices.  
+- **Guild spaces:** **Guild villages** and **guild housing** for shared identity and long-term guild goals.  
+- **Premium / VIP:** Premium-style perks are **unlocked with vote points**—earn points by **voting for the server** on the linked sites; **no paid subscription** is required for that path.  
+- **Anticheat:** Extra **integrity** tooling on top of core behavior; it is a layer of defense, not a promise that all abuse is impossible.
+
+---
+
+## Community and Long-Term Direction
+
+Old Man Warcraft is not positioned as a **throwaway seasonal pop** server. The intent is a **stable**, **feature-rich** home for adults who want **Wrath with modern conveniences** and **room for different playstyles**—whether you log in at peak or at 2 a.m.
+
+We want the realm to feel:
+
+- Welcoming to **returning** players  
+- Respectful of **limited time**  
+- Deep enough for **min-maxers** who want it  
+- Flexible for **solo and small-group** paths  
+- **Social** without **mandatory** hardcore scheduling  
+
+---
 
 ## At a Glance
 
-Here is what defines the Old Man Warcraft experience:
-
-*   Progressive character-based era advancement
-*   Smart playerbots for parties, raids, and world play
-*   Real AI-powered bot and NPC interaction
-*   Flexible autobalanced dungeons and raids
-*   Mythic+ and challenge-style repeatable endgame
-*   A custom Nemesis System that builds memorable rivalries
-*   Useful old-world content throughout progression
-*   Adult-friendly rates and weekend boosts
-*   Solo queue and custom PvP systems
-*   Account-wide convenience features
-*   Strong quality-of-life upgrades without losing the Wrath feel
+- Per-character progression to **tier 18** (Vanilla → TBC → WotLK)  
+- **Playerbots** for parties, raids, and the open world  
+- **LLM chat** for everyone  
+- **Party-size scaling** for dungeons and raids  
+- **Mythic+**-style dungeons and optional **challenge** character rules  
+- **Instanced world bosses**, active **auction** support, **Nemesis** rivalries  
+- **1.5x** XP and rep, **weekend** and **Twitch** XP bonuses  
+- **Solo 3v3**, **1v1 arena**, **city sieges**, PvP **titles**  
+- **Cross-faction** chat, **AoE loot**, **transmog**, **guild** spaces  
+- **VIP perks** via **vote points** (no subscription)  
+- **Anticheat** support  
 
 ---
 
 ## Join Us
 
-If you still love WoW but need a version that respects your time, supports your schedule, and lets you actually experience the game your way, Old Man Warcraft is ready for you.
+If you want Wrath with **more flexibility**, **more life off-peak**, and **progression that fits a grown-up schedule**, Old Man Warcraft may be your lane.
 
-Ready to jump back in?
-
-Grab your gear and join us at [oldmanwarcraft.com](https://oldmanwarcraft.com).
-
-Join the community on [Discord](https://discord.gg/thecgn).
+- **Website:** [oldmanwarcraft.com](https://oldmanwarcraft.com)  
+- **Discord:** [discord.gg/thecgn](https://discord.gg/thecgn)  
 
 Welcome to the retirement home.
-

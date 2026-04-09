@@ -189,6 +189,15 @@ void npc_escortAI::ReturnToLastPoint()
     me->GetMotionMaster()->MovePoint(POINT_LAST_POINT, x, y, z, FORCED_MOVEMENT_RUN);
 }
 
+void npc_escortAI::JustExitedCombat()
+{
+    // Do not chain to CreatureAI::JustExitedCombat (EnterEvadeMode). Combat reference teardown can
+    // run during a summon victim's death before SummonedCreatureDies; evading the escort NPC in
+    // that window breaks summoner-driven scripts (e.g. Culling of Stratholme street waves).
+    // Escorts still evade via EnterEvadeMode from UpdateVictim (REACT_PASSIVE) and explicit calls.
+    EngagementOver();
+}
+
 void npc_escortAI::EnterEvadeMode(EvadeReason /*why*/)
 {
     me->GetThreatMgr().ClearAllThreat();

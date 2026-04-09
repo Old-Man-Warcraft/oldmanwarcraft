@@ -15,12 +15,19 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "LFGMgr.h"
 #include "Player.h"
 #include "PlayerScript.h"
 
 enum ApprenticeAnglerQuestEnum
 {
     QUEST_APPRENTICE_ANGLER = 8194
+};
+
+enum DeathKnightLFGQuests : uint32
+{
+    QUEST_ALLIANCE_WHERE_KINGS_WALK = 13188,
+    QUEST_HORDE_WARCHIEFS_BLESSING    = 13189,
 };
 
 class QuestApprenticeAnglerPlayerScript : public PlayerScript
@@ -32,7 +39,11 @@ public:
 
     void OnPlayerCompleteQuest(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() == QUEST_APPRENTICE_ANGLER)
+        uint32 const qid = quest->GetQuestId();
+        if (qid == QUEST_ALLIANCE_WHERE_KINGS_WALK || qid == QUEST_HORDE_WARCHIEFS_BLESSING)
+            sLFGMgr->InitializeLockedDungeons(player);
+
+        if (qid == QUEST_APPRENTICE_ANGLER)
         {
             uint32 level = player->GetLevel();
             int32 moneyRew = 0;

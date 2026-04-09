@@ -38,6 +38,7 @@ set("AC_SCRIPTS_LIST" "")
 set(MOD_ALE_FOUND 0)
 set(MOD_ALE_PATH "")
 set(MOD_PLAYERBOTS_FOUND 0)
+set(MOD_MYTHIC_ENHANCED_FOUND 0)
 
 foreach(include ${AC_ADD_SCRIPTS_INCLUDE})
   set("AC_SCRIPTS_INCLUDES" "#include \"${include}\"\n${AC_SCRIPTS_INCLUDES}")
@@ -90,6 +91,15 @@ foreach(SOURCE_MODULE ${MODULES_MODULE_LIST})
     target_compile_options(game-interface
       INTERFACE
         -DMOD_PLAYERBOTS)
+  endif()
+
+  if (SOURCE_MODULE MATCHES "mod-mythic-enhanced")
+    if (NOT (${MODULE_MODULE_VARIABLE} STREQUAL "disabled"))
+      set(MOD_MYTHIC_ENHANCED_FOUND 1)
+      target_compile_options(game-interface
+        INTERFACE
+          -DMOD_MYTHIC_ENHANCED)
+    endif()
   endif()
 
   # Build the Graph values
