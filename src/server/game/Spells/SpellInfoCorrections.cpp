@@ -5276,6 +5276,19 @@ void SpellMgr::LoadSpellInfoCorrections()
             // Xinef: Dun Morogh, Kharanos tavern, missing resting flag
             else if (areaEntry->ID == 2102)
                 areaEntry->flags |= AREA_FLAG_REST_ZONE_ALLIANCE;
+            // Hellfire Peninsula faction hubs: DBC lacks rest flags; without them players skip
+            // PLAYER_FLAGS_RESTING unless they hit tavern areatriggers (instant logout + rested).
+            else if (areaEntry->ID == 3538) // Honor Hold
+                areaEntry->flags |= AREA_FLAG_REST_ZONE_ALLIANCE;
+            else if (areaEntry->ID == 3536) // Thrallmar
+                areaEntry->flags |= AREA_FLAG_REST_ZONE_HORDE;
+            else if (areaEntry->ID == 3552) // Temple of Telhamat
+                areaEntry->flags |= AREA_FLAG_REST_ZONE_ALLIANCE;
+            else if (areaEntry->ID == 3554) // Falcon Watch
+                areaEntry->flags |= AREA_FLAG_REST_ZONE_HORDE;
+            // GM Island: no rest flags in DBC; both masks so Alliance and Horde get resting (instant logout).
+            else if (areaEntry->ID == 876)
+                areaEntry->flags |= AREA_FLAG_REST_ZONE_ALLIANCE | AREA_FLAG_REST_ZONE_HORDE;
         }
 
     // Xinef: fix for something?
