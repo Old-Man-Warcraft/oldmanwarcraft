@@ -114,6 +114,15 @@ struct instance_molten_core : public InstanceScript
     {
         switch (creature->GetEntry())
         {
+            case NPC_MAJORDOMO_EXECUTUS:
+            {
+                // Majordomo is instance-summoned (no static spawn). If he is removed by a GM
+                // command, crash recovery, or despawn edge cases, clear the cached GUID so
+                // SummonMajordomoExecutus() can create a replacement when conditions are met.
+                if (_majordomoExecutusGUID == creature->GetGUID())
+                    _majordomoExecutusGUID.Clear();
+                break;
+            }
             case NPC_FIRESWORN:
             {
                 RemoveMinion(creature);
