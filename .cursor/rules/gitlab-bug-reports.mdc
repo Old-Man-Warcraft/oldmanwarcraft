@@ -1,0 +1,12 @@
+---
+description: When working from a GitLab issue or bug report, load the GitLab bug workflow skill; check recent GitHub PRs and upstream repos before implementing.
+alwaysApply: false
+---
+
+# GitLab bug reports
+
+When the user is fixing or investigating work **tracked on GitLab** (issue link, issue number, bug ticket, or MR tied to an issue):
+
+1. **Read** `.cursor/skills/workflow-gitlab-bug-reports/SKILL.md` and follow its checklist (issue context → scope → **recent GitHub PRs** on each related repo → **upstream fetch/log** → then implement).
+2. Use **GitLab-MCP** for issue/MR details when available (see `.cursor/rules/mcp-usage.mdc`).
+3. **Before** writing a non-trivial fix, check **recent pull requests** on GitHub for the **root upstream repo** and each affected **`modules/*`** upstream repo (open + merged), then confirm with **`git log`** so you do not duplicate work already merged or in flight upstream.
