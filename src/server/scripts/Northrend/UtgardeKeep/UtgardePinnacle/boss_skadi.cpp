@@ -478,7 +478,6 @@ public:
                         : SPELL_FREEZING_CLOUD_RIGHT_PERIODIC);
                     if (Creature* skadi = _instance->GetCreature(DATA_SKADI_THE_RUTHLESS))
                         skadi->AI()->DoAction(ACTION_DRAKE_BREATH);
-
                     _events.ScheduleEvent(EVENT_GRAUF_REMOVE_AURA, 10s);
                     break;
                 case EVENT_GRAUF_REMOVE_AURA:
