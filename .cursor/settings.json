@@ -1,1 +1,7 @@
-{}
+{
+  "plugins": {
+    "gitlab": {
+      "enabled": true
+    }
+  }
+}

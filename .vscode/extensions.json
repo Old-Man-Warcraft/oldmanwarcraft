@@ -14,5 +14,6 @@
         "mads-hartmann.bash-ide-vscode",
         "jetmartin.bats",
         "ms-vscode.makefile-tools",
+        "gitlab.gitlab-workflow",
     ]
 }

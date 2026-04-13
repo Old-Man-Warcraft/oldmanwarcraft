@@ -133,6 +133,9 @@ struct ArenaTeamStats
 
 #define MAX_ARENA_SLOT 4                                    // 0..2 slots
 
+// Minimum level to buy/sign arena charters and join teams: min(MaxPlayerLevel, WotLK default 80).
+uint32 GetArenaTeamRequiredMemberLevel();
+
 class ArenaTeam
 {
 public:

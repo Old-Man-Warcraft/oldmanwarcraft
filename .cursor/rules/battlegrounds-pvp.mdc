@@ -1,0 +1,19 @@
+---
+description: Apply when editing battlegrounds, arenas, honor, or PvP-related game logic under Battlegrounds/ or related handlers
+alwaysApply: false
+globs: src/server/game/Battlegrounds/**/*,src/server/game/Handlers/ArenaTeamHandler.cpp,src/server/game/Handlers/BattleGroundHandler.cpp,src/server/game/Handlers/DuelHandler.cpp
+---
+
+# Battlegrounds and PvP
+
+## Consistency
+
+- Arena teams, ratings, and queues touch **multiple handlers and storage**; keep **packet contracts** aligned with client 3.3.5a expectations and existing `ArenaTeam*` / `Battleground*` usage.
+
+## Playerbots and groups
+
+- Follow **`playerbots-rules.mdc`**: defensive null checks in **group and arena** flows; treat concurrent bot sessions as first-class edge cases until explicitly verified.
+
+## Data and deploy
+
+- Schema or character data changes need **SQL updates**, backups for **`acore_characters`**, and a **rollback story** when affecting shared tables or queues.

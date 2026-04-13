@@ -317,6 +317,13 @@ void npc_escortAI::UpdateAI(uint32 diff)
 
 void npc_escortAI::UpdateEscortAI(uint32 /*diff*/)
 {
+    // Passive escorts (e.g. FACTION_ESCORTEE_*): CreatureAI::UpdateVictim does not call SelectVictim()
+    // while still InCombat() with no current victim, so EnterEvadeMode() is never reached from that
+    // path and the escort stays idle after the last assist kill.
+    if (HasEscortState(STATE_ESCORT_ESCORTING) && !HasEscortState(STATE_ESCORT_RETURNING) &&
+        me->HasReactState(REACT_PASSIVE) && me->IsInCombat() && !me->GetVictim())
+        me->SelectVictim();
+
     if (!UpdateVictim())
         return;
 
