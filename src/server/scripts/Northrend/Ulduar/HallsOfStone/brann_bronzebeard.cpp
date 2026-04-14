@@ -144,6 +144,19 @@ class brann_bronzebeard : public CreatureScript
 public:
     brann_bronzebeard() : CreatureScript("brann_bronzebeard") { }
 
+    bool OnQuestAccept(Player* /*player*/, Creature* creature, Quest const* quest) override
+    {
+        if (!quest || quest->GetQuestId() != QUEST_HALLS_OF_STONE)
+            return false;
+
+        InstanceScript* instance = creature->GetInstanceScript();
+        if (!instance || instance->GetData(BRANN_BRONZEBEARD) != 1)
+            return false;
+
+        creature->AI()->DoAction(ACTION_START_ESCORT_EVENT);
+        return true;
+    }
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         InstanceScript* pInstance = (creature->GetInstanceScript());
@@ -364,6 +377,14 @@ public:
             switch (action)
             {
                 case ACTION_START_ESCORT_EVENT:
+                    if (HasEscortState(STATE_ESCORT_ESCORTING))
+                        break;
+                    // EscortAI::Start returns without starting if GetVictim() is set.
+                    if (me->GetVictim())
+                    {
+                        me->AttackStop();
+                        me->CombatStop(false);
+                    }
                     Start(false, ObjectGuid::Empty, 0, true, false);
                     Talk(SAY_BRANN_ESCORT_START);
                     me->SetReactState(REACT_AGGRESSIVE);

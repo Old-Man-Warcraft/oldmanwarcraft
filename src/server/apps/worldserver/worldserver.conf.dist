@@ -1742,7 +1742,7 @@ PlayerStart.MapsExplored = 0
 #                     3  - (Enabled, Admins)
 #                     4  - (Disabled)
 
-InstantLogout = 1
+InstantLogout = 0
 
 #
 ###################################################################################################
@@ -1762,7 +1762,7 @@ PlayerSaveInterval = 900000
 #        Default:     0  - (Disabled, Do not save character stats)
 #                     1+ - (Enabled, Level beyond which character stats are saved)
 
-PlayerSave.Stats.MinLevel = 0
+PlayerSave.Stats.MinLevel = 10
 
 #
 #    PlayerSave.Stats.SaveOnlyOnLogout
