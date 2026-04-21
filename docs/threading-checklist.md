@@ -167,12 +167,19 @@ Mark items as done: change `[ ]` → `[x]`
 - [x] `InstanceSaveMgr` — added `_instanceSaveMutex` + `_playerBindMutex` (`std::shared_mutex`)
   - Read paths (`GetInstanceSave`, `PlayerGetBoundInstance`, `PlayerGetBoundInstances`) → `shared_lock`
   - Write paths (`AddInstanceSave`, `DeleteInstanceSaveIfNeeded`, `_ResetSave`, `PlayerBindToInstance`, `PlayerUnbindInstance`, `PlayerUnbindInstanceNotExtended`, `PlayerCreateBoundInstancesMaps`) → `unique_lock`
-- [ ] `ScriptMgr` hooks — full audit of thread-safety per hook category
-  - [ ] Map-local hooks (safe, document)
-  - [ ] Hooks touching global state (add guard or redesign)
-- [ ] `ObjectAccessor::HashMapHolder<Player>` — verify all call sites in parallel context hold shared_lock
+- [x] `ScriptMgr` hooks — audit complete, all hooks safe
+  - **Map-local hooks** (called on map thread): OnMapUpdate, OnPlayerEnterMap, OnPlayerLeaveMap, OnDestroyMap, OnCreateMap, OnWeatherUpdate, OnWeatherChange, OnUnitUpdate, OnPlayerUpdate, OnPlayerBeforeUpdate, OnPlayerAfterUpdate, OnPlayerCanUpdateSkill, OnPlayerBeforeUpdateSkill, OnPlayerAfterUpdateMaxHealth, OnPlayerAfterUpdateMaxPower, OnPlayerBeforeUpdateAttackPowerAndDamage, OnPlayerAfterUpdateAttackPowerAndDamage
+  - **Global manager hooks** (managers have shared_mutex from Phase 1): OnGroup* (GroupMgr), OnGuild* (GuildMgr), OnPlayerReputationChange/OnPlayerReputationRankChange (ObjectMgr const getters)
+  - **Main-thread only hooks**: OnSocketOpen, OnSocketClose, OnNetworkStart, OnNetworkStop, OnMotdChange, OnTicket*, OnAfterDatabaseLoadCreatureTemplates, OnPlayerbotCheckLFGQueue, OnPlayerCanJoinLfg (LFGMgr called from World::Update)
+  - **Instance hooks** (InstanceSaveMgr now has mutex): OnDestroyInstance, OnBeforeCreateInstanceScript, OnAfterUpdateEncounterState
+- [x] `ObjectAccessor::HashMapHolder<Player>` — verified, all call sites hold lock
+  - `HashMapHolder<T>::Find` uses internal `shared_lock` — thread-safe
+  - `ObjectAccessor::GetPlayers()` returns container without lock — callers verified:
+    - `SaveAllPlayers` (ObjectAccessor.cpp:264) — holds `shared_lock`
+    - `DoForAllOnlinePlayers` (WorldSessionMgr.cpp:427) — holds `shared_lock`
+    - `Map::GetPlayers()` calls are map-local (`m_mapRefMgr`) — safe
 - [x] TSAN build — zero races (5 min runtime, RelWithDebInfo + -fsanitize=thread, NOJEM=1, mmap_rnd_bits=28)
-- [x] Commit Phase 3
+- [x] Commit Phase 3 — committed as 522fac4c5 (TSAN validation)
 
 ---
 
