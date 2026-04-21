@@ -86,21 +86,25 @@ bool WorldSessionFilter::Process(WorldPacket* packet)
 {
     ClientOpcodeHandler const* opHandle = opcodeTable[static_cast<OpcodeClient>(packet->GetOpcode())];
 
-    //check if packet handler is supposed to be safe
+    Player* player = m_pSession->GetPlayer();
+    bool const playerInWorld = player && player->IsInWorld();
+
+    // When a player is in-world, their session is also updated by Map::UpdateOwnedSessions().
+    // Keep packet ordering deterministic by letting the world thread drain only thread-unsafe
+    // opcodes from the head of the queue, while the map thread handles in-place/thread-safe work.
     if (opHandle->ProcessingPlace == PROCESS_INPLACE)
-        return true;
+        return !playerInWorld;
 
     //thread-unsafe packets should be processed in World::UpdateSessions()
     if (opHandle->ProcessingPlace == PROCESS_THREADUNSAFE)
         return true;
 
     //no player attached? -> our client! ^^
-    Player* player = m_pSession->GetPlayer();
     if (!player)
         return true;
 
     //lets process all packets for non-in-the-world player
-    return !player->IsInWorld();
+    return !playerInWorld;
 }
 
 /// WorldSession constructor
@@ -370,6 +374,8 @@ void WorldSession::LogUnprocessedTail(WorldPacket* packet)
 /// Update the WorldSession (triggered by World update)
 bool WorldSession::Update(uint32 diff, PacketFilter& updater)
 {
+    std::lock_guard<std::mutex> guard(_updateMutex);
+
     ///- Before we process anything:
     /// If necessary, kick the player because the client didn't send anything for too long
     /// (or they've been idling in character select)

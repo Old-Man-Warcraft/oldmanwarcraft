@@ -3214,6 +3214,13 @@ void Map::UpdateOwnedSessions(uint32 diff)
 
     for (WorldSession* session : sessions)
     {
+        Player* player = session ? session->GetPlayer() : nullptr;
+        // While the player is transferring between maps, WorldSessionMgr still updates the
+        // session on the world thread. Do not also update it from a map worker until the
+        // player is fully back in-world on this specific map, otherwise teleports can race.
+        if (!player || !player->IsInWorld() || player->FindMap() != this)
+            continue;
+
         MapSessionFilter updater(session);
         session->Update(diff, updater);
     }

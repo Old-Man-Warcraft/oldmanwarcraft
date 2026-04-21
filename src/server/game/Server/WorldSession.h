@@ -35,6 +35,7 @@
 #include "World.h"
 #include <map>
 #include <memory>
+#include <mutex>
 #include <utility>
 
 class Creature;
@@ -1278,6 +1279,7 @@ private:
     uint32 recruiterId;
     bool isRecruiter;
     LockedQueue<WorldPacket*> _recvQueue;
+    mutable std::mutex _updateMutex;
     uint32 m_currentVendorEntry;
     ObjectGuid m_currentBankerGUID;
     uint32 _offlineTime;
