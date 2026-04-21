@@ -150,9 +150,19 @@ Mark items as done: change `[ ]` → `[x]`
 - [x] Server startup test — clean start, no errors, no crashes (`feat/omw-threading` branch)
   - Full `./acore.sh compiler build` successful (11m27s), exit 0
   - Server `active` post-restart, bots initializing normally
-- [ ] Stress test: login/logout storm (50 concurrent)
-- [ ] Stress test: rapid teleport (bots teleport every 30s for 30 min)
-- [ ] Stress test: 500 sessions, all in-world, main thread session loop is now empty
+- [ ] Stress test: login/logout storm (50 concurrent) — requires manual verification
+- [ ] Stress test: rapid teleport (bots teleport every 30s for 30 min) — requires manual verification
+- [ ] Stress test: 500 sessions, all in-world, main thread session loop is now empty — requires manual verification
+- [x] Teleport session verification — no double updates
+  - `WorldSessionMgr::UpdateSessions` skips in-world players (line 141-142)
+  - `Map::UpdateOwnedSessions` updates in-world players on map thread
+  - During teleport: `RemovePlayerFromMap` sets `m_inWorld = false`, session switches to main thread
+  - After teleport: `AddPlayerToMap` sets `m_inWorld = true`, session switches to map thread
+  - Mutex-protected `_ownedSessions` list prevents race conditions
+- [x] Char-select/login session verification — updates on main thread
+  - Before `AddPlayerToMap`: `m_inWorld = false`, session updated by main thread
+  - After `AddPlayerToMap`: `m_inWorld = true`, session updated by map thread
+  - Session ownership correctly transferred via `SetMap`/`ResetMap` hooks
 - [x] Commit Phase 2 — committed as `560fa621e`
 
 ---
