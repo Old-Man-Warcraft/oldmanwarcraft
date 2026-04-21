@@ -27,7 +27,7 @@
 
 /*.override.yml
 /*.override.yaml
-
+/logs/
 !.gitkeep
 
 # default build directory if not specified by CMAKE configuration
@@ -57,6 +57,7 @@ CMakeLists.txt.user
 # AI tools
 #
 .claude
+.firecrawl/
 
 #
 # IDE & other software
