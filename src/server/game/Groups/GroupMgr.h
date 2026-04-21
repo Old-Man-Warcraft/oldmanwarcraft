@@ -19,6 +19,7 @@
 #define _GROUPMGR_H
 
 #include "Group.h"
+#include <shared_mutex>
 
 class GroupMgr
 {
@@ -46,6 +47,7 @@ protected:
     GroupIds            _groupIds;
     ObjectGuid::LowType _nextGroupId;
     GroupContainer      GroupStore;
+    mutable std::shared_mutex _groupStoreLock;
 };
 
 #define sGroupMgr GroupMgr::instance()

@@ -82,6 +82,7 @@ BattlegroundMgr* BattlegroundMgr::instance()
 
 void BattlegroundMgr::DeleteAllBattlegrounds()
 {
+    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
     for (auto& [_, data] : bgDataStore)
     {
         while (!data._Battlegrounds.empty())
@@ -99,6 +100,7 @@ void BattlegroundMgr::DeleteAllBattlegrounds()
 // used to update running battlegrounds, and delete finished ones
 void BattlegroundMgr::Update(uint32 diff)
 {
+    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
     // update all battlegrounds and delete if needed
     for (auto& [_, bgData] : bgDataStore)
     {
@@ -276,6 +278,7 @@ Battleground* BattlegroundMgr::GetBattlegroundThroughClientInstance(uint32 insta
     if (bg->isArena())
         return GetBattleground(instanceId, bgTypeId);
 
+    std::shared_lock<std::shared_mutex> lock(_bgDataStoreLock);
     auto const& it = bgDataStore.find(bgTypeId);
     if (it == bgDataStore.end())
         return nullptr;
@@ -294,6 +297,7 @@ Battleground* BattlegroundMgr::GetBattleground(uint32 instanceId, BattlegroundTy
     if (!instanceId)
         return nullptr;
 
+    std::shared_lock<std::shared_mutex> lock(_bgDataStoreLock);
     auto GetBgWithInstanceID = [instanceId](BattlegroundData const* bgData) -> Battleground*
     {
         auto const& itr = bgData->_Battlegrounds.find(instanceId);
@@ -326,6 +330,7 @@ Battleground* BattlegroundMgr::GetBattleground(uint32 instanceId, BattlegroundTy
 
 Battleground* BattlegroundMgr::GetBattlegroundTemplate(BattlegroundTypeId bgTypeId)
 {
+    std::shared_lock<std::shared_mutex> lock(_bgDataStoreLock);
     BattlegroundDataContainer::const_iterator itr = bgDataStore.find(bgTypeId);
     if (itr == bgDataStore.end())
         return nullptr;
@@ -338,6 +343,7 @@ Battleground* BattlegroundMgr::GetBattlegroundTemplate(BattlegroundTypeId bgType
 
 std::vector<Battleground const*> BattlegroundMgr::GetActiveBattlegrounds()
 {
+    std::shared_lock<std::shared_mutex> lock(_bgDataStoreLock);
     std::vector<Battleground const*> result;
 
     for (auto const& [bgType, bgData] : bgDataStore)
@@ -360,6 +366,7 @@ uint32 BattlegroundMgr::CreateClientVisibleInstanceId(BattlegroundTypeId bgTypeI
     // the following works, because std::set is default ordered with "<"
     // the optimalization would be to use as bitmask std::vector<uint32> - but that would only make code unreadable
 
+    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
     BattlegroundClientIdsContainer& clientIds = bgDataStore[bgTypeId]._ClientBattlegroundIds[bracket_id];
     uint32 lastId = 0;
 
@@ -585,6 +592,8 @@ void BattlegroundMgr::BuildBattlegroundListPacket(WorldPacket* data, ObjectGuid 
 {
     if (!player)
         return;
+
+    std::shared_lock<std::shared_mutex> lock(_bgDataStoreLock);
 
     uint32 winner_kills = player->GetRandomWinner() ? sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_HONOR_LAST) : sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_HONOR_FIRST);
     uint32 winner_arena = player->GetRandomWinner() ? sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_ARENA_LAST) : sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_ARENA_FIRST);
@@ -949,11 +958,13 @@ BGFreeSlotQueueContainer& BattlegroundMgr::GetBGFreeSlotQueueStore(BattlegroundT
 
 void BattlegroundMgr::AddToBGFreeSlotQueue(BattlegroundTypeId bgTypeId, Battleground* bg)
 {
+    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
     bgDataStore[bgTypeId].BGFreeSlotQueue.push_front(bg);
 }
 
 void BattlegroundMgr::RemoveFromBGFreeSlotQueue(BattlegroundTypeId bgTypeId, uint32 instanceId)
 {
+    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
     BGFreeSlotQueueContainer& queues = bgDataStore[bgTypeId].BGFreeSlotQueue;
     for (BGFreeSlotQueueContainer::iterator itr = queues.begin(); itr != queues.end(); ++itr)
         if ((*itr)->GetInstanceID() == instanceId)
@@ -965,6 +976,7 @@ void BattlegroundMgr::RemoveFromBGFreeSlotQueue(BattlegroundTypeId bgTypeId, uin
 
 void BattlegroundMgr::AddBattleground(Battleground* bg)
 {
+    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
     if (bg)
         bgDataStore[bg->GetBgTypeID()]._Battlegrounds[bg->GetInstanceID()] = bg;
 
@@ -973,6 +985,7 @@ void BattlegroundMgr::AddBattleground(Battleground* bg)
 
 void BattlegroundMgr::RemoveBattleground(BattlegroundTypeId bgTypeId, uint32 instanceId)
 {
+    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
     bgDataStore[bgTypeId]._Battlegrounds.erase(instanceId);
 }
 

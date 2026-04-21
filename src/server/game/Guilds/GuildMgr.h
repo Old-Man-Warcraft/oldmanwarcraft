@@ -19,6 +19,7 @@
 #define _GUILDMGR_H
 
 #include "Guild.h"
+#include <shared_mutex>
 
 class GuildMgr
 {
@@ -46,6 +47,7 @@ protected:
     typedef std::unordered_map<uint32, Guild*> GuildContainer;
     uint32 NextGuildId;
     GuildContainer GuildStore;
+    mutable std::shared_mutex _guildStoreLock;
 };
 
 #define sGuildMgr GuildMgr::instance()

@@ -35,11 +35,13 @@ GuildMgr* GuildMgr::instance()
 
 void GuildMgr::AddGuild(Guild* guild)
 {
+    std::unique_lock<std::shared_mutex> lock(_guildStoreLock);
     GuildStore[guild->GetId()] = guild;
 }
 
 void GuildMgr::RemoveGuild(uint32 guildId)
 {
+    std::unique_lock<std::shared_mutex> lock(_guildStoreLock);
     GuildStore.erase(guildId);
 }
 
@@ -56,6 +58,7 @@ uint32 GuildMgr::GenerateGuildId()
 // Guild collection
 Guild* GuildMgr::GetGuildById(uint32 guildId) const
 {
+    std::shared_lock<std::shared_mutex> lock(_guildStoreLock);
     GuildContainer::const_iterator itr = GuildStore.find(guildId);
     if (itr != GuildStore.end())
         return itr->second;
@@ -65,6 +68,7 @@ Guild* GuildMgr::GetGuildById(uint32 guildId) const
 
 Guild* GuildMgr::GetGuildByName(std::string_view guildName) const
 {
+    std::shared_lock<std::shared_mutex> lock(_guildStoreLock);
     for (auto const& [id, guild] : GuildStore)
         if (StringEqualI(guild->GetName(), guildName))
             return guild;
@@ -74,14 +78,17 @@ Guild* GuildMgr::GetGuildByName(std::string_view guildName) const
 
 std::string GuildMgr::GetGuildNameById(uint32 guildId) const
 {
-    if (Guild* guild = GetGuildById(guildId))
-        return guild->GetName();
+    std::shared_lock<std::shared_mutex> lock(_guildStoreLock);
+    GuildContainer::const_iterator itr = GuildStore.find(guildId);
+    if (itr != GuildStore.end())
+        return itr->second->GetName();
 
     return "";
 }
 
 Guild* GuildMgr::GetGuildByLeader(ObjectGuid guid) const
 {
+    std::shared_lock<std::shared_mutex> lock(_guildStoreLock);
     for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
         if (itr->second->GetLeaderGUID() == guid)
             return itr->second;
@@ -406,6 +413,7 @@ void GuildMgr::LoadGuilds()
 
 void GuildMgr::ResetTimes()
 {
+    std::shared_lock<std::shared_mutex> lock(_guildStoreLock);
     for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
         if (Guild* guild = itr->second)
             guild->ResetTimes();

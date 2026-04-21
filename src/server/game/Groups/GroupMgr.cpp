@@ -80,6 +80,7 @@ ObjectGuid::LowType GroupMgr::GenerateGroupId()
 
 Group* GroupMgr::GetGroupByGUID(ObjectGuid::LowType groupId) const
 {
+    std::shared_lock<std::shared_mutex> lock(_groupStoreLock);
     GroupContainer::const_iterator itr = GroupStore.find(groupId);
     if (itr != GroupStore.end())
         return itr->second;
@@ -89,11 +90,13 @@ Group* GroupMgr::GetGroupByGUID(ObjectGuid::LowType groupId) const
 
 void GroupMgr::AddGroup(Group* group)
 {
+    std::unique_lock<std::shared_mutex> lock(_groupStoreLock);
     GroupStore[group->GetGUID().GetCounter()] = group;
 }
 
 void GroupMgr::RemoveGroup(Group* group)
 {
+    std::unique_lock<std::shared_mutex> lock(_groupStoreLock);
     GroupStore.erase(group->GetGUID().GetCounter());
 }
 

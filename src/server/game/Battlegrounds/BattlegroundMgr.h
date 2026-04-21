@@ -22,6 +22,7 @@
 #include "BattlegroundQueue.h"
 #include "CreatureAIImpl.h"
 #include "DBCEnums.h"
+#include <shared_mutex>
 #include <unordered_map>
 
 typedef std::map<uint32, Battleground*> BattlegroundContainer;
@@ -147,6 +148,7 @@ private:
 
     typedef std::map<BattlegroundTypeId, BattlegroundData> BattlegroundDataContainer;
     BattlegroundDataContainer bgDataStore;
+    mutable std::shared_mutex _bgDataStoreLock;
 
     BattlegroundQueue m_BattlegroundQueues[MAX_BATTLEGROUND_QUEUE_TYPES];
 

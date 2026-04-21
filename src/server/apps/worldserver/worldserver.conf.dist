@@ -361,9 +361,9 @@ Updates.ExceptionShutdownDelay = 10000
 #
 #    Network.Threads
 #        Description: Number of threads for network.
-#         Default:    1 - (Recommended 1 thread per 1000 connections)
+#         Default:    2 - (Recommended 1 thread per 1000 connections; minimum 2 for OMW)
 
-Network.Threads = 1
+Network.Threads = 2
 
 #
 #    Network.OutKBuff
@@ -502,9 +502,9 @@ TOTPMasterSecret =
 #                      - Database keep-alive ping
 #                      - Core freeze check
 #                      - World socket networking
-#        Default:     2
+#        Default:     4 (OMW recommended; original upstream default was 2)
 
-ThreadPool = 2
+ThreadPool = 4
 
 #
 #    UseProcessors
@@ -928,10 +928,10 @@ Logger.weather=4,Console weather
 #
 #    Log.Async.Enable
 #        Description: Enables asynchronous message logging.
-#        Default:     0 - (Disabled)
-#                     1 - (Enabled)
+#        Default:     1 - (Enabled) — posts log calls to Asio pool, removes logging overhead from game thread
+#                     0 - (Disabled)
 
-Log.Async.Enable = 0
+Log.Async.Enable = 1
 
 #
 ###################################################################################################
@@ -1470,10 +1470,12 @@ MapUpdateInterval = 10
 
 #
 #    MapUpdate.Threads
-#        Description: Number of threads to update maps.
-#        Default:     1
+#        Description: Number of threads to update maps in parallel.
+#                     Each map (continent, instance, BG, arena) is updated on a worker thread.
+#                     Set to roughly half your logical CPU count. Set to 0 to disable (single-threaded).
+#        Default:     4 (OMW recommended; upstream default was 1)
 
-MapUpdate.Threads = 1
+MapUpdate.Threads = 4
 
 #
 #    MoveMaps.Enable
