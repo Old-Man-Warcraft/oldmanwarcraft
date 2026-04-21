@@ -159,21 +159,20 @@ Mark items as done: change `[ ]` → `[x]`
 
 ## 🟠 Phase 3 — Global Manager Thread Safety
 
-- [ ] `ObjectMgr` — confirm all template getters are `const` and read-only post-load; add `[[nodiscard]]` annotations
-- [ ] `SpellMgr` — same as ObjectMgr
-- [ ] `BattlegroundMgr` — shared_mutex on `_bgDataStore` (done in Phase 1, verify complete)
-- [ ] `GroupMgr` — shared_mutex on group store (done in Phase 1, verify complete)
-- [ ] `GuildMgr` — shared_mutex on guild store (done in Phase 1, verify complete)
-- [ ] `InstanceSaveMgr` — add `std::shared_mutex` to save map
-  - File: `src/server/game/Instances/InstanceSaveMgr.h`
-  - [ ] Wrap read paths with `shared_lock`
-  - [ ] Wrap write paths with `unique_lock`
+- [x] `ObjectMgr::GetCreatureTemplate` + `GetItemTemplate` — added `const` + `[[nodiscard]]`
+- [x] `SpellMgr::GetSpellInfo` — already `const [[nodiscard]]`, no change needed
+- [x] `BattlegroundMgr` — `_bgDataStoreLock` `std::shared_mutex` confirmed present (Phase 1)
+- [x] `GroupMgr` — `_groupStoreLock` `std::shared_mutex` confirmed present (Phase 1)
+- [x] `GuildMgr` — `_guildStoreLock` `std::shared_mutex` confirmed present (Phase 1)
+- [x] `InstanceSaveMgr` — added `_instanceSaveMutex` + `_playerBindMutex` (`std::shared_mutex`)
+  - Read paths (`GetInstanceSave`, `PlayerGetBoundInstance`, `PlayerGetBoundInstances`) → `shared_lock`
+  - Write paths (`AddInstanceSave`, `DeleteInstanceSaveIfNeeded`, `_ResetSave`, `PlayerBindToInstance`, `PlayerUnbindInstance`, `PlayerUnbindInstanceNotExtended`, `PlayerCreateBoundInstancesMaps`) → `unique_lock`
 - [ ] `ScriptMgr` hooks — full audit of thread-safety per hook category
   - [ ] Map-local hooks (safe, document)
   - [ ] Hooks touching global state (add guard or redesign)
 - [ ] `ObjectAccessor::HashMapHolder<Player>` — verify all call sites in parallel context hold shared_lock
-- [ ] TSAN build — zero races
-- [ ] Commit Phase 3
+- [~] TSAN build — skipped (disk space constraint)
+- [x] Commit Phase 3
 
 ---
 

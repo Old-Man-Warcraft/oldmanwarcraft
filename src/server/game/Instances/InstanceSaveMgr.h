@@ -26,6 +26,7 @@
 #include <list>
 #include <map>
 #include <mutex>
+#include <shared_mutex>
 #include <unordered_map>
 
 struct InstanceTemplate;
@@ -194,9 +195,11 @@ private:
     void _ResetSave(InstanceSaveHashMap::iterator& itr);
     bool lock_instLists{false};
     InstanceSaveHashMap m_instanceSaveById;
+    mutable std::shared_mutex _instanceSaveMutex;
     ResetTimeByMapDifficultyMap m_resetTimeByMapDifficulty;
     ResetTimeByMapDifficultyMap m_resetExtendedTimeByMapDifficulty;
     ResetTimeQueue m_resetTimeQueue;
+    mutable std::shared_mutex _playerBindMutex;
 };
 
 #define sInstanceSaveMgr InstanceSaveMgr::instance()

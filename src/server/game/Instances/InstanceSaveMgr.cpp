@@ -101,12 +101,16 @@ InstanceSave* InstanceSaveMgr::AddInstanceSave(uint32 mapId, uint32 instanceId, 
     if (!startup)
         save->InsertToDB();
 
-    m_instanceSaveById[instanceId] = save;
+    {
+        std::unique_lock<std::shared_mutex> lock(_instanceSaveMutex);
+        m_instanceSaveById[instanceId] = save;
+    }
     return save;
 }
 
 InstanceSave* InstanceSaveMgr::GetInstanceSave(uint32 InstanceId)
 {
+    std::shared_lock<std::shared_mutex> lock(_instanceSaveMutex);
     InstanceSaveHashMap::iterator itr = m_instanceSaveById.find(InstanceId);
     return itr != m_instanceSaveById.end() ? itr->second : nullptr;
 }
@@ -123,6 +127,7 @@ bool InstanceSaveMgr::DeleteInstanceSaveIfNeeded(InstanceSave* save, bool skipMa
     if (!lock_instLists && save && save->m_playerList.empty() && (skipMapCheck || !sMapMgr->FindMap(save->GetMapId(), save->GetInstanceId())))
     {
         // delete save from storage:
+        std::unique_lock<std::shared_mutex> lock(_instanceSaveMutex);
         InstanceSaveHashMap::iterator itr = m_instanceSaveById.find(save->GetInstanceId());
         ASSERT(itr != m_instanceSaveById.end() && itr->second == save);
         m_instanceSaveById.erase(itr);
@@ -536,7 +541,10 @@ void InstanceSaveMgr::_ResetSave(InstanceSaveHashMap::iterator& itr)
         sScriptMgr->OnInstanceIdRemoved(itr->second->GetInstanceId());
 
         delete itr->second;
-        m_instanceSaveById.erase(itr);
+        {
+            std::unique_lock<std::shared_mutex> lock(_instanceSaveMutex);
+            m_instanceSaveById.erase(itr);
+        }
     }
     else
     {
@@ -636,6 +644,7 @@ void InstanceSaveMgr::_ResetOrWarnAll(uint32 mapid, Difficulty difficulty, bool 
 
 InstancePlayerBind* InstanceSaveMgr::PlayerBindToInstance(ObjectGuid guid, InstanceSave* save, bool permanent, Player* player /*= nullptr*/)
 {
+    std::unique_lock<std::shared_mutex> lock(_playerBindMutex);
     InstancePlayerBind& bind = playerBindStorage[guid]->m[save->GetDifficulty()][save->GetMapId()];
     ASSERT(!bind.perm || permanent); // ensure there's no changing permanent to temporary, this can be done only by unbinding
 
@@ -708,6 +717,7 @@ InstancePlayerBind* InstanceSaveMgr::PlayerBindToInstance(ObjectGuid guid, Insta
 
 void InstanceSaveMgr::PlayerUnbindInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty, bool deleteFromDB, Player* player /*= nullptr*/)
 {
+    std::unique_lock<std::shared_mutex> lock(_playerBindMutex);
     BoundInstancesMapWrapper* w = playerBindStorage[guid];
     BoundInstancesMap::iterator itr = w->m[difficulty].find(mapid);
     if (itr != w->m[difficulty].end())
@@ -731,6 +741,7 @@ void InstanceSaveMgr::PlayerUnbindInstance(ObjectGuid guid, uint32 mapid, Diffic
 
 void InstanceSaveMgr::PlayerUnbindInstanceNotExtended(ObjectGuid guid, uint32 mapid, Difficulty difficulty, Player* player /*= nullptr*/)
 {
+    std::unique_lock<std::shared_mutex> lock(_playerBindMutex);
     BoundInstancesMapWrapper* w = playerBindStorage[guid];
     BoundInstancesMap::iterator itr = w->m[difficulty].find(mapid);
     if (itr != w->m[difficulty].end())
@@ -758,11 +769,14 @@ InstancePlayerBind* InstanceSaveMgr::PlayerGetBoundInstance(ObjectGuid guid, uin
         return nullptr;
 
     BoundInstancesMapWrapper* w = nullptr;
-    PlayerBindStorage::const_iterator itr = playerBindStorage.find(guid);
-    if (itr != playerBindStorage.end())
-        w = itr->second;
-    else
-        return nullptr;
+    {
+        std::shared_lock<std::shared_mutex> lock(_playerBindMutex);
+        PlayerBindStorage::const_iterator itr = playerBindStorage.find(guid);
+        if (itr != playerBindStorage.end())
+            w = itr->second;
+        else
+            return nullptr;
+    }
 
     BoundInstancesMap::iterator itr2 = w->m[difficulty_fixed].find(mapid);
     if (itr2 != w->m[difficulty_fixed].end())
@@ -781,6 +795,7 @@ bool InstanceSaveMgr::PlayerIsPermBoundToInstance(ObjectGuid guid, uint32 mapid,
 
 BoundInstancesMap const& InstanceSaveMgr::PlayerGetBoundInstances(ObjectGuid guid, Difficulty difficulty)
 {
+    std::shared_lock<std::shared_mutex> lock(_playerBindMutex);
     PlayerBindStorage::iterator itr = playerBindStorage.find(guid);
     if (itr != playerBindStorage.end())
         return itr->second->m[difficulty];
@@ -789,6 +804,7 @@ BoundInstancesMap const& InstanceSaveMgr::PlayerGetBoundInstances(ObjectGuid gui
 
 void InstanceSaveMgr::PlayerCreateBoundInstancesMaps(ObjectGuid guid)
 {
+    std::unique_lock<std::shared_mutex> lock(_playerBindMutex);
     if (playerBindStorage.find(guid) == playerBindStorage.end())
         playerBindStorage[guid] = new BoundInstancesMapWrapper;
 }
