@@ -2,8 +2,12 @@
 -- custom_unlocked_appearances.item_template_id: MEDIUMINT max 16777215 is too small for
 -- custom item entries (e.g. > 22M). Fixes MySQL 1264 "Out of range value for column item_template_id".
 
-ALTER TABLE `custom_unlocked_appearances`
-    MODIFY COLUMN `item_template_id` INT UNSIGNED NOT NULL DEFAULT 0;
+SET @tbl_exists := (SELECT COUNT(1) FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'custom_unlocked_appearances');
+SET @sql := IF(@tbl_exists > 0,
+    'ALTER TABLE `custom_unlocked_appearances` MODIFY COLUMN `item_template_id` INT UNSIGNED NOT NULL DEFAULT 0',
+    'SELECT 1 -- custom_unlocked_appearances does not exist, skipping ALTER');
+PREPARE _stmt FROM @sql; EXECUTE _stmt; DEALLOCATE PREPARE _stmt;
 
 -- Keep high custom item IDs exact in item-upgrade requirements (float loses precision > 16,777,216).
 ALTER TABLE `mod_item_upgrade_stats_req`
