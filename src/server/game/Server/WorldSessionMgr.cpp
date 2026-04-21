@@ -136,6 +136,11 @@ void WorldSessionMgr::UpdateSessions(uint32 const diff)
         [[maybe_unused]] uint32 currentSessionId = itr->first;
         METRIC_DETAILED_TIMER("world_update_sessions_time", METRIC_TAG("account_id", std::to_string(currentSessionId)));
 
+        // Sessions whose player is in-world are updated by Map::UpdateOwnedSessions on the map worker thread.
+        // Only update here for sessions not yet assigned to a map (login screen, char select, loading).
+        if (Player* player = pSession->GetPlayer(); player && player->IsInWorld())
+            continue;
+
         if (!pSession->Update(diff, updater))
         {
             if (!RemoveQueuedPlayer(pSession) && sWorld->getIntConfig(CONFIG_INTERVAL_DISCONNECT_TOLERANCE))

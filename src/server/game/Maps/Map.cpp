@@ -43,6 +43,7 @@
 #include "VMapMgr2.h"
 #include "Weather.h"
 #include "WeatherMgr.h"
+#include "WorldSession.h"
 
 #define MAP_INVALID_ZONE        0xFFFFFFFF
 
@@ -432,19 +433,18 @@ void Map::Update(const uint32 t_diff, const uint32 s_diff, bool  /*thread*/)
     if (t_diff)
         _mapCollisionData.GetDynamicTree().update(t_diff);
 
-    // Update world sessions and players
-    for (m_mapRefIter = m_mapRefMgr.begin(); m_mapRefIter != m_mapRefMgr.end(); ++m_mapRefIter)
-    {
-        Player* player = m_mapRefIter->GetSource();
-        if (player && player->IsInWorld())
-        {
-            // Update session
-            WorldSession* session = player->GetSession();
-            MapSessionFilter updater(session);
-            session->Update(s_diff, updater);
+    // Update world sessions for players on this map.
+    // UpdateOwnedSessions iterates _ownedSessions (built via Player::SetMap/ResetMap hooks)
+    // and runs MapSessionFilter::Update for each, safe to call from a map worker thread.
+    UpdateOwnedSessions(s_diff);
 
-            // update players at tick
-            if (!t_diff)
+    // Update players at sub-tick (s_diff only, no t_diff)
+    if (!t_diff)
+    {
+        for (m_mapRefIter = m_mapRefMgr.begin(); m_mapRefIter != m_mapRefMgr.end(); ++m_mapRefIter)
+        {
+            Player* player = m_mapRefIter->GetSource();
+            if (player && player->IsInWorld())
                 player->Update(s_diff);
         }
     }
@@ -3165,4 +3165,33 @@ std::string InstanceMap::GetDebugInfo() const
         << std::boolalpha
         << "ScriptId: " << GetScriptId() << " ScriptName: " << GetScriptName();
     return sstr.str();
+}
+
+void Map::AddOwnedSession(WorldSession* session)
+{
+    std::lock_guard<std::mutex> lock(_ownedSessionsMutex);
+    _ownedSessions.push_back(session);
+}
+
+void Map::RemoveOwnedSession(WorldSession* session)
+{
+    std::lock_guard<std::mutex> lock(_ownedSessionsMutex);
+    _ownedSessions.erase(
+        std::remove(_ownedSessions.begin(), _ownedSessions.end(), session),
+        _ownedSessions.end());
+}
+
+void Map::UpdateOwnedSessions(uint32 diff)
+{
+    std::vector<WorldSession*> sessions;
+    {
+        std::lock_guard<std::mutex> lock(_ownedSessionsMutex);
+        sessions = _ownedSessions;
+    }
+
+    for (WorldSession* session : sessions)
+    {
+        MapSessionFilter updater(session);
+        session->Update(diff, updater);
+    }
 }

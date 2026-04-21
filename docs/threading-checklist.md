@@ -91,24 +91,29 @@ Mark items as done: change `[ ]` → `[x]`
 
 ### Infrastructure
 
-- [ ] Add `_ownedSessions` (`std::vector<WorldSession*>`) to `Map`
+- [x] Add `_ownedSessions` (`std::vector<WorldSession*>`) to `Map`
   - File: `src/server/game/Maps/Map.h`
-- [ ] Add `_ownedSessionsMutex` (`std::mutex`) to `Map`
-- [ ] Implement `Map::AddOwnedSession(WorldSession*)` 
-- [ ] Implement `Map::RemoveOwnedSession(WorldSession*)`
-- [ ] Implement `Map::UpdateOwnedSessions(uint32 diff)` — drains `_recvQueue` for each session
+- [x] Add `_ownedSessionsMutex` (`std::mutex`) to `Map`
+- [x] Implement `Map::AddOwnedSession(WorldSession*)` — locks mutex, appends to `_ownedSessions`
+- [x] Implement `Map::RemoveOwnedSession(WorldSession*)` — locks mutex, erases from `_ownedSessions`
+- [x] Implement `Map::UpdateOwnedSessions(uint32 diff)` — snapshots session list under lock, then calls `session->Update(diff, MapSessionFilter)` for each
 
 ### Player Lifecycle Hooks
 
-- [ ] Hook `Player::SetMap()` → call `newMap->AddOwnedSession(session)`
-- [ ] Hook `Player::ResetMap()` / teleport source → call `oldMap->RemoveOwnedSession(session)` on deferred list
-- [ ] Verify: session is never double-updated during a teleport tick
+- [x] Hook `Player::SetMap()` → `map->AddOwnedSession(GetSession())` after `m_mapRef.link()`
+- [x] Hook `Player::ResetMap()` → `GetMap()->RemoveOwnedSession(GetSession())` before `Unit::ResetMap()`
+- [ ] Verify: session is never double-updated during a teleport tick (needs TSAN + stress test)
 
 ### Main Thread Filtering
 
-- [ ] Modify `WorldSessionMgr::UpdateSessions()` to skip sessions where `player->IsInWorld()`
+- [x] Modify `WorldSessionMgr::UpdateSessions()` to skip sessions where `player && player->IsInWorld()`
+  - Pre-login / char-select / loading sessions still updated on main thread
+  - In-world sessions delegated to `Map::UpdateOwnedSessions()` on map worker thread
   - File: `src/server/game/Server/WorldSessionMgr.cpp`
 - [ ] Verify: loading screen, char select, login queue sessions still update correctly on main thread
+- [x] Wire `Map::Update()` to call `UpdateOwnedSessions(s_diff)` instead of inline session loop
+  - Sub-tick `!t_diff` player `Update()` split out into separate guarded block
+  - Full-tick player update loop at line ~464 unchanged (game logic only, no packet processing)
 
 ### Cross-Session Opcodes
 
@@ -219,3 +224,4 @@ grep "WarnSyncQuery\|sync query" logs/Server.log
 - 2026-04-21: `HashMapHolder<Player>::Find()` already uses `shared_lock` internally — `FindPlayer`/`FindConnectedPlayer` are thread-safe
 - 2026-04-21: `PlayerNameMapHolder::PlayerNameMap` is completely unguarded — `FindPlayerByName` is NOT thread-safe. Not called from `Map::Update()` today, but needs a mutex if Phase 2 session parallelism exposes it
 - 2026-04-21: Phase 1 prerequisite race fixes complete: `BattlegroundMgr`, `GroupMgr`, `GuildMgr` all guarded with `shared_mutex`
+- 2026-04-21: Phase 2 infrastructure complete: `Map::_ownedSessions` + mutex, `AddOwnedSession`/`RemoveOwnedSession` hooked into `Player::SetMap`/`ResetMap`, `UpdateOwnedSessions` wired into `Map::Update`, `WorldSessionMgr::UpdateSessions` skips in-world sessions

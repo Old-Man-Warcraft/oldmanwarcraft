@@ -40,7 +40,9 @@
 #include <bitset>
 #include <list>
 #include <memory>
+#include <mutex>
 #include <shared_mutex>
+#include <vector>
 
 class Unit;
 class WorldPacket;
@@ -192,6 +194,10 @@ public:
     void MarkNearbyCellsOf(WorldObject* obj);
 
     virtual void Update(const uint32, const uint32, bool thread = true);
+
+    void AddOwnedSession(WorldSession* session);
+    void RemoveOwnedSession(WorldSession* session);
+    void UpdateOwnedSessions(uint32 diff);
 
     [[nodiscard]] float GetVisibilityRange() const { return m_VisibleDistance; }
     void SetVisibilityRange(float range) { m_VisibleDistance = range; }
@@ -628,6 +634,9 @@ private:
     std::unordered_set<Corpse*> _corpseBones;
 
     std::unordered_set<Object*> _updateObjects;
+
+    std::vector<WorldSession*> _ownedSessions;
+    std::mutex _ownedSessionsMutex;
 
     UpdatableObjectList _updatableObjectList;
     PendingAddUpdatableObjectList _pendingAddUpdatableObjectList;

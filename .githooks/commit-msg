@@ -1,0 +1,36 @@
+#!/bin/bash
+# Conventional Commits for AzerothCore (see CLAUDE.md). Enable with:
+#   git config core.hooksPath .githooks
+
+set -euo pipefail
+
+msg_file="${1:?commit-msg hook requires message file path}"
+first=$(sed -n '1p' "$msg_file" | tr -d '\r')
+
+if [[ -z "$first" ]]; then
+  echo "commit-msg: empty first line" >&2
+  exit 1
+fi
+
+# Automated merges / reverts from Git
+if [[ "$first" =~ ^Merge\  ]] || [[ "$first" =~ ^Revert\  ]]; then
+  exit 0
+fi
+
+# type(scope): subject  OR  type: subject (space after colon). Types: CLAUDE.md
+if ! printf '%s\n' "$first" | grep -qE \
+  '^(feat|fix|refactor|style|docs|test|chore)(\([^)]+\))?: .+'; then
+  echo "commit-msg: first line must match Conventional Commits, e.g." >&2
+  echo "  fix(Core/Spells): Short description" >&2
+  echo "  fix(DB/world): Adjust creature loot" >&2
+  exit 1
+fi
+
+max=72
+len=${#first}
+if (( len > max )); then
+  echo "commit-msg: first line is ${len} chars (max ${max}). Trim or wrap body in paragraph 2+." >&2
+  exit 1
+fi
+
+exit 0
