@@ -19,6 +19,7 @@
 #include "Item.h"
 #include "Language.h"
 #include "Log.h"
+#include "MapMgr.h"
 #include "ObjectAccessor.h"
 #include "Opcodes.h"
 #include "Player.h"
@@ -675,13 +676,22 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
     _player->m_trade = new TradeData(_player, pOther);
     pOther->m_trade = new TradeData(pOther, _player);
 
-    // WorldPacket data(SMSG_TRADE_STATUS, 12);
-    // data << uint32(TRADE_STATUS_BEGIN_TRADE);
-    // data << _player->GetGUID();
-    // pOther->SendDirectMessage(&data);
     info.Status = TRADE_STATUS_BEGIN_TRADE;
     info.TraderGuid = _player->GetGUID();
-    pOther->GetSession()->SendTradeStatus(info);
+
+    // pOther may be on a different map worker thread — defer the send to their map's next tick
+    ObjectGuid otherGuid = pOther->GetGUID();
+    TradeStatusInfo deferredInfo = info;
+    if (Map* targetMap = pOther->FindMap())
+    {
+        targetMap->PostNextTick([otherGuid, deferredInfo]()
+        {
+            if (Player* other = ObjectAccessor::FindConnectedPlayer(otherGuid))
+                other->GetSession()->SendTradeStatus(deferredInfo);
+        });
+    }
+    else
+        pOther->GetSession()->SendTradeStatus(info);
 }
 
 void WorldSession::HandleSetTradeGoldOpcode(WorldPacket& recvPacket)

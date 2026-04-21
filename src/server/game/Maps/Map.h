@@ -38,6 +38,7 @@
 #include "Timer.h"
 #include "GridTerrainData.h"
 #include <bitset>
+#include <functional>
 #include <list>
 #include <memory>
 #include <mutex>
@@ -198,6 +199,9 @@ public:
     void AddOwnedSession(WorldSession* session);
     void RemoveOwnedSession(WorldSession* session);
     void UpdateOwnedSessions(uint32 diff);
+
+    void PostNextTick(std::function<void()> task);
+    void DrainNextTickTasks();
 
     [[nodiscard]] float GetVisibilityRange() const { return m_VisibleDistance; }
     void SetVisibilityRange(float range) { m_VisibleDistance = range; }
@@ -637,6 +641,9 @@ private:
 
     std::vector<WorldSession*> _ownedSessions;
     std::mutex _ownedSessionsMutex;
+
+    std::vector<std::function<void()>> _nextTickTasks;
+    std::mutex _nextTickTasksMutex;
 
     UpdatableObjectList _updatableObjectList;
     PendingAddUpdatableObjectList _pendingAddUpdatableObjectList;

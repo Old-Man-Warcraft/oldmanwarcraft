@@ -123,11 +123,25 @@ Mark items as done: change `[ ]` → `[x]`
   - Group invite
   - Whisper (cross-session send)
   - Auction house interaction
-- [ ] Implement deferred-task API: `Map::PostNextTick(std::function<void()>)` using existing `PCQueue` or new list
-- [ ] Route each cross-session opcode to target map's next-tick list
-- [ ] Test: trade between players on same map
-- [ ] Test: trade between players on different maps
+- [x] Implement deferred-task API: `Map::PostNextTick(std::function<void()>)` + `Map::DrainNextTickTasks()`
+  - `PostNextTick`: locks `_nextTickTasksMutex`, appends to `_nextTickTasks`
+  - `DrainNextTickTasks`: swaps queue under lock, executes all tasks on the map thread
+  - Called at top of `Map::Update()` before session and object updates
+- [x] Route group invite cross-session send through `PostNextTick` on target map
+  - File: `src/server/game/Handlers/GroupHandler.cpp`
+  - `invitedPlayer->SendDirectMessage` now deferred via `targetMap->PostNextTick([invitedGuid, packet]())`
+  - Fallback to direct send if `FindMap()` returns null (player not in world yet)
+- [x] Route trade request initiation through `PostNextTick`
+  - File: `src/server/game/Handlers/TradeHandler.cpp` — `HandleInitiateTradeOpcode`
+  - `pOther->GetSession()->SendTradeStatus(info)` deferred via `pOther->FindMap()->PostNextTick`
+- [x] Route duel request through `PostNextTick`
+  - File: `src/server/game/Spells/SpellEffects.cpp` — `SPELL_EFFECT_DUEL`
+  - `target->SendDirectMessage(SMSG_DUEL_REQUESTED)` deferred via `target->FindMap()->PostNextTick`
+- [x] Route whisper cross-session send through `PostNextTick`
+  - File: `src/server/game/Entities/Player/Player.cpp` — `Player::Whisper`
+  - `target->SendDirectMessage(CHAT_MSG_WHISPER)` deferred via `target->FindMap()->PostNextTick`
 - [ ] Test: group invite across maps
+- [ ] Test: trade request across maps
 - [ ] Test: duel challenge and accept
 
 ### Validation

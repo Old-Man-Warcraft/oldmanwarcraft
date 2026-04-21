@@ -4131,7 +4131,20 @@ void Spell::EffectDuel(SpellEffIndex effIndex)
     data << pGameObj->GetGUID();
     data << caster->GetGUID();
     caster->SendDirectMessage(&data);
-    target->SendDirectMessage(&data);
+
+    // target may be on a different map worker thread — defer the send to their map's next tick
+    ObjectGuid targetGuid = target->GetGUID();
+    if (Map* targetMap = target->FindMap())
+    {
+        WorldPacket deferred(data);
+        targetMap->PostNextTick([targetGuid, deferred = std::move(deferred)]() mutable
+        {
+            if (Player* t = ObjectAccessor::FindConnectedPlayer(targetGuid))
+                t->SendDirectMessage(&deferred);
+        });
+    }
+    else
+        target->SendDirectMessage(&data);
 
     // create duel-info
     bool isMounted = (GetSpellInfo()->Id == 62875);

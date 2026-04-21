@@ -430,6 +430,9 @@ void Map::UpdatePlayerZoneStats(uint32 oldZone, uint32 newZone)
 
 void Map::Update(const uint32 t_diff, const uint32 s_diff, bool  /*thread*/)
 {
+    // Drain deferred tasks posted from other map threads (cross-session opcodes, etc.)
+    DrainNextTickTasks();
+
     if (t_diff)
         _mapCollisionData.GetDynamicTree().update(t_diff);
 
@@ -3165,6 +3168,23 @@ std::string InstanceMap::GetDebugInfo() const
         << std::boolalpha
         << "ScriptId: " << GetScriptId() << " ScriptName: " << GetScriptName();
     return sstr.str();
+}
+
+void Map::PostNextTick(std::function<void()> task)
+{
+    std::lock_guard<std::mutex> lock(_nextTickTasksMutex);
+    _nextTickTasks.push_back(std::move(task));
+}
+
+void Map::DrainNextTickTasks()
+{
+    std::vector<std::function<void()>> tasks;
+    {
+        std::lock_guard<std::mutex> lock(_nextTickTasksMutex);
+        tasks.swap(_nextTickTasks);
+    }
+    for (auto& task : tasks)
+        task();
 }
 
 void Map::AddOwnedSession(WorldSession* session)

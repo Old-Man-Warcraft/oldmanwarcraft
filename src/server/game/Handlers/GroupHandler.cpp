@@ -17,6 +17,7 @@
 
 #include "Chat.h"
 #include "DatabaseEnv.h"
+#include "ObjectAccessor.h"
 #include "Group.h"
 #include "GroupMgr.h"
 #include "LFGMgr.h"
@@ -209,7 +210,20 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
     data << uint32(0);                                      // unk
     data << uint8(0);                                       // count
     data << uint32(0);                                      // unk
-    invitedPlayer->SendDirectMessage(&data);
+
+    // invitedPlayer may be on a different map worker thread — post the send to their map's next tick
+    ObjectGuid invitedGuid = invitedPlayer->GetGUID();
+    if (Map* targetMap = invitedPlayer->FindMap())
+    {
+        WorldPacket deferred(data);
+        targetMap->PostNextTick([invitedGuid, deferred = std::move(deferred)]() mutable
+        {
+            if (Player* target = ObjectAccessor::FindConnectedPlayer(invitedGuid))
+                target->SendDirectMessage(&deferred);
+        });
+    }
+    else
+        invitedPlayer->SendDirectMessage(&data);
 
     SendPartyResult(PARTY_OP_INVITE, membername, ERR_PARTY_RESULT_OK);
 }

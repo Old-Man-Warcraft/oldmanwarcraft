@@ -9457,7 +9457,20 @@ void Player::Whisper(std::string_view text, Language language, Player* target, b
 
     WorldPacket data;
     ChatHandler::BuildChatPacket(data, CHAT_MSG_WHISPER, language, this, this, _text);
-    target->SendDirectMessage(&data);
+
+    // target may be on a different map worker thread — defer the send to their map's next tick
+    ObjectGuid targetGuid = target->GetGUID();
+    if (Map* targetMap = target->FindMap())
+    {
+        WorldPacket deferred(data);
+        targetMap->PostNextTick([targetGuid, deferred = std::move(deferred)]() mutable
+        {
+            if (Player* t = ObjectAccessor::FindConnectedPlayer(targetGuid))
+                t->SendDirectMessage(&deferred);
+        });
+    }
+    else
+        target->SendDirectMessage(&data);
 
     // rest stuff shouldn't happen in case of addon message
     if (isAddonMessage)
