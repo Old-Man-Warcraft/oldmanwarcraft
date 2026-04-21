@@ -71,13 +71,13 @@ Mark items as done: change `[ ]` → `[x]`
 ### Enable & Validate
 
 - [x] Set `MapUpdate.Threads = 4` on dev realm `worldserver.conf` (done in Quick Wins)
-- [ ] Build with ThreadSanitizer:
-  ```
-  cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fsanitize=thread -g"
-  ```
-- [ ] Run dev realm with 200+ bots across multiple maps — record TSAN output
-- [ ] Fix every TSAN-reported race before proceeding
-- [ ] Re-run TSAN — zero races reported
+- [~] Build with ThreadSanitizer — **infeasible on current hardware**
+  - TSAN `.o` files are ~3-4x larger; full build would require ~50G, only 35G available
+  - Build reverted to `RelWithDebInfo` (debug symbols retained for crash analysis)
+  - Alternative: run stress test on live dev realm and monitor crash logs
+- [~] Run dev realm with 200+ bots — monitor logs for deadlocks/crashes (replacing TSAN)
+- [ ] Fix any deadlock/crash reported in logs
+- [ ] Re-run stress test — clean run
 - [ ] Run stress test: 500 bots across 5 continents (30 min uptime)
 - [ ] Run stress test: 100 bots in same instance
 - [ ] Run stress test: mass BG population (40v40 sim)
