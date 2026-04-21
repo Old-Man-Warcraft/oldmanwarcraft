@@ -171,7 +171,7 @@ Mark items as done: change `[ ]` → `[x]`
   - [ ] Map-local hooks (safe, document)
   - [ ] Hooks touching global state (add guard or redesign)
 - [ ] `ObjectAccessor::HashMapHolder<Player>` — verify all call sites in parallel context hold shared_lock
-- [~] TSAN build — skipped (disk space constraint)
+- [x] TSAN build — zero races (5 min runtime, RelWithDebInfo + -fsanitize=thread, NOJEM=1, mmap_rnd_bits=28)
 - [x] Commit Phase 3
 
 ---
