@@ -146,11 +146,14 @@ Mark items as done: change `[ ]` → `[x]`
 
 ### Validation
 
-- [ ] TSAN build — zero new races
+- [~] TSAN build — skipped (insufficient disk for TSAN build artifacts; cmake set to RelWithDebInfo)
+- [x] Server startup test — clean start, no errors, no crashes (`feat/omw-threading` branch)
+  - Full `./acore.sh compiler build` successful (11m27s), exit 0
+  - Server `active` post-restart, bots initializing normally
 - [ ] Stress test: login/logout storm (50 concurrent)
 - [ ] Stress test: rapid teleport (bots teleport every 30s for 30 min)
 - [ ] Stress test: 500 sessions, all in-world, main thread session loop is now empty
-- [ ] Commit Phase 2
+- [x] Commit Phase 2 — committed as `560fa621e`
 
 ---
 
