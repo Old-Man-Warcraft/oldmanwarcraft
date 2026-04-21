@@ -305,6 +305,7 @@ int main(int argc, char** argv)
 
     ///- Initialize the World
     sSecretMgr->Initialize();
+    sMapMgr->SetIoContext(*ioContext);
     sWorld->SetInitialWorldSettings();
 
     std::shared_ptr<void> mapManagementHandle(nullptr, [](void*)

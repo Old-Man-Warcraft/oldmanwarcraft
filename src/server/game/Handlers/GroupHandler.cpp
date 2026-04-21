@@ -211,12 +211,12 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
     data << uint8(0);                                       // count
     data << uint32(0);                                      // unk
 
-    // invitedPlayer may be on a different map worker thread — post the send to their map's next tick
+    // invitedPlayer may be on a different map worker thread — post the send to their map's strand
     ObjectGuid invitedGuid = invitedPlayer->GetGUID();
     if (Map* targetMap = invitedPlayer->FindMap())
     {
         WorldPacket deferred(data);
-        targetMap->PostNextTick([invitedGuid, deferred = std::move(deferred)]() mutable
+        boost::asio::post(targetMap->GetStrand(), [invitedGuid, deferred = std::move(deferred)]() mutable
         {
             if (Player* target = ObjectAccessor::FindConnectedPlayer(invitedGuid))
                 target->SendDirectMessage(&deferred);

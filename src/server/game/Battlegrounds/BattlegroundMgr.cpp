@@ -100,30 +100,33 @@ void BattlegroundMgr::DeleteAllBattlegrounds()
 // used to update running battlegrounds, and delete finished ones
 void BattlegroundMgr::Update(uint32 diff)
 {
-    std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
-    // update all battlegrounds and delete if needed
-    for (auto& [_, bgData] : bgDataStore)
     {
-        auto& bgList = bgData._Battlegrounds;
-        auto itrDelete = bgList.begin();
+        std::unique_lock<std::shared_mutex> lock(_bgDataStoreLock);
 
-        // first one is template and should not be deleted
-        for (BattlegroundContainer::iterator itr = ++itrDelete; itr != bgList.end();)
+        // update all battlegrounds and delete if needed
+        for (auto& [_, bgData] : bgDataStore)
         {
-            itrDelete = itr++;
-            Battleground* bg = itrDelete->second;
+            auto& bgList = bgData._Battlegrounds;
+            auto itrDelete = bgList.begin();
 
-            bg->Update(diff);
-            if (bg->ToBeDeleted())
+            // first one is template and should not be deleted
+            for (BattlegroundContainer::iterator itr = ++itrDelete; itr != bgList.end();)
             {
-                itrDelete->second = nullptr;
-                bgList.erase(itrDelete);
+                itrDelete = itr++;
+                Battleground* bg = itrDelete->second;
 
-                BattlegroundClientIdsContainer& clients = bgData._ClientBattlegroundIds[bg->GetBracketId()];
-                if (!clients.empty())
-                    clients.erase(bg->GetClientInstanceID());
+                bg->Update(diff);
+                if (bg->ToBeDeleted())
+                {
+                    itrDelete->second = nullptr;
+                    bgList.erase(itrDelete);
 
-                delete bg;
+                    BattlegroundClientIdsContainer& clients = bgData._ClientBattlegroundIds[bg->GetBracketId()];
+                    if (!clients.empty())
+                        clients.erase(bg->GetClientInstanceID());
+
+                    delete bg;
+                }
             }
         }
     }

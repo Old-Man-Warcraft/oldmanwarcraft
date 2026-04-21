@@ -20,6 +20,7 @@
 
 #include "Common.h"
 #include "Define.h"
+#include "IoContext.h"
 #include "Map.h"
 #include "MapInstanced.h"
 #include "MapUpdater.h"
@@ -68,6 +69,9 @@ public:
         Map const* m = const_cast<MapMgr*>(this)->CreateBaseMap(mapid);
         m->GetZoneAndAreaId(phaseMask, zoneid, areaid, x, y, z);
     }
+
+    void SetIoContext(Acore::Asio::IoContext& ioContext) { _ioContext = &ioContext; }
+    [[nodiscard]] Acore::Asio::IoContext* GetIoContext() const { return _ioContext; }
 
     void Initialize(void);
     void Update(uint32);
@@ -176,6 +180,7 @@ private:
     InstanceIds _instanceIds;
     uint32 _nextInstanceId;
     MapUpdater m_updater;
+    Acore::Asio::IoContext* _ioContext = nullptr;
 };
 
 template<typename Worker>

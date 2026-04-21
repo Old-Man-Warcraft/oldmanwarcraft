@@ -18,6 +18,8 @@
 #include "MapMgr.h"
 #include "Chat.h"
 #include "DatabaseEnv.h"
+#include <boost/asio/post.hpp>
+#include <latch>
 #include "GridDefines.h"
 #include "GridTerrainLoader.h"
 #include "Group.h"
@@ -37,7 +39,7 @@
 
 MapMgr::MapMgr()
 {
-    i_timer[3].SetInterval(sWorld->getIntConfig(CONFIG_INTERVAL_MAPUPDATE));
+    i_timer[3].SetInterval(MIN_MAP_UPDATE_DELAY);
     mapUpdateStep = 0;
     _nextInstanceId = 0;
 }
@@ -265,22 +267,80 @@ void MapMgr::Update(uint32 diff)
         }
     }
 
-    MapMapType::iterator iter = i_maps.begin();
-    for (; iter != i_maps.end(); ++iter)
+    // Phase 4: if IoContext is available, post non-instanceable base maps to their
+    // own strands and wait for completion. Keep MapInstanced base containers on the
+    // main thread: they may synchronously fan out child instance updates and wait
+    // for them, which can deadlock the shared Asio pool if the container itself is
+    // already occupying one of the worker threads.
+    if (_ioContext)
     {
-        bool full = mapUpdateStep < 3 && ((mapUpdateStep == 0 && !iter->second->IsBattlegroundOrArena() && !iter->second->IsDungeon()) || (mapUpdateStep == 1 && iter->second->IsBattlegroundOrArena()) || (mapUpdateStep == 2 && iter->second->IsDungeon()));
-        if (m_updater.activated())
-            m_updater.schedule_update(*iter->second, uint32(full ? i_timer[mapUpdateStep].GetCurrent() : 0), diff);
-        else
-            iter->second->Update(uint32(full ? i_timer[mapUpdateStep].GetCurrent() : 0), diff);
-    }
+        std::size_t count = 0;
+        for (auto& [id, map] : i_maps)
+        {
+            if (!map->Instanceable())
+                ++count;
+        }
 
-    if (m_updater.activated())
-        m_updater.wait();
+        if (count > 0)
+        {
+            std::latch latch(static_cast<std::ptrdiff_t>(count));
+
+            for (auto& [id, map] : i_maps)
+            {
+                bool full = mapUpdateStep < 3 &&
+                    ((mapUpdateStep == 0 && !map->IsBattlegroundOrArena() && !map->IsDungeon()) ||
+                     (mapUpdateStep == 1 &&  map->IsBattlegroundOrArena()) ||
+                     (mapUpdateStep == 2 &&  map->IsDungeon()));
+                uint32 mapDiff = uint32(full ? i_timer[mapUpdateStep].GetCurrent() : 0);
+
+                if (map->Instanceable())
+                {
+                    map->Update(mapDiff, diff);
+                    continue;
+                }
+
+                boost::asio::post(map->GetStrand(), [map, mapDiff, diff, &latch]()
+                {
+                    map->Update(mapDiff, diff);
+                    latch.count_down();
+                });
+            }
+
+            latch.wait();
+        }
+        else
+        {
+            for (auto& [id, map] : i_maps)
+            {
+                bool full = mapUpdateStep < 3 &&
+                    ((mapUpdateStep == 0 && !map->IsBattlegroundOrArena() && !map->IsDungeon()) ||
+                     (mapUpdateStep == 1 &&  map->IsBattlegroundOrArena()) ||
+                     (mapUpdateStep == 2 &&  map->IsDungeon()));
+                uint32 mapDiff = uint32(full ? i_timer[mapUpdateStep].GetCurrent() : 0);
+
+                map->Update(mapDiff, diff);
+            }
+        }
+    }
+    else
+    {
+        MapMapType::iterator iter = i_maps.begin();
+        for (; iter != i_maps.end(); ++iter)
+        {
+            bool full = mapUpdateStep < 3 && ((mapUpdateStep == 0 && !iter->second->IsBattlegroundOrArena() && !iter->second->IsDungeon()) || (mapUpdateStep == 1 && iter->second->IsBattlegroundOrArena()) || (mapUpdateStep == 2 && iter->second->IsDungeon()));
+            if (m_updater.activated())
+                m_updater.schedule_update(*iter->second, uint32(full ? i_timer[mapUpdateStep].GetCurrent() : 0), diff);
+            else
+                iter->second->Update(uint32(full ? i_timer[mapUpdateStep].GetCurrent() : 0), diff);
+        }
+
+        if (m_updater.activated())
+            m_updater.wait();
+    }
 
     if (mapUpdateStep < 3)
     {
-        for (iter = i_maps.begin(); iter != i_maps.end(); ++iter)
+        for (MapMapType::iterator iter = i_maps.begin(); iter != i_maps.end(); ++iter)
         {
             bool full = ((mapUpdateStep == 0 && !iter->second->IsBattlegroundOrArena() && !iter->second->IsDungeon()) || (mapUpdateStep == 1 && iter->second->IsBattlegroundOrArena()) || (mapUpdateStep == 2 && iter->second->IsDungeon()));
             if (full)

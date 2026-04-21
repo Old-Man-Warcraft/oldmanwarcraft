@@ -84,20 +84,31 @@ namespace PlayerNameMapHolder
 {
     typedef std::unordered_map<std::string, Player*> MapType;
     static MapType PlayerNameMap;
+    static std::shared_mutex PlayerNameMapLock;
 
     void Insert(Player* p)
     {
+        std::unique_lock<std::shared_mutex> lock(PlayerNameMapLock);
         PlayerNameMap[p->GetName()] = p;
     }
 
     void Remove(Player* p)
     {
+        std::unique_lock<std::shared_mutex> lock(PlayerNameMapLock);
         PlayerNameMap.erase(p->GetName());
     }
 
     void RemoveByName(std::string const& name)
     {
+        std::unique_lock<std::shared_mutex> lock(PlayerNameMapLock);
         PlayerNameMap.erase(name);
+    }
+
+    void Replace(std::string const& oldName, Player* p)
+    {
+        std::unique_lock<std::shared_mutex> lock(PlayerNameMapLock);
+        PlayerNameMap.erase(oldName);
+        PlayerNameMap[p->GetName()] = p;
     }
 
     Player* Find(std::string const& name)
@@ -106,6 +117,7 @@ namespace PlayerNameMapHolder
         if (!normalizePlayerName(charName))
             return nullptr;
 
+        std::shared_lock<std::shared_mutex> lock(PlayerNameMapLock);
         auto itr = PlayerNameMap.find(charName);
         return (itr != PlayerNameMap.end()) ? itr->second : nullptr;
     }
@@ -345,6 +357,5 @@ void ObjectAccessor::RemoveObject(Player* player)
 
 void ObjectAccessor::UpdatePlayerNameMapReference(std::string oldname, Player* player)
 {
-    PlayerNameMapHolder::RemoveByName(oldname);
-    PlayerNameMapHolder::Insert(player);
+    PlayerNameMapHolder::Replace(oldname, player);
 }

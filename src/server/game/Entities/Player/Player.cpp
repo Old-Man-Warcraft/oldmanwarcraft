@@ -9458,12 +9458,12 @@ void Player::Whisper(std::string_view text, Language language, Player* target, b
     WorldPacket data;
     ChatHandler::BuildChatPacket(data, CHAT_MSG_WHISPER, language, this, this, _text);
 
-    // target may be on a different map worker thread — defer the send to their map's next tick
+    // target may be on a different map worker thread — post the send to their map's strand
     ObjectGuid targetGuid = target->GetGUID();
     if (Map* targetMap = target->FindMap())
     {
         WorldPacket deferred(data);
-        targetMap->PostNextTick([targetGuid, deferred = std::move(deferred)]() mutable
+        boost::asio::post(targetMap->GetStrand(), [targetGuid, deferred = std::move(deferred)]() mutable
         {
             if (Player* t = ObjectAccessor::FindConnectedPlayer(targetGuid))
                 t->SendDirectMessage(&deferred);

@@ -39,6 +39,8 @@
 #include "WaypointMovementGenerator.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include <boost/asio/post.hpp>
+#include <latch>
 
 #define MOVEMENT_PACKET_TIME_DELAY 0
 
@@ -113,7 +115,26 @@ void WorldSession::HandleMoveWorldportAck()
             GetPlayer()->m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_CAN_FLY);
     }
 
-    if (!GetPlayer()->GetMap()->AddPlayerToMap(GetPlayer()))
+    // Phase 4: when crossing to a different map, post AddPlayerToMap to the target
+    // map's strand so all mutations to newMap happen under strand serialisation.
+    // For same-map teleports the strand is identical — run inline to avoid deadlock.
+    bool addedToMap = false;
+    if (newMap != oldMap && sMapMgr->GetIoContext())
+    {
+        std::latch latch(1);
+        boost::asio::post(newMap->GetStrand(), [this, newMap, &addedToMap, &latch]()
+        {
+            addedToMap = newMap->AddPlayerToMap(GetPlayer());
+            latch.count_down();
+        });
+        latch.wait();
+    }
+    else
+    {
+        addedToMap = GetPlayer()->GetMap()->AddPlayerToMap(GetPlayer());
+    }
+
+    if (!addedToMap)
     {
         LOG_ERROR("network.opcode", "WORLD: failed to teleport player {} ({}) to map {} because of unknown reason!",
             GetPlayer()->GetName(), GetPlayer()->GetGUID().ToString(), loc.GetMapId());

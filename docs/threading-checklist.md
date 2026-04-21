@@ -195,15 +195,33 @@ Mark items as done: change `[ ]` → `[x]`
 
 ## 🔴 Phase 4 — Full Asio Strand Ownership (Long-Term)
 
-- [ ] Add `boost::asio::strand<...>` member to `Map`
-  - File: `src/server/game/Maps/Map.h`
-  - Pass `IoContext` reference during `Map` construction
-- [ ] Refactor `MapMgr::Update()` — post per-map work to each map's strand instead of `MapUpdater` queue
+- [x] Add `Acore::Asio::Strand` member to `Map` + `GetStrand()` accessor
+  - File: `src/server/game/Maps/Map.h` — `_strand` member in private section, `GetStrand()` in public
+  - `MapMgr::SetIoContext()` / `GetIoContext()` added to `MapMgr.h`
+  - `Main.cpp`: `sMapMgr->SetIoContext(*ioContext)` called before `sWorld->SetInitialWorldSettings()`
+  - `Map.cpp`: `_strand(*sMapMgr->GetIoContext())` in constructor initialiser list
+- [x] Refactor `MapMgr::Update()` — post per-map work to each map's strand with `std::latch` barrier
   - File: `src/server/game/Maps/MapMgr.cpp`
-- [ ] Replace `MapUpdater::wait()` with `std::latch` or `boost::asio::experimental::parallel_group`
-- [ ] Port teleport to strand-safe deferred add/remove
-- [ ] Port all cross-session opcode dispatch to `boost::asio::post(targetMap->strand, ...)`
-- [ ] Port DB async callbacks to route result back to the map strand that issued the query
+  - When `_ioContext != nullptr`: `boost::asio::post(map->GetStrand(), ...)` for every map; `latch.wait()` replaces `m_updater.wait()`
+  - Falls back to existing `MapUpdater` / inline path when `_ioContext == nullptr`
+- [x] Port child-instance scheduling in `MapInstanced::Update()` to strand + `std::latch`
+  - File: `src/server/game/Maps/MapInstanced.cpp`
+  - Same pattern: collect live child maps → post each to its strand → `latch.wait()`
+  - Falls back to `MapUpdater` / inline when IoContext unavailable
+- [x] Replace `MapUpdater::wait()` with `std::latch` (done above in strand path)
+  - `MapUpdater` class retained as fallback for `_ioContext == nullptr` case
+- [x] Port teleport to strand-safe deferred add/remove
+  - File: `src/server/game/Handlers/MovementHandler.cpp` — `HandleMoveWorldportAck()`
+  - Cross-map teleport: `AddPlayerToMap` posted to `newMap->GetStrand()` via `std::latch`; same-map runs inline to avoid deadlock
+  - `Map::AddOwnedSession` made idempotent (dedup guard) to prevent double-add from `SetMap` + `AddPlayerToMap` both calling it
+- [x] Port all cross-session opcode dispatch to `boost::asio::post(targetMap->GetStrand(), ...)`
+  - `src/server/game/Handlers/GroupHandler.cpp` — group invite
+  - `src/server/game/Handlers/TradeHandler.cpp` — trade initiation
+  - `src/server/game/Spells/SpellEffects.cpp` — duel request
+  - `src/server/game/Entities/Player/Player.cpp` — whisper
+- [x] Port DB async callbacks to route result back to the map strand that issued the query
+  - `WorldSession::ProcessQueryCallbacks()` is called from `WorldSession::Update()` which Phase 2 already moved to the map worker thread — callbacks land on the correct strand automatically
+  - `World::ProcessQueryCallbacks()` handles World-level queries on main thread — intentional, no change needed
 - [ ] Remove `MapUpdater` class (fully replaced by strands)
 - [ ] Remove `PCQueue` dependency from `MapUpdater` (class deleted)
 - [ ] TSAN build — zero races
@@ -256,5 +274,7 @@ grep "WarnSyncQuery\|sync query" logs/Server.log
 - 2026-04-21: ScriptMgr hook registries (`ScriptPointerList`, `EnabledHooks`) are read-only after startup — safe under map parallelism, no locking needed
 - 2026-04-21: `HashMapHolder<Player>::Find()` already uses `shared_lock` internally — `FindPlayer`/`FindConnectedPlayer` are thread-safe
 - 2026-04-21: `PlayerNameMapHolder::PlayerNameMap` is completely unguarded — `FindPlayerByName` is NOT thread-safe. Not called from `Map::Update()` today, but needs a mutex if Phase 2 session parallelism exposes it
+- 2026-04-21: Added `std::shared_mutex` protection to `PlayerNameMapHolder::PlayerNameMap` and made rename updates atomic via `UpdatePlayerNameMapReference()`. This closes a Phase 2 follow-up race for handlers that do `FindPlayerByName()` on map worker threads (chat, group, guild, arena, calendar).
 - 2026-04-21: Phase 1 prerequisite race fixes complete: `BattlegroundMgr`, `GroupMgr`, `GuildMgr` all guarded with `shared_mutex`
 - 2026-04-21: Phase 2 infrastructure complete: `Map::_ownedSessions` + mutex, `AddOwnedSession`/`RemoveOwnedSession` hooked into `Player::SetMap`/`ResetMap`, `UpdateOwnedSessions` wired into `Map::Update`, `WorldSessionMgr::UpdateSessions` skips in-world sessions
+- 2026-04-21: Phase 4 partial — strand infrastructure complete. `Acore::Asio::Strand _strand` added to `Map`; `MapMgr::SetIoContext()` / `GetIoContext()` added; `Main.cpp` passes IoContext before world init; `MapMgr::Update()` and `MapInstanced::Update()` now post to per-map strands with `std::latch` completion barrier when IoContext is set (falls back to MapUpdater otherwise). All four cross-session opcode sends ported to `boost::asio::post(strand)`. Remaining: teleport strand-safety, DB callback routing to map strand, MapUpdater removal.

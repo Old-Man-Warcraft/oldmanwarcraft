@@ -23,6 +23,8 @@
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "ScriptMgr.h"
+#include <boost/asio/post.hpp>
+#include <latch>
 
 MapInstanced::MapInstanced(uint32 id) : Map(id, 0, DUNGEON_DIFFICULTY_NORMAL)
 {
@@ -49,23 +51,60 @@ void MapInstanced::Update(const uint32 t, const uint32 s_diff, bool /*thread*/)
     // update the instanced maps
     InstancedMaps::iterator i = m_InstancedMaps.begin();
 
-    while (i != m_InstancedMaps.end())
+    // Phase 4: collect child maps that need updating this tick
+    if (sMapMgr->GetIoContext())
     {
-        if (i->second->CanUnload(t))
+        std::vector<Map*> toUpdate;
+        while (i != m_InstancedMaps.end())
         {
-            if (!DestroyInstance(i))                             // iterator incremented
+            if (i->second->CanUnload(t))
             {
-                //m_unloadTimer
+                if (!DestroyInstance(i))
+                {
+                    //m_unloadTimer
+                }
+            }
+            else
+            {
+                toUpdate.push_back(i->second);
+                ++i;
             }
         }
-        else
+
+        if (!toUpdate.empty())
         {
-            // update only here, because it may schedule some bad things before delete
-            if (sMapMgr->GetMapUpdater()->activated())
-                sMapMgr->GetMapUpdater()->schedule_update(*i->second, t, s_diff);
+            std::latch latch(static_cast<std::ptrdiff_t>(toUpdate.size()));
+            for (Map* childMap : toUpdate)
+            {
+                boost::asio::post(childMap->GetStrand(), [childMap, t, s_diff, &latch]()
+                {
+                    childMap->Update(t, s_diff);
+                    latch.count_down();
+                });
+            }
+            latch.wait();
+        }
+    }
+    else
+    {
+        while (i != m_InstancedMaps.end())
+        {
+            if (i->second->CanUnload(t))
+            {
+                if (!DestroyInstance(i))                             // iterator incremented
+                {
+                    //m_unloadTimer
+                }
+            }
             else
-                i->second->Update(t, s_diff);
-            ++i;
+            {
+                // update only here, because it may schedule some bad things before delete
+                if (sMapMgr->GetMapUpdater()->activated())
+                    sMapMgr->GetMapUpdater()->schedule_update(*i->second, t, s_diff);
+                else
+                    i->second->Update(t, s_diff);
+                ++i;
+            }
         }
     }
 }

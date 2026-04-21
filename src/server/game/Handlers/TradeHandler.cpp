@@ -679,12 +679,12 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
     info.Status = TRADE_STATUS_BEGIN_TRADE;
     info.TraderGuid = _player->GetGUID();
 
-    // pOther may be on a different map worker thread — defer the send to their map's next tick
+    // pOther may be on a different map worker thread — post the send to their map's strand
     ObjectGuid otherGuid = pOther->GetGUID();
     TradeStatusInfo deferredInfo = info;
     if (Map* targetMap = pOther->FindMap())
     {
-        targetMap->PostNextTick([otherGuid, deferredInfo]()
+        boost::asio::post(targetMap->GetStrand(), [otherGuid, deferredInfo]()
         {
             if (Player* other = ObjectAccessor::FindConnectedPlayer(otherGuid))
                 other->GetSession()->SendTradeStatus(deferredInfo);

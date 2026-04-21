@@ -195,10 +195,10 @@ void World::LoadConfigSettings(bool reload)
     for (uint8 i = 0; i < MAX_MOVE_TYPE; ++i)
         baseMoveSpeed[i] *= getRate(RATE_MOVESPEED_NPC);
 
+    sMapMgr->SetMapUpdateInterval(getIntConfig(CONFIG_INTERVAL_MAPUPDATE));
+
     if (reload)
     {
-        sMapMgr->SetMapUpdateInterval(getIntConfig(CONFIG_INTERVAL_MAPUPDATE));
-
         _timers[WUPDATE_UPTIME].SetInterval(getIntConfig(CONFIG_UPTIME_UPDATE) * MINUTE* IN_MILLISECONDS);
         _timers[WUPDATE_UPTIME].Reset();
 

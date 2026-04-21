@@ -37,6 +37,7 @@
 #include "SharedDefines.h"
 #include "Timer.h"
 #include "GridTerrainData.h"
+#include "Strand.h"
 #include <bitset>
 #include <functional>
 #include <list>
@@ -202,6 +203,8 @@ public:
 
     void PostNextTick(std::function<void()> task);
     void DrainNextTickTasks();
+
+    [[nodiscard]] Acore::Asio::Strand& GetStrand() { return _strand; }
 
     [[nodiscard]] float GetVisibilityRange() const { return m_VisibleDistance; }
     void SetVisibilityRange(float range) { m_VisibleDistance = range; }
@@ -644,6 +647,8 @@ private:
 
     std::vector<std::function<void()>> _nextTickTasks;
     std::mutex _nextTickTasksMutex;
+
+    Acore::Asio::Strand _strand;
 
     UpdatableObjectList _updatableObjectList;
     PendingAddUpdatableObjectList _pendingAddUpdatableObjectList;
