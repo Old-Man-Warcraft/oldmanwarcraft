@@ -10,20 +10,32 @@ SET @sql := IF(@tbl_exists > 0,
 PREPARE _stmt FROM @sql; EXECUTE _stmt; DEALLOCATE PREPARE _stmt;
 
 -- Keep high custom item IDs exact in item-upgrade requirements (float loses precision > 16,777,216).
-ALTER TABLE `mod_item_upgrade_stats_req`
-    MODIFY COLUMN `req_val1` DOUBLE NOT NULL,
-    MODIFY COLUMN `req_val2` DOUBLE NULL;
+SET @tbl_exists := (SELECT COUNT(1) FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'mod_item_upgrade_stats_req');
+SET @sql := IF(@tbl_exists > 0,
+    'ALTER TABLE `mod_item_upgrade_stats_req` MODIFY COLUMN `req_val1` DOUBLE NOT NULL, MODIFY COLUMN `req_val2` DOUBLE NULL',
+    'SELECT 1 /* mod_item_upgrade_stats_req does not exist, skipping ALTER */');
+PREPARE _stmt FROM @sql; EXECUTE _stmt; DEALLOCATE PREPARE _stmt;
 
-ALTER TABLE `mod_item_upgrade_stats_req_override`
-    MODIFY COLUMN `req_val1` DOUBLE NULL,
-    MODIFY COLUMN `req_val2` DOUBLE NULL;
+SET @tbl_exists := (SELECT COUNT(1) FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'mod_item_upgrade_stats_req_override');
+SET @sql := IF(@tbl_exists > 0,
+    'ALTER TABLE `mod_item_upgrade_stats_req_override` MODIFY COLUMN `req_val1` DOUBLE NULL, MODIFY COLUMN `req_val2` DOUBLE NULL',
+    'SELECT 1 /* mod_item_upgrade_stats_req_override does not exist, skipping ALTER */');
+PREPARE _stmt FROM @sql; EXECUTE _stmt; DEALLOCATE PREPARE _stmt;
 
 -- Remove malformed item-upgrade requirement rows that can produce invalid item lookups at runtime.
 -- NOTE: existence against item_template is validated in C++ loader; this SQL only removes structurally invalid rows.
-DELETE FROM `mod_item_upgrade_stats_req`
-WHERE `req_type` = 4
-  AND (`req_val1` < 1 OR `req_val2` < 1 OR `req_val1` <> FLOOR(`req_val1`));
+SET @tbl_exists := (SELECT COUNT(1) FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'mod_item_upgrade_stats_req');
+SET @sql := IF(@tbl_exists > 0,
+    'DELETE FROM `mod_item_upgrade_stats_req` WHERE `req_type` = 4 AND (`req_val1` < 1 OR `req_val2` < 1 OR `req_val1` <> FLOOR(`req_val1`))',
+    'SELECT 1 /* mod_item_upgrade_stats_req does not exist, skipping DELETE */');
+PREPARE _stmt FROM @sql; EXECUTE _stmt; DEALLOCATE PREPARE _stmt;
 
-DELETE FROM `mod_item_upgrade_stats_req_override`
-WHERE (`item_entry` < 1)
-   OR (`req_type` = 4 AND (`req_val1` < 1 OR `req_val2` < 1 OR `req_val1` <> FLOOR(`req_val1`)));
+SET @tbl_exists := (SELECT COUNT(1) FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'mod_item_upgrade_stats_req_override');
+SET @sql := IF(@tbl_exists > 0,
+    'DELETE FROM `mod_item_upgrade_stats_req_override` WHERE (`item_entry` < 1) OR (`req_type` = 4 AND (`req_val1` < 1 OR `req_val2` < 1 OR `req_val1` <> FLOOR(`req_val1`)))',
+    'SELECT 1 /* mod_item_upgrade_stats_req_override does not exist, skipping DELETE */');
+PREPARE _stmt FROM @sql; EXECUTE _stmt; DEALLOCATE PREPARE _stmt;

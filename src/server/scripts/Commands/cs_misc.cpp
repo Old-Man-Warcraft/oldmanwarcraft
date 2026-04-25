@@ -850,7 +850,7 @@ public:
                 }
 
                 // if the GM is bound to another instance, he will not be bound to another one
-                InstancePlayerBind* bind = sInstanceSaveMgr->PlayerGetBoundInstance(_player->GetGUID(), targetPlayer->GetMapId(), targetPlayer->GetDifficulty(map->IsRaid()));
+                std::optional<InstancePlayerBind> bind = sInstanceSaveMgr->PlayerGetBoundInstance(_player->GetGUID(), targetPlayer->GetMapId(), targetPlayer->GetDifficulty(map->IsRaid()));
                 if (!bind)
                 {
                     if (InstanceSave* save = sInstanceSaveMgr->GetInstanceSave(target->GetConnectedPlayer()->GetInstanceId()))
