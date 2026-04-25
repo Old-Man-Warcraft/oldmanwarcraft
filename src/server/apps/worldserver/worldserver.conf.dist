@@ -924,6 +924,9 @@ Logger.sql.driver=4,Console sql.driver
 Logger.vehicles=4,Console vehicles
 Logger.warden=4,Console warden
 Logger.weather=4,Console weather
+Logger.entities.player.auctionhouse=4,Console entities.player
+Logger.entities.player.mail=4,Console entities.player
+Logger.entities.player.trade=4,Console entities.player
 
 #
 #    Log.Async.Enable
