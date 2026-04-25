@@ -199,7 +199,7 @@ void Player::ResetInstances(ObjectGuid guid, uint8 method, bool isRaid)
             if (!p || p->GetDifficulty(false) != DUNGEON_DIFFICULTY_NORMAL)
                 break;
             std::vector<InstanceSave*> toUnbind;
-            BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(p->GetGUID(), Difficulty(DUNGEON_DIFFICULTY_NORMAL));
+            BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(p->GetGUID(), Difficulty(DUNGEON_DIFFICULTY_NORMAL));
             for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
             {
                 InstanceSave* instanceSave = itr->second.save;
@@ -234,7 +234,7 @@ void Player::ResetInstances(ObjectGuid guid, uint8 method, bool isRaid)
             if (!p)
                 break;
             std::vector<InstanceSave*> toUnbind;
-            BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(p->GetGUID(), p->GetDifficulty(isRaid));
+            BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(p->GetGUID(), p->GetDifficulty(isRaid));
             for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
             {
                 InstanceSave* instanceSave = itr->second.save;
@@ -269,7 +269,7 @@ void Player::ResetInstances(ObjectGuid guid, uint8 method, bool isRaid)
             for (uint8 d = 0; d < MAX_DIFFICULTY; ++d)
             {
                 std::vector<InstanceSave*> toUnbind;
-                BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(p->GetGUID(), Difficulty(d));
+                BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(p->GetGUID(), Difficulty(d));
                 for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
                 {
                     if (itr->second.perm)
@@ -297,7 +297,7 @@ void Player::ResetInstances(ObjectGuid guid, uint8 method, bool isRaid)
             for (uint8 d = 0; d < MAX_DIFFICULTY; ++d)
             {
                 std::vector<InstanceSave*> toUnbind;
-                BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(guid, Difficulty(d));
+                BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(guid, Difficulty(d));
                 for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
                 {
                     if (itr->second.perm)

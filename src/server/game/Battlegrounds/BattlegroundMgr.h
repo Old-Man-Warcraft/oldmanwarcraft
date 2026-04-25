@@ -22,6 +22,7 @@
 #include "BattlegroundQueue.h"
 #include "CreatureAIImpl.h"
 #include "DBCEnums.h"
+#include <mutex>
 #include <shared_mutex>
 #include <unordered_map>
 
@@ -153,6 +154,7 @@ private:
     BattlegroundQueue m_BattlegroundQueues[MAX_BATTLEGROUND_QUEUE_TYPES];
 
     std::vector<uint64> m_QueueUpdateScheduler;
+    std::mutex _queueUpdateSchedulerMutex;
     bool   m_ArenaTesting;
     bool   m_Testing;
     Seconds m_NextAutoDistributionTime;

@@ -26,6 +26,7 @@
 #include <list>
 #include <map>
 #include <mutex>
+#include <optional>
 #include <shared_mutex>
 #include <unordered_map>
 
@@ -174,9 +175,10 @@ public:
     InstancePlayerBind* PlayerBindToInstance(ObjectGuid guid, InstanceSave* save, bool permanent, Player* player = nullptr);
     void PlayerUnbindInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty, bool deleteFromDB, Player* player = nullptr);
     void PlayerUnbindInstanceNotExtended(ObjectGuid guid, uint32 mapid, Difficulty difficulty, Player* player = nullptr);
-    InstancePlayerBind* PlayerGetBoundInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty);
+    std::optional<InstancePlayerBind> PlayerGetBoundInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty);
+    InstanceSave* PlayerSetBoundInstanceExtended(ObjectGuid guid, uint32 mapid, Difficulty difficulty, bool extended);
     bool PlayerIsPermBoundToInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty);
-    BoundInstancesMap const& PlayerGetBoundInstances(ObjectGuid guid, Difficulty difficulty);
+    BoundInstancesMap PlayerGetBoundInstances(ObjectGuid guid, Difficulty difficulty);
     void PlayerCreateBoundInstancesMaps(ObjectGuid guid);
     InstanceSave* PlayerGetInstanceSave(ObjectGuid guid, uint32 mapid, Difficulty difficulty);
     uint32 PlayerGetDestinationInstanceId(Player* player, uint32 mapid, Difficulty difficulty);

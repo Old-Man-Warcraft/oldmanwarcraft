@@ -501,13 +501,11 @@ void InstanceSaveMgr::Update()
         LOG_INFO("instance.save", "Instance ID reset occurred, sending updated calendar and raid info to all players!");
         WorldPacket dummy;
 
-        WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-        for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-            if (Player* plr = itr->second->GetPlayer())
-            {
-                itr->second->HandleCalendarGetCalendar(dummy);
-                plr->SendRaidInfo();
-            }
+        sWorldSessionMgr->DoForAllOnlinePlayers([&dummy](Player* player)
+        {
+            player->GetSession()->HandleCalendarGetCalendar(dummy);
+            player->SendRaidInfo();
+        });
     }
 }
 
@@ -760,40 +758,62 @@ void InstanceSaveMgr::PlayerUnbindInstanceNotExtended(ObjectGuid guid, uint32 ma
     }
 }
 
-InstancePlayerBind* InstanceSaveMgr::PlayerGetBoundInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty)
+std::optional<InstancePlayerBind> InstanceSaveMgr::PlayerGetBoundInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty)
 {
     Difficulty difficulty_fixed = ( IsSharedDifficultyMap(mapid) ? Difficulty(difficulty % 2) : difficulty);
 
     MapDifficulty const* mapDiff = GetDownscaledMapDifficultyData(mapid, difficulty_fixed);
     if (!mapDiff)
+        return std::nullopt;
+
+    std::shared_lock<std::shared_mutex> lock(_playerBindMutex);
+    PlayerBindStorage::const_iterator itr = playerBindStorage.find(guid);
+    if (itr == playerBindStorage.end())
+        return std::nullopt;
+
+    BoundInstancesMap const& bounds = itr->second->m[difficulty_fixed];
+    BoundInstancesMap::const_iterator itr2 = bounds.find(mapid);
+    if (itr2 != bounds.end())
+        return itr2->second;
+
+    return std::nullopt;
+}
+
+InstanceSave* InstanceSaveMgr::PlayerSetBoundInstanceExtended(ObjectGuid guid, uint32 mapid, Difficulty difficulty, bool extended)
+{
+    Difficulty difficultyFixed = (IsSharedDifficultyMap(mapid) ? Difficulty(difficulty % 2) : difficulty);
+
+    MapDifficulty const* mapDiff = GetDownscaledMapDifficultyData(mapid, difficultyFixed);
+    if (!mapDiff)
         return nullptr;
 
-    BoundInstancesMapWrapper* w = nullptr;
-    {
-        std::shared_lock<std::shared_mutex> lock(_playerBindMutex);
-        PlayerBindStorage::const_iterator itr = playerBindStorage.find(guid);
-        if (itr != playerBindStorage.end())
-            w = itr->second;
-        else
-            return nullptr;
-    }
-
-    BoundInstancesMap::iterator itr2 = w->m[difficulty_fixed].find(mapid);
-    if (itr2 != w->m[difficulty_fixed].end())
-        return &itr2->second;
-    else
+    std::unique_lock<std::shared_mutex> lock(_playerBindMutex);
+    PlayerBindStorage::iterator itr = playerBindStorage.find(guid);
+    if (itr == playerBindStorage.end())
         return nullptr;
+
+    BoundInstancesMap& bounds = itr->second->m[difficultyFixed];
+    BoundInstancesMap::iterator bindItr = bounds.find(mapid);
+    if (bindItr == bounds.end())
+        return nullptr;
+
+    InstancePlayerBind& bind = bindItr->second;
+    if (!bind.perm || bind.extended == extended)
+        return nullptr;
+
+    bind.extended = extended;
+    return bind.save;
 }
 
 bool InstanceSaveMgr::PlayerIsPermBoundToInstance(ObjectGuid guid, uint32 mapid, Difficulty difficulty)
 {
-    if (InstancePlayerBind* bind = PlayerGetBoundInstance(guid, mapid, difficulty))
+    if (std::optional<InstancePlayerBind> bind = PlayerGetBoundInstance(guid, mapid, difficulty))
         if (bind->perm)
             return true;
     return false;
 }
 
-BoundInstancesMap const& InstanceSaveMgr::PlayerGetBoundInstances(ObjectGuid guid, Difficulty difficulty)
+BoundInstancesMap InstanceSaveMgr::PlayerGetBoundInstances(ObjectGuid guid, Difficulty difficulty)
 {
     std::shared_lock<std::shared_mutex> lock(_playerBindMutex);
     PlayerBindStorage::iterator itr = playerBindStorage.find(guid);
@@ -811,8 +831,8 @@ void InstanceSaveMgr::PlayerCreateBoundInstancesMaps(ObjectGuid guid)
 
 InstanceSave* InstanceSaveMgr::PlayerGetInstanceSave(ObjectGuid guid, uint32 mapid, Difficulty difficulty)
 {
-    InstancePlayerBind* pBind = PlayerGetBoundInstance(guid, mapid, difficulty);
-    return (pBind ? pBind->save : nullptr);
+    std::optional<InstancePlayerBind> bind = PlayerGetBoundInstance(guid, mapid, difficulty);
+    return bind ? bind->save : nullptr;
 }
 
 uint32 InstanceSaveMgr::PlayerGetDestinationInstanceId(Player* player, uint32 mapid, Difficulty difficulty)
@@ -820,12 +840,12 @@ uint32 InstanceSaveMgr::PlayerGetDestinationInstanceId(Player* player, uint32 ma
     // returning 0 means a new instance will be created
     // non-zero implicates that InstanceSave exists
 
-    InstancePlayerBind* ipb = PlayerGetBoundInstance(player->GetGUID(), mapid, difficulty);
+    std::optional<InstancePlayerBind> ipb = PlayerGetBoundInstance(player->GetGUID(), mapid, difficulty);
     if (ipb && ipb->perm) // 1. self perm
         return ipb->save->GetInstanceId();
     if (Group* g = player->GetGroup())
     {
-        if (InstancePlayerBind* ilb = PlayerGetBoundInstance(g->GetLeaderGUID(), mapid, difficulty)) // 2. leader temp/perm
+        if (std::optional<InstancePlayerBind> ilb = PlayerGetBoundInstance(g->GetLeaderGUID(), mapid, difficulty)) // 2. leader temp/perm
             return ilb->save->GetInstanceId();
         return 0; // 3. in group, no leader bind
     }
@@ -839,7 +859,7 @@ void InstanceSaveMgr::CopyBinds(ObjectGuid from, ObjectGuid to, Player* toPlr)
 
     for (uint8 d = 0; d < MAX_DIFFICULTY; ++d)
     {
-        BoundInstancesMap const& bi = PlayerGetBoundInstances(from, Difficulty(d));
+        BoundInstancesMap const bi = PlayerGetBoundInstances(from, Difficulty(d));
         for (BoundInstancesMap::const_iterator itr = bi.begin(); itr != bi.end(); ++itr)
             if (!PlayerGetBoundInstance(to, itr->first, Difficulty(d)))
                 PlayerBindToInstance(to, itr->second.save, false, toPlr);

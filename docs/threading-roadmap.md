@@ -1,7 +1,7 @@
 # AzerothCore / OMW Multithreading Roadmap
 
 > Branch: `feat/omw-threading`
-> Last updated: 2026-04-21
+> Last updated: 2026-04-25
 
 ---
 
@@ -58,6 +58,8 @@ WorldUpdateLoop()  [Main.cpp:564]
 - `WorldSession::_recvQueue` — `LockedQueue<WorldPacket*>` (mutex), produced by network threads, consumed by main thread only
 - `sScriptMgr` — most hooks are called without any lock; parallel invocations would race
 - Arena/Guild/Group formation — documented race conditions in playerbots-rules.md apply equally here
+- **Remaining map-lifecycle audit** — the major teleport/shared-difficulty source-map detach paths are now strand-owned, but `m_mapRefMgr` mutation still needs a broader audit to guarantee no off-strand remove/unlink flow remains
+- **Dual-thread session update introduces contention and queue head-of-line blocking** — world thread and map thread both compete for `WorldSession::_updateMutex`, while `LockedQueue::next(result, filter)` only considers the queue head
 
 ---
 
@@ -67,6 +69,7 @@ WorldUpdateLoop()  [Main.cpp:564]
 2. **Phase 2** — Session parallelism: drain `WorldSession::_recvQueue` on per-map strands instead of main thread
 3. **Phase 3** — Global manager safety: make shared singletons strand-safe or lock-free
 4. **Phase 4** — Full map-strand ownership: each map owns its sessions; cross-map ops become async handoffs
+5. **Phase 5** — Contention cleanup and API hardening: remove transitional dual-thread assumptions and unsafe container exposure
 
 Each phase is independently deployable and testable.
 
@@ -191,9 +194,10 @@ class Map {
 **4.3.2 Player teleport transfers session ownership**
 
 When a player teleports (`Player::TeleportTo`):
-1. Source map calls `RemoveOwnedSession(session)` on the map's next-tick deferred list
-2. Destination map calls `AddOwnedSession(session)` after the player is placed
-3. Transfer is atomic from the perspective of session ownership (no double-update)
+1. **Source map strand** performs `RemovePlayerFromMap`, `RemoveOwnedSession`, `ResetMap`, and `m_mapRefMgr` unlink work
+2. **Destination map strand** performs `AddPlayerToMap` / `AddOwnedSession` after the player is placed
+3. World thread only orchestrates handoff and waits for completion; it must not directly mutate per-map player containers
+4. Transfer is atomic from the perspective of session ownership (no double-update, no cross-thread container mutation)
 
 **4.3.3 `Map::Update()` calls `UpdateOwnedSessions()`**
 
@@ -205,9 +209,14 @@ void Map::Update(uint32 diff, uint32 s_diff)
 }
 ```
 
-**4.3.4 `WorldSessionMgr::UpdateSessions()` only handles non-world sessions**
+**4.3.4 `WorldSessionMgr::UpdateSessions()` final ownership rule must be explicit**
 
-Sessions where `GetPlayer() == nullptr || !GetPlayer()->IsInWorld()` stay on main thread. This covers login queue, char selection, loading screen.
+There are two viable end states:
+
+- **Strict map-owned model:** sessions where `GetPlayer() != nullptr && GetPlayer()->IsInWorld()` are skipped by the world thread
+- **Split-responsibility model (current transition):** world thread still handles `PROCESS_THREADUNSAFE` packets and maintenance, while map threads handle map-safe packet processing
+
+Whichever model remains, it must be documented as the single supported contract. Pre-login, char-select, and loading sessions remain world-thread owned in either case.
 
 ### 4.4 Cross-Session Packet Safety
 
@@ -217,17 +226,37 @@ Some opcodes touch other sessions' data (trade, duel, group invite). These need 
 
 The simplest safe approach: **opcodes that cross session boundaries are queued as tasks on the target map's next-tick deferred list** rather than executed inline.
 
-### 4.5 Implementation Steps
+### 4.5 Transitional Risk: Dual Thread Ownership
+
+The current branch no longer fully matches the original "world thread stops updating in-world sessions" design. Instead:
+
+- the **world thread** still visits in-world sessions for `PROCESS_THREADUNSAFE` packets and session-only maintenance
+- the **map thread** handles map-safe packet processing via `Map::UpdateOwnedSessions()`
+
+This is defensible as a transition step because `WorldSession::_updateMutex` serializes `WorldSession::Update()`, but it has two costs:
+
+1. **contention** — two schedulers compete for the same session lock
+2. **head-of-line blocking** — `LockedQueue::next(result, filter)` only inspects the queue head, so a packet meant for the "other" execution place can stall progress
+
+Before calling Phase 2 complete, choose one of these end states:
+
+- **Option A — keep dual-owner model:** document it, measure contention, and redesign packet queue splitting to avoid queue-head blocking
+- **Option B — restore single-owner map model for in-world sessions:** make the world thread skip in-world sessions except for explicit maintenance hooks
+
+### 4.6 Implementation Steps
 
 ```
 [ ] 1. Add _ownedSessions + mutex to Map
 [ ] 2. Add AddOwnedSession/RemoveOwnedSession to Map API
 [ ] 3. Hook into Player::SetMap / Player::ResetMap to call these
 [ ] 4. Add UpdateOwnedSessions() to Map::Update() (before grid update)
-[ ] 5. Filter WorldSessionMgr::UpdateSessions() to non-world sessions only
-[ ] 6. Identify cross-session opcodes — create deferred-task API for them
-[ ] 7. Test: login/logout, teleport between maps, death, instance enter/exit
-[ ] 8. Test: trade, duel, group invite (cross-session packets)
+[x] 5. Move known source-map removal/unlink flows to the owning map strand (`MovementHandler`, `Player::TeleportTo`, `MiscHandler`)
+[ ] 6. Audit for any remaining off-strand remove/unlink path outside the known teleport and shared-difficulty flows
+[ ] 7. Decide final world-thread vs map-thread session ownership model
+[ ] 8. If dual-owner model remains, split/reshape packet queue semantics to avoid queue-head blocking
+[ ] 9. Identify cross-session opcodes — create deferred-task API for them
+[ ] 10. Test: login/logout, teleport between maps, death, instance enter/exit
+[ ] 11. Test: trade, duel, group invite (cross-session packets)
 ```
 
 ---
@@ -251,6 +280,8 @@ This phase is a prerequisite for Phase 2 being fully safe. The global managers a
 | `ScriptMgr` | Hooks are unguarded | Per-hook mutex OR document hooks as map-local |
 | `InstanceSaveMgr` | Mutable on instance bind | `shared_mutex` on save map |
 | `ConditionMgr` | Read-only after load | Safe |
+| `WorldSessionMgr` | Exposes raw session container | Replace with snapshot / visitor API |
+| `BattlegroundMgr` queue scheduler | Plain vector, unsynchronized | Mutex or MPSC queue |
 
 ### 5.2 Pattern to Use
 
@@ -281,10 +312,14 @@ public:
 [ ] 1. Add shared_mutex + shared_lock to BattlegroundMgr read paths
 [ ] 2. Add shared_mutex + shared_lock to GroupMgr read paths
 [ ] 3. Add shared_mutex + shared_lock to GuildMgr read paths
-[ ] 4. Add shared_mutex + shared_lock to InstanceSaveMgr read paths
-[ ] 5. Review ObjectAccessor::HashMapHolder — ensure FindPlayer is always lock-protected
-[ ] 6. Audit ScriptMgr hooks — categorise each as: map-local / needs lock / already safe
-[ ] 7. Run TSAN build again — no new races should appear
+[x] 4. Add shared_mutex + shared_lock to InstanceSaveMgr read paths
+[x] 5. Replace `InstanceSaveMgr` bind-return APIs with snapshots/callbacks instead of unlocked pointers/references
+[x] 6. Replace `WorldSessionMgr::GetAllSessions()` raw reference access with a thread-safe iteration API
+[x] 7. Audit `CreatureTextMgr`, `ChatHandler`, and any world-range broadcast helpers for map-thread reachable session iteration
+[x] 8. Add synchronization for `BattlegroundMgr::m_QueueUpdateScheduler`
+[ ] 9. Review ObjectAccessor::HashMapHolder — ensure FindPlayer is always lock-protected
+[ ] 10. Audit ScriptMgr hooks — categorise each as: map-local / needs lock / already safe
+[ ] 11. Run TSAN build again — no new races should appear
 ```
 
 ---
@@ -352,16 +387,50 @@ All cross-session opcodes similarly become `post()` calls to the target map's st
 [ ] 1. Add strand member to Map; pass IoContext reference during construction
 [ ] 2. Refactor MapMgr::Update() to post per-map work to strands
 [ ] 3. Replace MapUpdater::wait() with std::latch or boost::asio::experimental::parallel_group
-[ ] 4. Port teleport: use strand-safe deferred removal/addition
-[ ] 5. Port cross-session opcodes to strand-posted tasks
-[ ] 6. Port DB async callbacks to route to map strand (not arbitrary Asio thread)
-[ ] 7. Remove MapUpdater class (replaced by strands)
-[ ] 8. Full stress test + TSAN
+[ ] 4. Port teleport **source removal and destination add** fully onto map strands
+[x] 5. Port forced shared-difficulty map shuffles (`MiscHandler`) onto map strands too
+[ ] 6. Port cross-session opcodes to strand-posted tasks
+[ ] 7. Port DB async callbacks to route to map strand (not arbitrary Asio thread)
+[ ] 8. Remove MapUpdater class (replaced by strands)
+[ ] 9. Full stress test + TSAN
 ```
 
 ---
 
-## 7. Quick Wins (Do Immediately, No Phase Required)
+## 7. Phase 5 — API Hardening & Contention Cleanup
+
+**Effort:** Medium | **Risk:** Medium | **Expected gain:** Stabilizes the strand model and recovers lost scaling from transitional compromises
+
+This phase exists because the branch is no longer just missing locks; it also has a few APIs whose shape is unsafe in a multithreaded world.
+
+### 7.1 Problems to Eliminate
+
+1. **Raw container exposure**
+  - `ObjectAccessor::GetPlayers()` returns `HashMapHolder<Player>::MapType const&`
+  - `Map::GetPlayers()` returns the live map ref manager
+
+2. **Unlocked storage-backed references**
+  - any newly introduced bind/session helper that leaks storage-backed references beyond lock lifetime
+
+3. **Transitional lock contention**
+  - both world and map schedulers enter `WorldSession::Update()`
+  - packet queue filtering works on queue head only
+
+### 7.2 Implementation Steps
+
+```
+[x] 1. Introduce session snapshot / visitor helpers in WorldSessionMgr
+[x] 2. Convert world-range fanout (`CreatureTextMgr`, chat/admin helpers) to those helpers
+[x] 3. Introduce value/snapshot bind lookup helpers in InstanceSaveMgr
+[x] 4. Convert callers to stop holding raw bind pointers/references after lock release
+[ ] 5. Decide whether in-world sessions remain dual-owner or become map-owned only
+[ ] 6. If dual-owner remains, redesign packet-queue split to avoid queue-head starvation
+[ ] 7. Re-run TSAN and mixed-workload packet stress tests
+```
+
+---
+
+## 8. Quick Wins (Do Immediately, No Phase Required)
 
 These changes are safe, isolated, and provide measurable improvement today:
 
@@ -410,7 +479,7 @@ Each one stalls the main thread for the round-trip DB latency (1–10ms each). C
 
 ---
 
-## 8. Testing Strategy
+## 9. Testing Strategy
 
 ### 8.1 Thread Sanitizer Build
 
@@ -434,8 +503,10 @@ For each phase, test the following scenarios on the **dev realm (8086)** before 
 | 100 bots in same instance | Tests instance map locking |
 | Mass BG population (40v40) | Tests BattlegroundMgr read contention |
 | Rapid teleport (bots teleport every 30s) | Tests session ownership transfer |
+| Rapid teleport + instance difficulty shuffle | Tests source-map strand removal and map ref mutation safety |
 | Guild mass invite/kick | Tests GuildMgr write locking |
 | Group formation under load | Tests GroupMgr write locking |
+| World-range creature text spam from active AI | Tests world-session fanout from map-thread reachable code |
 | Server shutdown under load | Tests deactivation path of MapUpdater |
 
 ### 8.3 Metrics to Watch
@@ -451,7 +522,7 @@ db_queue_login/char/world — async DB backlog (should not grow unboundedly)
 
 ---
 
-## 9. File Reference
+## 10. File Reference
 
 | File | Role in Threading |
 |---|---|
@@ -461,6 +532,12 @@ db_queue_login/char/world — async DB backlog (should not grow unboundedly)
 | `src/server/game/Maps/Map.cpp` | `Map::Update()` — per-map work (Phase 2 target) |
 | `src/server/game/Server/WorldSessionMgr.cpp` | `UpdateSessions()` — Phase 2 target |
 | `src/server/game/Server/WorldSession.cpp` | `WorldSession::Update()` — packet drain loop |
+| `src/server/game/Handlers/MovementHandler.cpp` | Far teleport source/destination handoff |
+| `src/server/game/Entities/Player/Player.cpp` | `TeleportTo()` source-map removal path |
+| `src/server/game/Handlers/MiscHandler.cpp` | Shared-difficulty forced player shuffles |
+| `src/server/game/Battlegrounds/BattlegroundMgr.cpp` | Queue scheduler + BG lifecycle updates |
+| `src/server/game/Texts/CreatureTextMgr.cpp/.h` | World-range broadcast path using session iteration |
+| `src/server/game/Instances/InstanceSaveMgr.cpp/.h` | Instance bind storage and lookup APIs |
 | `src/server/game/World/World.cpp` | `World::Update()` — orchestrates everything |
 | `src/common/Threading/MapUpdater.h` | Thread pool headers |
 | `src/common/Threading/PCQueue.h` | Producer-consumer queue (mutex + condvar) |
@@ -472,24 +549,25 @@ db_queue_login/char/world — async DB backlog (should not grow unboundedly)
 
 ---
 
-## 10. Priority Order
+## 11. Priority Order
 
 ```
 Priority 1 (this sprint):
-  ├─ §7.1  Enable async logging
-  ├─ §7.2  Tune Network.Threads
-  ├─ §7.3  Tune ThreadPool
-  └─ §7.5  Audit + replace sync DB calls in hot paths
+  ├─ Audit any remaining off-strand map detach/unlink path
+  ├─ Decide final world-thread vs map-thread session ownership model
+  ├─ Remove packet queue head-of-line blocking for split ownership
+  └─ Re-run TSAN + teleport / broadcast stress suite
 
 Priority 2 (next sprint):
-  ├─ §3.2  Fix global singleton races under map parallelism
-  ├─ §3.3  Enable NumThreads = 4 on dev with TSAN validation
-  └─ §3.7  Update worldserver.conf.dist defaults
+  ├─ Broaden map-lifecycle audit beyond teleports and shared-difficulty shuffles
+  ├─ Review remaining global-manager/script-hook lock coverage
+  └─ Finish manual stress validation matrix
 
 Priority 3 (following sprint):
-  ├─ §5    Harden global managers (shared_mutex)
-  └─ §4    Map-owned session updates
+  ├─ Remove transitional raw container APIs
+  └─ Finish map-owned session update cleanup
 
 Priority 4 (long-term):
-  └─ §6    Full Asio strand ownership per map
+  ├─ Remove MapUpdater / PCQueue fallback
+  └─ Complete full Asio strand ownership per map
 ```

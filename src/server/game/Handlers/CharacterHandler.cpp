@@ -1092,21 +1092,18 @@ void WorldSession::HandlePlayerLoginFromDB(LoginQueryHolder const& holder)
     {
         bool isReferrer = pCurrChar->GetSession()->IsARecruiter();
 
-        for (auto const& [accID, session] : sWorldSessionMgr->GetAllSessions())
+        sWorldSessionMgr->DoForAllOnlinePlayers([pCurrChar, isReferrer](Player* recruiterFriend)
         {
+            WorldSession* session = recruiterFriend->GetSession();
             if (!session->GetRecruiterId() && !session->IsARecruiter())
-                continue;
+                return;
 
             if ((isReferrer && pCurrChar->GetSession()->GetAccountId() == session->GetRecruiterId()) || (!isReferrer && pCurrChar->GetSession()->GetRecruiterId() == session->GetAccountId()))
             {
-                Player* rf = session->GetPlayer();
-                if (rf)
-                {
-                    pCurrChar->SendUpdateToPlayer(rf);
-                    rf->SendUpdateToPlayer(pCurrChar);
-                }
+                pCurrChar->SendUpdateToPlayer(recruiterFriend);
+                recruiterFriend->SendUpdateToPlayer(pCurrChar);
             }
-        }
+        });
     }
 
     sScriptMgr->OnPlayerLogin(pCurrChar);

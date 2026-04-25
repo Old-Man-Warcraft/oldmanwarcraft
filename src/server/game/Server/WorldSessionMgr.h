@@ -54,7 +54,6 @@ public:
     bool HasRecentlyDisconnected(WorldSession* session);
 
     typedef std::unordered_map<uint32, WorldSession*> SessionMap;
-    SessionMap const& GetAllSessions() const { return _sessions; }
 
     /// Get the number of current active sessions
     void UpdateMaxSessionCounters();

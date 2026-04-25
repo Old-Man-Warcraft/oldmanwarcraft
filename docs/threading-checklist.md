@@ -2,7 +2,7 @@
 
 > Branch: `feat/omw-threading`
 > Reference: [threading-roadmap.md](threading-roadmap.md)
-> Last updated: 2026-04-21
+> Last updated: 2026-04-25
 
 Mark items as done: change `[ ]` → `[x]`
 
@@ -106,14 +106,31 @@ Mark items as done: change `[ ]` → `[x]`
 
 ### Main Thread Filtering
 
-- [x] Modify `WorldSessionMgr::UpdateSessions()` to skip sessions where `player && player->IsInWorld()`
-  - Pre-login / char-select / loading sessions still updated on main thread
-  - In-world sessions delegated to `Map::UpdateOwnedSessions()` on map worker thread
+- [~] Split `WorldSessionMgr::UpdateSessions()` responsibilities between world thread and map thread
+  - **Current state:** in-world sessions are still visited on the world thread for `PROCESS_THREADUNSAFE` packets and session-only maintenance, guarded by `WorldSession::_updateMutex`
+  - **Current state:** map threads also call `Map::UpdateOwnedSessions()` for map-safe packet handling
+  - **Decision needed:** either keep this dual-owner model and document it as intentional, or finish the original "main thread skips in-world sessions" design
+  - **Follow-up if dual-owner stays:** remove head-of-line blocking between world-thread and map-thread packet consumers in `LockedQueue::next(packet, filter)` semantics
   - File: `src/server/game/Server/WorldSessionMgr.cpp`
 - [ ] Verify: loading screen, char select, login queue sessions still update correctly on main thread
 - [x] Wire `Map::Update()` to call `UpdateOwnedSessions(s_diff)` instead of inline session loop
   - Sub-tick `!t_diff` player `Update()` split out into separate guarded block
   - Full-tick player update loop at line ~464 unchanged (game logic only, no packet processing)
+
+### Cross-Thread Lifecycle Hazards
+
+- [x] Move source-map player removal onto the source map strand for far teleports
+  - Updated paths: `src/server/game/Handlers/MovementHandler.cpp`, `src/server/game/Entities/Player/Player.cpp`
+  - Added `Map::ExecuteOnStrandAndWait(std::function<void()>)` and routed old-map `RemovePlayerFromMap` / `ResetMap` / `AfterPlayerUnlinkFromMap()` through the owning strand
+- [x] Move raid/shared-difficulty forced player shuffles onto the source map strand
+  - Updated path: `src/server/game/Handlers/MiscHandler.cpp`
+  - Forced temporary ejection/re-entry flow now performs old-map detach work on the source map strand before retargeting the player map
+- [~] Guarantee `Map::m_mapRefMgr` mutation only happens on the owning map thread/strand
+  - Teleport and shared-difficulty shuffle flows now use the source map strand
+  - Remaining work: audit any other `RemovePlayerFromMap` / `ResetMap` / `GetMapRef().unlink()` paths outside these known flows
+- [ ] Stress test rapid teleport / instance transfer / difficulty change under load
+  - 200+ bots changing maps every 30 seconds for 30 min
+  - Group difficulty switch while players are inside ICC/RS-style shared-difficulty maps
 
 ### Cross-Session Opcodes
 
@@ -152,13 +169,15 @@ Mark items as done: change `[ ]` → `[x]`
   - Server `active` post-restart, bots initializing normally
 - [ ] Stress test: login/logout storm (50 concurrent) — requires manual verification
 - [ ] Stress test: rapid teleport (bots teleport every 30s for 30 min) — requires manual verification
-- [ ] Stress test: 500 sessions, all in-world, main thread session loop is now empty — requires manual verification
+- [ ] Stress test: 500 sessions, all in-world, verify world-thread maintenance path and map-thread packet path do not contend excessively — requires manual verification
+- [ ] Stress test: mixed packet workload with thread-unsafe opcodes at queue head
+  - Goal: verify no starvation / queue ordering regressions when world-thread and map-thread consumers share `_recvQueue`
 - [x] Teleport session verification — no double updates
-  - `WorldSessionMgr::UpdateSessions` skips in-world players (line 141-142)
   - `Map::UpdateOwnedSessions` updates in-world players on map thread
-  - During teleport: `RemovePlayerFromMap` sets `m_inWorld = false`, session switches to main thread
-  - After teleport: `AddPlayerToMap` sets `m_inWorld = true`, session switches to map thread
-  - Mutex-protected `_ownedSessions` list prevents race conditions
+  - `WorldSessionMgr::UpdateSessions` still handles thread-unsafe packets and maintenance on the world thread under `_updateMutex`
+  - During teleport: `RemovePlayerFromMap` sets `m_inWorld = false`, session work falls back to the world-thread path
+  - After teleport: `AddPlayerToMap` sets `m_inWorld = true`, map-thread packet handling resumes
+  - Mutex-protected `_ownedSessions` list prevents obvious double-add/remove, but source-map strand ownership is still unfinished
 - [x] Char-select/login session verification — updates on main thread
   - Before `AddPlayerToMap`: `m_inWorld = false`, session updated by main thread
   - After `AddPlayerToMap`: `m_inWorld = true`, session updated by map thread
@@ -188,6 +207,24 @@ Mark items as done: change `[ ]` → `[x]`
     - `SaveAllPlayers` (ObjectAccessor.cpp:264) — holds `shared_lock`
     - `DoForAllOnlinePlayers` (WorldSessionMgr.cpp:427) — holds `shared_lock`
     - `Map::GetPlayers()` calls are map-local (`m_mapRefMgr`) — safe
+- [x] Synchronize `BattlegroundMgr::m_QueueUpdateScheduler`
+  - Protected scheduler `swap`/`find`/`emplace_back` with `_queueUpdateSchedulerMutex`
+  - File: `src/server/game/Battlegrounds/BattlegroundMgr.cpp`
+- [x] Replace `WorldSessionMgr::GetAllSessions()` raw container exposure with a thread-safe API path
+  - Removed `GetAllSessions()` from `WorldSessionMgr`
+  - Switched world-range/session fanout call sites to `DoForAllOnlinePlayers()`
+  - Updated callers in `CreatureTextMgr`, `ChatHandler`, `World`, `InstanceSaveMgr`, `CharacterHandler`, and global message helpers
+- [x] Replace unlocked bind reference APIs in `InstanceSaveMgr`
+  - `PlayerGetBoundInstance()` now returns `std::optional<InstancePlayerBind>`
+  - `PlayerGetBoundInstances()` now returns a copy (`BoundInstancesMap`)
+  - Added `PlayerSetBoundInstanceExtended()` for the calendar toggle mutation path
+- [x] Audit global world/session fanout from map-thread reachable code
+  - `CreatureTextMgr::SendChatPacket(... TEXT_RANGE_WORLD ...)` and non-chat world fanout now iterate via `DoForAllOnlinePlayers()`
+  - No remaining `GetAllSessions()` calls under `src/server/game/**`
+- [x] Build validation for Phase 3 hardening
+  - Incremental `game` target build succeeded after the API changes
+  - Full workspace build was previously blocked by an unrelated pre-existing `mod-ale` override signature error
+  - User later confirmed the build succeeded after follow-up rebuild/cleanup
 - [x] TSAN build — zero races (5 min runtime, RelWithDebInfo + -fsanitize=thread, NOJEM=1, mmap_rnd_bits=28)
 - [x] Commit Phase 3 — committed as 522fac4c5 (TSAN validation)
 
@@ -210,10 +247,12 @@ Mark items as done: change `[ ]` → `[x]`
   - Falls back to `MapUpdater` / inline when IoContext unavailable
 - [x] Replace `MapUpdater::wait()` with `std::latch` (done above in strand path)
   - `MapUpdater` class retained as fallback for `_ioContext == nullptr` case
-- [x] Port teleport to strand-safe deferred add/remove
+- [~] Port teleport to strand-safe deferred add/remove
   - File: `src/server/game/Handlers/MovementHandler.cpp` — `HandleMoveWorldportAck()`
-  - Cross-map teleport: `AddPlayerToMap` posted to `newMap->GetStrand()` via `std::latch`; same-map runs inline to avoid deadlock
-  - `Map::AddOwnedSession` made idempotent (dedup guard) to prevent double-add from `SetMap` + `AddPlayerToMap` both calling it
+  - ✅ Cross-map teleport destination add is posted to `newMap->GetStrand()` via `std::latch`; same-map runs inline to avoid deadlock
+  - ✅ `Map::AddOwnedSession` made idempotent (dedup guard) to prevent double-add from `SetMap` + `AddPlayerToMap` both calling it
+  - ❌ Source-map removal still happens directly on world-thread call paths (`HandleMoveWorldportAck`, `Player::TeleportTo`, shared-difficulty shuffle in `MiscHandler.cpp`)
+  - **Remaining work:** move source-map removal/unlink to `oldMap->GetStrand()` and make all map-player list mutation strand-owned
 - [x] Port all cross-session opcode dispatch to `boost::asio::post(targetMap->GetStrand(), ...)`
   - `src/server/game/Handlers/GroupHandler.cpp` — group invite
   - `src/server/game/Handlers/TradeHandler.cpp` — trade initiation
@@ -222,6 +261,9 @@ Mark items as done: change `[ ]` → `[x]`
 - [x] Port DB async callbacks to route result back to the map strand that issued the query
   - `WorldSession::ProcessQueryCallbacks()` is called from `WorldSession::Update()` which Phase 2 already moved to the map worker thread — callbacks land on the correct strand automatically
   - `World::ProcessQueryCallbacks()` handles World-level queries on main thread — intentional, no change needed
+- [ ] Replace direct world/session fanout APIs used from map-thread reachable code
+  - Remove raw `GetAllSessions()` iteration from map-thread reachable paths
+  - Convert world-range text/broadcast helpers to thread-safe snapshots or world-thread dispatch
 - [ ] Remove `MapUpdater` class (fully replaced by strands)
 - [ ] Remove `PCQueue` dependency from `MapUpdater` (class deleted)
 - [ ] TSAN build — zero races
@@ -276,5 +318,10 @@ grep "WarnSyncQuery\|sync query" logs/Server.log
 - 2026-04-21: `PlayerNameMapHolder::PlayerNameMap` is completely unguarded — `FindPlayerByName` is NOT thread-safe. Not called from `Map::Update()` today, but needs a mutex if Phase 2 session parallelism exposes it
 - 2026-04-21: Added `std::shared_mutex` protection to `PlayerNameMapHolder::PlayerNameMap` and made rename updates atomic via `UpdatePlayerNameMapReference()`. This closes a Phase 2 follow-up race for handlers that do `FindPlayerByName()` on map worker threads (chat, group, guild, arena, calendar).
 - 2026-04-21: Phase 1 prerequisite race fixes complete: `BattlegroundMgr`, `GroupMgr`, `GuildMgr` all guarded with `shared_mutex`
-- 2026-04-21: Phase 2 infrastructure complete: `Map::_ownedSessions` + mutex, `AddOwnedSession`/`RemoveOwnedSession` hooked into `Player::SetMap`/`ResetMap`, `UpdateOwnedSessions` wired into `Map::Update`, `WorldSessionMgr::UpdateSessions` skips in-world sessions
+- 2026-04-21: Phase 2 infrastructure complete: `Map::_ownedSessions` + mutex, `AddOwnedSession`/`RemoveOwnedSession` hooked into `Player::SetMap`/`ResetMap`, `UpdateOwnedSessions` wired into `Map::Update`; later review showed `WorldSessionMgr::UpdateSessions` still intentionally visits in-world sessions for thread-unsafe packets and maintenance
 - 2026-04-21: Phase 4 partial — strand infrastructure complete. `Acore::Asio::Strand _strand` added to `Map`; `MapMgr::SetIoContext()` / `GetIoContext()` added; `Main.cpp` passes IoContext before world init; `MapMgr::Update()` and `MapInstanced::Update()` now post to per-map strands with `std::latch` completion barrier when IoContext is set (falls back to MapUpdater otherwise). All four cross-session opcode sends ported to `boost::asio::post(strand)`. Remaining: teleport strand-safety, DB callback routing to map strand, MapUpdater removal.
+- 2026-04-25: Review found Phase 4 teleport work is only half-finished — destination map add is strand-owned, but source map removal still mutates `m_mapRefMgr` from world-thread paths (`MovementHandler`, `Player::TeleportTo`, `MiscHandler`)
+- 2026-04-25: `BattlegroundMgr::ScheduleQueueUpdate()` still pushes into `m_QueueUpdateScheduler` without synchronization; code comment already marks it as needing atomic protection
+- 2026-04-25: `WorldSessionMgr::GetAllSessions()` returns the raw session container by reference; `CreatureTextMgr` world-range broadcast paths iterate it from map-thread reachable code, creating a real cross-thread container access risk
+- 2026-04-25: `InstanceSaveMgr::PlayerGetBoundInstance()` / `PlayerGetBoundInstances()` return unlocked pointers/references into lock-protected storage; safe enough for single-threaded call flows, unsafe as map-thread ownership expands
+- 2026-04-25: Current dual world-thread/map-thread session update split is functionally plausible because of `WorldSession::_updateMutex`, but it adds contention and can cause head-of-line blocking when the front packet belongs to the other execution place

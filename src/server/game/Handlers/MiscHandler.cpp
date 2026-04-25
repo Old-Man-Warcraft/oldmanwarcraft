@@ -1422,9 +1422,12 @@ void WorldSession::HandleSetRaidDifficultyOpcode(WorldPackets::Instance::SetRaid
             {
                 Player* p = itr->first;
                 Map* oldMap = p->GetMap();
-                oldMap->RemovePlayerFromMap(p, false);
-                p->ResetMap();
-                oldMap->AfterPlayerUnlinkFromMap();
+                oldMap->ExecuteOnStrandAndWait([p, oldMap]()
+                {
+                    oldMap->RemovePlayerFromMap(p, false);
+                    p->ResetMap();
+                    oldMap->AfterPlayerUnlinkFromMap();
+                });
                 p->SetMap(homeMap0);
                 p->Relocate(0.0f, 0.0f, 0.0f, 0.0f);
                 if (!p->TeleportTo(MAP_NORTHREND, 5790.20f, 2071.36f, 636.07f, 3.60f))
@@ -1446,9 +1449,12 @@ void WorldSession::HandleSetRaidDifficultyOpcode(WorldPackets::Instance::SetRaid
                     float x, y, z, o;
                     groupGuy->GetPosition(x, y, z, o);
                     Map* oldMap = groupGuy->GetMap();
-                    oldMap->RemovePlayerFromMap(groupGuy, false);
-                    groupGuy->ResetMap();
-                    oldMap->AfterPlayerUnlinkFromMap();
+                    oldMap->ExecuteOnStrandAndWait([groupGuy, oldMap]()
+                    {
+                        oldMap->RemovePlayerFromMap(groupGuy, false);
+                        groupGuy->ResetMap();
+                        oldMap->AfterPlayerUnlinkFromMap();
+                    });
                     groupGuy->SetMap(homeMap571);
                     groupGuy->Relocate(5790.20f, 2071.36f, 636.07f, 3.60f);
                     Position dest = {x, y, z + 0.1f, o};

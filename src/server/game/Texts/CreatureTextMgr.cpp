@@ -348,11 +348,11 @@ void CreatureTextMgr::SendNonChatPacket(WorldObject* source, WorldPacket const* 
             }
         case TEXT_RANGE_WORLD:
             {
-                WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-                for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-                    if (Player* player = itr->second->GetPlayer())
-                        if ((teamId == TEAM_NEUTRAL || player->GetTeamId() == teamId) && (!gmOnly || player->IsGameMaster()))
-                            player->SendDirectMessage(data);
+                sWorldSessionMgr->DoForAllOnlinePlayers([data, teamId, gmOnly](Player* player)
+                {
+                    if ((teamId == TEAM_NEUTRAL || player->GetTeamId() == teamId) && (!gmOnly || player->IsGameMaster()))
+                        player->SendDirectMessage(data);
+                });
                 return;
             }
         case TEXT_RANGE_NORMAL:

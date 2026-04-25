@@ -6624,7 +6624,7 @@ void Player::SendRaidInfo()
 
     for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)
     {
-        BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(GetGUID(), Difficulty(i));
+        BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(GetGUID(), Difficulty(i));
         for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
         {
             if (itr->second.perm)
@@ -6655,7 +6655,7 @@ void Player::SendSavedInstances()
 
     for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)
     {
-        BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(GetGUID(), Difficulty(i));
+        BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(GetGUID(), Difficulty(i));
         for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
         {
             if (itr->second.perm)                               // only permanent binds are sent
@@ -6676,7 +6676,7 @@ void Player::SendSavedInstances()
 
     for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)
     {
-        BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(GetGUID(), Difficulty(i));
+        BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(GetGUID(), Difficulty(i));
         for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
         {
             if (itr->second.perm)

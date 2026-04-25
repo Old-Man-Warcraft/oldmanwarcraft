@@ -1670,10 +1670,10 @@ void World::ResetDailyQuests()
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_QUEST_STATUS_DAILY);
     CharacterDatabase.Execute(stmt);
 
-    WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-    for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-        if (itr->second->GetPlayer())
-            itr->second->GetPlayer()->ResetDailyQuestStatus();
+    sWorldSessionMgr->DoForAllOnlinePlayers([](Player* player)
+    {
+        player->ResetDailyQuestStatus();
+    });
 
     _nextDailyQuestReset = Seconds(Acore::Time::GetNextTimeWithDayAndHour(-1, 6));
     sWorldState->setWorldState(WORLD_STATE_CUSTOM_DAILY_QUEST_RESET_TIME, _nextDailyQuestReset.count());
@@ -1706,10 +1706,10 @@ void World::ResetWeeklyQuests()
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_QUEST_STATUS_WEEKLY);
     CharacterDatabase.Execute(stmt);
 
-    WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-    for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-        if (itr->second->GetPlayer())
-            itr->second->GetPlayer()->ResetWeeklyQuestStatus();
+    sWorldSessionMgr->DoForAllOnlinePlayers([](Player* player)
+    {
+        player->ResetWeeklyQuestStatus();
+    });
 
     _nextWeeklyQuestReset = Seconds(Acore::Time::GetNextTimeWithDayAndHour(4, 6));
     sWorldState->setWorldState(WORLD_STATE_CUSTOM_WEEKLY_QUEST_RESET_TIME, _nextWeeklyQuestReset.count());
@@ -1725,10 +1725,10 @@ void World::ResetMonthlyQuests()
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_QUEST_STATUS_MONTHLY);
     CharacterDatabase.Execute(stmt);
 
-    WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-    for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-        if (itr->second->GetPlayer())
-            itr->second->GetPlayer()->ResetMonthlyQuestStatus();
+    sWorldSessionMgr->DoForAllOnlinePlayers([](Player* player)
+    {
+        player->ResetMonthlyQuestStatus();
+    });
 
     _nextMonthlyQuestReset = Seconds(Acore::Time::GetNextTimeWithMonthAndHour(-1, 6));
     sWorldState->setWorldState(WORLD_STATE_CUSTOM_MONTHLY_QUEST_RESET_TIME, _nextMonthlyQuestReset.count());
@@ -1740,10 +1740,10 @@ void World::ResetEventSeasonalQuests(uint16 event_id)
     stmt->SetData(0, event_id);
     CharacterDatabase.Execute(stmt);
 
-    WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-    for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-        if (itr->second->GetPlayer())
-            itr->second->GetPlayer()->ResetSeasonalQuestStatus(event_id);
+    sWorldSessionMgr->DoForAllOnlinePlayers([event_id](Player* player)
+    {
+        player->ResetSeasonalQuestStatus(event_id);
+    });
 }
 
 void World::ResetRandomBG()
@@ -1753,10 +1753,10 @@ void World::ResetRandomBG()
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_BATTLEGROUND_RANDOM);
     CharacterDatabase.Execute(stmt);
 
-    WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-    for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-        if (itr->second->GetPlayer())
-            itr->second->GetPlayer()->SetRandomWinner(false);
+    sWorldSessionMgr->DoForAllOnlinePlayers([](Player* player)
+    {
+        player->SetRandomWinner(false);
+    });
 
     _nextRandomBGReset = Seconds(Acore::Time::GetNextTimeWithDayAndHour(-1, 6));
     sWorldState->setWorldState(WORLD_STATE_CUSTOM_BG_DAILY_RESET_TIME, _nextRandomBGReset.count());
@@ -1800,13 +1800,11 @@ void World::LoadDBVersion()
 
 void World::UpdateAreaDependentAuras()
 {
-    WorldSessionMgr::SessionMap const& sessionMap = sWorldSessionMgr->GetAllSessions();
-    for (WorldSessionMgr::SessionMap::const_iterator itr = sessionMap.begin(); itr != sessionMap.end(); ++itr)
-        if (itr->second && itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
-        {
-            itr->second->GetPlayer()->UpdateAreaDependentAuras(itr->second->GetPlayer()->GetAreaId());
-            itr->second->GetPlayer()->UpdateZoneDependentAuras(itr->second->GetPlayer()->GetZoneId());
-        }
+    sWorldSessionMgr->DoForAllOnlinePlayers([](Player* player)
+    {
+        player->UpdateAreaDependentAuras(player->GetAreaId());
+        player->UpdateZoneDependentAuras(player->GetZoneId());
+    });
 }
 
 void World::ProcessQueryCallbacks()

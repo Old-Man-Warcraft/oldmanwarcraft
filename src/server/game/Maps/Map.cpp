@@ -47,6 +47,10 @@
 #include "WeatherMgr.h"
 #include "WorldSession.h"
 
+#include <boost/asio/dispatch.hpp>
+
+#include <latch>
+
 #define MAP_INVALID_ZONE        0xFFFFFFFF
 
 ZoneDynamicInfo::ZoneDynamicInfo() : MusicId(0), DefaultWeather(nullptr), WeatherId(WEATHER_STATE_FINE),
@@ -532,6 +536,26 @@ void Map::Update(const uint32 t_diff, const uint32 s_diff, bool  /*thread*/)
     METRIC_VALUE("map_gameobjects", uint64(GetObjectsStore().Size<GameObject>()),
         METRIC_TAG("map_id", std::to_string(GetId())),
         METRIC_TAG("map_instanceid", std::to_string(GetInstanceId())));
+}
+
+void Map::ExecuteOnStrandAndWait(std::function<void()> task)
+{
+    if (!task)
+        return;
+
+    if (!sMapMgr->GetIoContext())
+    {
+        task();
+        return;
+    }
+
+    std::latch latch(1);
+    boost::asio::dispatch(GetStrand(), [task = std::move(task), &latch]() mutable
+    {
+        task();
+        latch.count_down();
+    });
+    latch.wait();
 }
 
 void Map::UpdateNonPlayerObjects(uint32 const diff)
@@ -2012,7 +2036,7 @@ bool InstanceMap::AddPlayerToMap(Player* player)
         }
 
         // check for existing instance binds
-        InstancePlayerBind* playerBind = sInstanceSaveMgr->PlayerGetBoundInstance(player->GetGUID(), GetId(), Difficulty(GetSpawnMode()));
+        std::optional<InstancePlayerBind> playerBind = sInstanceSaveMgr->PlayerGetBoundInstance(player->GetGUID(), GetId(), Difficulty(GetSpawnMode()));
         if (playerBind && playerBind->perm)
         {
             if (playerBind->save != mapSave)
@@ -2030,7 +2054,7 @@ bool InstanceMap::AddPlayerToMap(Player* player)
         }
         else
         {
-            playerBind = sInstanceSaveMgr->PlayerBindToInstance(player->GetGUID(), mapSave, false, player);
+            playerBind = *sInstanceSaveMgr->PlayerBindToInstance(player->GetGUID(), mapSave, false, player);
             // pussywizard: bind lider also if not yet bound
             if (Group* g = player->GetGroup())
                 if (g->GetLeaderGUID() != player->GetGUID())
@@ -2218,7 +2242,7 @@ void InstanceMap::PermBindAllPlayers()
 
         // players inside an instance cannot be bound to other instances
         // some players may already be permanently bound, in this case nothing happens
-        InstancePlayerBind* bind = sInstanceSaveMgr->PlayerGetBoundInstance(player->GetGUID(), save->GetMapId(), save->GetDifficulty());
+        std::optional<InstancePlayerBind> bind = sInstanceSaveMgr->PlayerGetBoundInstance(player->GetGUID(), save->GetMapId(), save->GetDifficulty());
 
         if (!bind || !bind->perm)
         {

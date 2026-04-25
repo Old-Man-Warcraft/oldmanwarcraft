@@ -376,36 +376,23 @@ void WorldSessionMgr::UpdateMaxSessionCounters()
 /// Send a packet to all players (except self if mentioned)
 void WorldSessionMgr::SendGlobalMessage(WorldPacket const* packet, WorldSession* self, TeamId teamId)
 {
-    SessionMap::const_iterator itr;
-    for (itr = _sessions.begin(); itr != _sessions.end(); ++itr)
+    DoForAllOnlinePlayers([packet, self, teamId](Player* player)
     {
-        if (itr->second &&
-            itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld() &&
-            itr->second != self &&
-            (teamId == TEAM_NEUTRAL || itr->second->GetPlayer()->GetTeamId() == teamId))
-        {
-            itr->second->SendPacket(packet);
-        }
-    }
+        WorldSession* session = player->GetSession();
+        if (session != self && (teamId == TEAM_NEUTRAL || player->GetTeamId() == teamId))
+            session->SendPacket(packet);
+    });
 }
 
 /// Send a packet to all GMs (except self if mentioned)
 void WorldSessionMgr::SendGlobalGMMessage(WorldPacket const* packet, WorldSession* self, TeamId teamId)
 {
-    SessionMap::iterator itr;
-    for (itr = _sessions.begin(); itr != _sessions.end(); ++itr)
+    DoForAllOnlinePlayers([packet, self, teamId](Player* player)
     {
-        if (itr->second &&
-            itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld() &&
-            itr->second != self &&
-            !AccountMgr::IsPlayerAccount(itr->second->GetSecurity()) &&
-            (teamId == TEAM_NEUTRAL || itr->second->GetPlayer()->GetTeamId() == teamId))
-        {
-            itr->second->SendPacket(packet);
-        }
-    }
+        WorldSession* session = player->GetSession();
+        if (session != self && !AccountMgr::IsPlayerAccount(session->GetSecurity()) && (teamId == TEAM_NEUTRAL || player->GetTeamId() == teamId))
+            session->SendPacket(packet);
+    });
 }
 
 /// Send a server message to the user(s)

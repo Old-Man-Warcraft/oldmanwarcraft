@@ -1130,7 +1130,7 @@ namespace lfg
                     }
                     encounterMask = 0;
                     instanceGuid.Clear();
-                    if (InstancePlayerBind* bind = sInstanceSaveMgr->PlayerGetBoundInstance(guid, dungeonData->map, dungeonData->difficulty))
+                    if (std::optional<InstancePlayerBind> bind = sInstanceSaveMgr->PlayerGetBoundInstance(guid, dungeonData->map, dungeonData->difficulty))
                         if (bind->perm)
                         {
                             instanceGuid = ObjectGuid::Create<HighGuid::Instance>(bind->save->GetInstanceId());
@@ -1854,7 +1854,7 @@ namespace lfg
                     // check instance id with leader
                     if (!leaderTeleportIncluded)
                     {
-                        if (InstancePlayerBind* ilb = sInstanceSaveMgr->PlayerGetBoundInstance(grp->GetLeaderGUID(), dungeon->map, player->GetDungeonDifficulty()))
+                        if (std::optional<InstancePlayerBind> ilb = sInstanceSaveMgr->PlayerGetBoundInstance(grp->GetLeaderGUID(), dungeon->map, player->GetDungeonDifficulty()))
                         {
                             if (player->GetInstanceId() == ilb->save->GetInstanceId())
                             {

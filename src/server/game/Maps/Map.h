@@ -205,6 +205,7 @@ public:
 
     void PostNextTick(std::function<void()> task);
     void DrainNextTickTasks();
+    void ExecuteOnStrandAndWait(std::function<void()> task);
 
     [[nodiscard]] Acore::Asio::Strand& GetStrand() { return _strand; }
 

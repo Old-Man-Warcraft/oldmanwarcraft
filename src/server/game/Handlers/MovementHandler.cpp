@@ -74,10 +74,7 @@ void WorldSession::HandleMoveWorldportAck()
 
     Map* oldMap = GetPlayer()->GetMap();
     if (GetPlayer()->IsInWorld())
-    {
         LOG_ERROR("network.opcode", "Player (Name {}) is still in world when teleported from map {} to new map {}", GetPlayer()->GetName(), oldMap->GetId(), loc.GetMapId());
-        oldMap->RemovePlayerFromMap(GetPlayer(), false);
-    }
 
     // reset instance validity, except if going to an instance inside an instance
     if (!GetPlayer()->m_InstanceValid && !mInstance)
@@ -102,7 +99,15 @@ void WorldSession::HandleMoveWorldportAck()
     float z = loc.GetPositionZ() + GetPlayer()->GetHoverHeight();
     GetPlayer()->Relocate(loc.GetPositionX(), loc.GetPositionY(), z, loc.GetOrientation());
 
-    GetPlayer()->ResetMap();
+    oldMap->ExecuteOnStrandAndWait([this, oldMap]()
+    {
+        if (GetPlayer()->IsInWorld())
+            oldMap->RemovePlayerFromMap(GetPlayer(), false);
+
+        GetPlayer()->ResetMap();
+        oldMap->AfterPlayerUnlinkFromMap();
+    });
+
     GetPlayer()->SetMap(newMap);
 
     GetPlayer()->UpdatePositionData();
@@ -143,8 +148,6 @@ void WorldSession::HandleMoveWorldportAck()
         GetPlayer()->TeleportTo(GetPlayer()->m_homebindMapId, GetPlayer()->m_homebindX, GetPlayer()->m_homebindY, GetPlayer()->m_homebindZ, GetPlayer()->GetOrientation());
         return;
     }
-
-    oldMap->AfterPlayerUnlinkFromMap();
 
     // pussywizard: transport teleport couldn't teleport us to the same map (some other teleport pending, reqs not met, etc.), but we still have transport set until player moves! clear it if map differs (crashfix)
     if (Transport* t = _player->GetTransport())

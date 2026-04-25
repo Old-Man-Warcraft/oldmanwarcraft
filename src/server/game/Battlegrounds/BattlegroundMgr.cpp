@@ -136,21 +136,21 @@ void BattlegroundMgr::Update(uint32 diff)
         m_BattlegroundQueues[qtype].UpdateEvents(diff);
 
     // update using scheduled tasks (used only for rated arenas, initial opponent search works differently than periodic queue update)
-    if (!m_QueueUpdateScheduler.empty())
+    std::vector<uint64> scheduled;
     {
-        std::vector<uint64> scheduled;
+        std::lock_guard<std::mutex> lock(_queueUpdateSchedulerMutex);
         std::swap(scheduled, m_QueueUpdateScheduler);
+    }
 
-        for (uint8 i = 0; i < scheduled.size(); i++)
-        {
-            uint32 arenaMMRating = scheduled[i] >> 32;
-            uint8 arenaType = scheduled[i] >> 24 & 255;
-            BattlegroundQueueTypeId bgQueueTypeId = BattlegroundQueueTypeId(scheduled[i] >> 16 & 255);
-            BattlegroundTypeId bgTypeId = BattlegroundTypeId((scheduled[i] >> 8) & 255);
-            BattlegroundBracketId bracket_id = BattlegroundBracketId(scheduled[i] & 255);
+    for (std::size_t i = 0; i < scheduled.size(); ++i)
+    {
+        uint32 arenaMMRating = scheduled[i] >> 32;
+        uint8 arenaType = scheduled[i] >> 24 & 255;
+        BattlegroundQueueTypeId bgQueueTypeId = BattlegroundQueueTypeId(scheduled[i] >> 16 & 255);
+        BattlegroundTypeId bgTypeId = BattlegroundTypeId((scheduled[i] >> 8) & 255);
+        BattlegroundBracketId bracket_id = BattlegroundBracketId(scheduled[i] & 255);
             m_BattlegroundQueues[bgQueueTypeId].BattlegroundQueueUpdate(diff, bgTypeId, bracket_id, arenaType, arenaMMRating > 0, arenaMMRating);
             m_BattlegroundQueues[bgQueueTypeId].BattlegroundQueueAnnouncerUpdate(diff, bgQueueTypeId, bracket_id);
-        }
     }
 
     // periodic queue update
@@ -784,9 +784,9 @@ void BattlegroundMgr::SetHolidayWeekends(uint32 mask)
 
 void BattlegroundMgr::ScheduleQueueUpdate(uint32 arenaMatchmakerRating, uint8 arenaType, BattlegroundQueueTypeId bgQueueTypeId, BattlegroundTypeId bgTypeId, BattlegroundBracketId bracket_id)
 {
-    //This method must be atomic, @todo add mutex
-    //we will use only 1 number created of bgTypeId and bracket_id
+    // we will use only 1 number created of bgTypeId and bracket_id
     uint64 const scheduleId = ((uint64)arenaMatchmakerRating << 32) | ((uint64)arenaType << 24) | ((uint64)bgQueueTypeId << 16) | ((uint64)bgTypeId << 8) | (uint64)bracket_id;
+    std::lock_guard<std::mutex> lock(_queueUpdateSchedulerMutex);
     if (std::find(m_QueueUpdateScheduler.begin(), m_QueueUpdateScheduler.end(), scheduleId) == m_QueueUpdateScheduler.end())
         m_QueueUpdateScheduler.emplace_back(scheduleId);
 }

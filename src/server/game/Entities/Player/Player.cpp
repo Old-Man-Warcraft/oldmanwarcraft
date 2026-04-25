@@ -1567,7 +1567,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
             // remove from old map now
             if (oldmap)
-                oldmap->RemovePlayerFromMap(this, false);
+                oldmap->ExecuteOnStrandAndWait([this, oldmap]()
+                {
+                    oldmap->RemovePlayerFromMap(this, false);
+                });
 
             teleportStore_dest = WorldLocation(mapid, x, y, z, orientation);
             SetFallInformation(GameTime::GetGameTime().count(), z);
@@ -11722,7 +11725,7 @@ void Player::SendTransferAborted(uint32 mapid, TransferAbortReason reason, uint8
 void Player::SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint32 time, bool onEnterMap)
 {
     // pussywizard:
-    InstancePlayerBind* bind = sInstanceSaveMgr->PlayerGetBoundInstance(GetGUID(), mapid, difficulty);
+    std::optional<InstancePlayerBind> bind = sInstanceSaveMgr->PlayerGetBoundInstance(GetGUID(), mapid, difficulty);
     if (bind && bind->extended)
     {
         if (!onEnterMap) // extended id player shouldn't be warned about lock expiration

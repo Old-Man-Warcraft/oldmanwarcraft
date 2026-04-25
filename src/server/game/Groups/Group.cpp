@@ -2144,7 +2144,7 @@ void Group::ResetInstances(uint8 method, bool isRaid, Player* leader)
                 if (leader->GetDifficulty(false) != DUNGEON_DIFFICULTY_NORMAL)
                     break;
                 std::vector<InstanceSave*> toUnbind;
-                BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(leader->GetGUID(), Difficulty(DUNGEON_DIFFICULTY_NORMAL));
+                BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(leader->GetGUID(), Difficulty(DUNGEON_DIFFICULTY_NORMAL));
                 for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
                 {
                     InstanceSave* instanceSave = itr->second.save;
@@ -2172,7 +2172,7 @@ void Group::ResetInstances(uint8 method, bool isRaid, Player* leader)
         case INSTANCE_RESET_CHANGE_DIFFICULTY:
             {
                 std::vector<InstanceSave*> toUnbind;
-                BoundInstancesMap const& m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(leader->GetGUID(), leader->GetDifficulty(isRaid));
+                BoundInstancesMap const m_boundInstances = sInstanceSaveMgr->PlayerGetBoundInstances(leader->GetGUID(), leader->GetDifficulty(isRaid));
                 for (BoundInstancesMap::const_iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end(); ++itr)
                 {
                     InstanceSave* instanceSave = itr->second.save;
@@ -2211,7 +2211,7 @@ void Group::_cancelHomebindIfInstance(Player* player)
     // if player is reinvited to group and in the instance - cancel homebind timer
     if (!player->FindMap() || !player->FindMap()->IsDungeon())
         return;
-    InstancePlayerBind* bind = sInstanceSaveMgr->PlayerGetBoundInstance(player->GetGUID(), player->FindMap()->GetId(), player->GetDifficulty(player->FindMap()->IsRaid()));
+    std::optional<InstancePlayerBind> bind = sInstanceSaveMgr->PlayerGetBoundInstance(player->GetGUID(), player->FindMap()->GetId(), player->GetDifficulty(player->FindMap()->IsRaid()));
     if (bind && bind->save->GetInstanceId() == player->GetInstanceId())
         player->m_InstanceValid = true;
 }
