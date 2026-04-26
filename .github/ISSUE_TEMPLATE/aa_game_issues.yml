@@ -1,6 +1,7 @@
 name: Gameplay bug report
 description: Report a reproducible in-game issue on Old Man Warcraft.
 title: "[Bug]: "
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
@@ -19,6 +20,18 @@ body:
       placeholder: Example: Thrallina
     validations:
       required: false
+  - type: checkboxes
+    id: issue_tags
+    attributes:
+      label: Issue tags
+      description: Select every tag that applies. These tags are used for GitHub labels and project routing.
+      options:
+        - label: Levels 1-20
+        - label: Levels 21-40
+        - label: Levels 41-60
+        - label: Levels 61-80
+        - label: Dungeons
+        - label: Raids
   - type: dropdown
     id: category
     attributes:
