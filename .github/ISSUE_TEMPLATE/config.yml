@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Old Man Warcraft website
-    url: https://oldmanwarcraft.com/
-    about: News, account tools, armory, and server information.
   - name: Support center
     url: https://oldmanwarcraft.com/support
     about: Use this for private account help, payment questions, appeals, and sensitive support requests.
@@ -12,6 +9,3 @@ contact_links:
   - name: Changelog
     url: https://oldmanwarcraft.com/changelog
     about: Check whether a bug or feature was already changed recently.
-  - name: Discord
-    url: https://oldmanwarcraft.com/discord
-    about: Join the community for quick questions, triage, and follow-up discussion.
