@@ -1,3 +1,4 @@
+-- DB update 2026_04_26_00 -> 2026_04_26_01
 -- OMW: heirloom-style caster wands with +10% XP (spell 57353, same as stock heirlooms)
 DELETE FROM `item_template` WHERE `entry` IN (2041203, 2041204, 2041205);
 INSERT INTO `item_template` VALUES

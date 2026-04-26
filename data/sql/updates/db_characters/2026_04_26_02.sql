@@ -1,3 +1,4 @@
+-- DB update 2026_04_26_01 -> 2026_04_26_02
 -- Restore individual progression quests for characters Shade (guid 2372) and Nekro (guid 2428)
 -- Both are level 80 in Northrend; setting to PROGRESSION_WOTLK_TIER_5 (state 18 = max).
 -- All intermediate progression quests (66001-66018) are inserted so there are no gaps in the chain.

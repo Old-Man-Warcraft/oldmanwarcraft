@@ -1,3 +1,4 @@
+-- DB update 2026_04_12_00 -> 2026_04_26_00
 INSERT INTO `character_skills` (`guid`, `skill`, `value`, `max`)
 SELECT `c`.`guid`, `lang`.`skill`, 300, 300
 FROM `characters` AS `c`

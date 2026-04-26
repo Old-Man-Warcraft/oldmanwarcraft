@@ -1,3 +1,4 @@
+-- DB update 2026_04_26_00 -> 2026_04_26_01
 CREATE TABLE IF NOT EXISTS `prestige_stats` (
     `player_id` int unsigned NOT NULL,
     `prestige_level` int unsigned NOT NULL DEFAULT 0,
