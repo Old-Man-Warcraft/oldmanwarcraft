@@ -199,8 +199,6 @@ public:
 
     virtual void Update(const uint32, const uint32, bool thread = true);
 
-    void AddOwnedSession(WorldSession* session);
-    void RemoveOwnedSession(WorldSession* session);
     void UpdateOwnedSessions(uint32 diff);
 
     void PostNextTick(std::function<void()> task);
@@ -702,9 +700,6 @@ private:
     std::unordered_set<Corpse*> _corpseBones;
 
     std::unordered_set<Object*> _updateObjects;
-
-    std::vector<WorldSession*> _ownedSessions;
-    std::mutex _ownedSessionsMutex;
 
     std::vector<std::function<void()>> _nextTickTasks;
     std::mutex _nextTickTasksMutex;

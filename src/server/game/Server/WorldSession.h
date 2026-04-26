@@ -511,6 +511,7 @@ public:
 
     void QueuePacket(WorldPacket* new_packet);
     bool Update(uint32 diff, PacketFilter& updater);
+    [[nodiscard]] bool HasQueuedPackets() const { return !_recvQueue.empty(); }
 
     /// Handle the authentication waiting queue (to be completed)
     void SendAuthWaitQueue(uint32 position);

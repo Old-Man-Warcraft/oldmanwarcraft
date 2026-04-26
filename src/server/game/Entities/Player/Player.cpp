@@ -14820,8 +14820,6 @@ void Player::ResetMap()
     // nocheck_prev will return the padding element of the RefMgr
     // instead of nullptr in the case of prev
     GetMap()->UpdateIteratorBack(this);
-    if (WorldSession* session = GetSession())
-        GetMap()->RemoveOwnedSession(session);
     Unit::ResetMap();
     GetMapRef().unlink();
 }
@@ -14830,8 +14828,6 @@ void Player::SetMap(Map* map)
 {
     Unit::SetMap(map);
     m_mapRef.link(map, this);
-    if (WorldSession* session = GetSession())
-        map->AddOwnedSession(session);
 }
 
 void Player::_SaveCharacter(bool create, CharacterDatabaseTransaction trans)

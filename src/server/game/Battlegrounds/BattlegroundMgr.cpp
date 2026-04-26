@@ -664,7 +664,24 @@ void BattlegroundMgr::SendToBattleground(Player* player, uint32 instanceId, Batt
     if (Battleground* bg = GetBattleground(instanceId, bgTypeId))
     {
         uint32 mapid = bg->GetMapId();
-        Position const* pos = bg->GetTeamStartPosition(player->GetBgTeamId());
+        TeamId teamId = player->GetBgTeamId();
+        Position const* pos = bg->GetTeamStartPosition(teamId);
+        if (!pos)
+        {
+            TeamId fallbackTeamId = player->GetTeamId();
+            if (fallbackTeamId != teamId)
+                pos = bg->GetTeamStartPosition(fallbackTeamId);
+
+            if (!pos)
+            {
+                LOG_ERROR("bg.battleground", "BattlegroundMgr::SendToBattleground: failed to resolve start position for player {} ({}) with bg team {} and fallback team {} in battleground {} instance {}",
+                    player->GetName(), player->GetGUID().ToString(), uint32(teamId), uint32(fallbackTeamId), bgTypeId, instanceId);
+                return;
+            }
+
+            LOG_ERROR("bg.battleground", "BattlegroundMgr::SendToBattleground: player {} ({}) had invalid bg team {}, using fallback team {} for battleground {} instance {}",
+                player->GetName(), player->GetGUID().ToString(), uint32(teamId), uint32(fallbackTeamId), bgTypeId, instanceId);
+        }
 
         LOG_DEBUG("bg.battleground", "BattlegroundMgr::SendToBattleground: Sending {} to map {}, {} (bgType {})", player->GetName(), mapid, pos->ToString(), bgTypeId);
         player->TeleportTo(mapid, pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ(), pos->GetOrientation());

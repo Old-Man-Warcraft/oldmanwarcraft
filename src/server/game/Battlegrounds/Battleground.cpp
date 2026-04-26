@@ -334,13 +334,25 @@ inline void Battleground::_CheckSafePositions(uint32 diff)
     {
         m_ValidStartPositionTimer = 0;
 
-        for (auto const& [playerGuid, player] : GetPlayers())
+        for (auto const& itr : GetPlayers())
         {
+            ObjectGuid const& playerGuid = itr.first;
+            Player* player = ObjectAccessor::FindPlayer(playerGuid);
+            if (!player || player->GetBattleground() != this)
+                continue;
+
             if (player->IsGameMaster())
                 continue;
 
             Position pos = player->GetPosition();
-            Position const* startPos = GetTeamStartPosition(player->GetBgTeamId());
+            TeamId teamId = player->GetBgTeamId();
+            Position const* startPos = GetTeamStartPosition(teamId);
+            if (!startPos)
+            {
+                LOG_ERROR("bg.battleground", "Battleground::_CheckSafePositions: player {} ({}) has invalid bg team {} in battleground {} instance {} map {}",
+                    player->GetName(), player->GetGUID().ToString(), uint32(teamId), GetBgTypeID(), GetInstanceID(), GetMapId());
+                continue;
+            }
 
             if (pos.GetExactDistSq(startPos) > maxDist)
             {
@@ -709,7 +721,13 @@ void Battleground::SetTeamStartPosition(TeamId teamId, Position const& pos)
 
 Position const* Battleground::GetTeamStartPosition(TeamId teamId) const
 {
-    ASSERT(teamId < TEAM_NEUTRAL);
+    if (teamId >= TEAM_NEUTRAL)
+    {
+        LOG_ERROR("bg.battleground", "Battleground::GetTeamStartPosition: invalid team {} for battleground {} instance {} map {}",
+            uint32(teamId), GetBgTypeID(), GetInstanceID(), GetMapId());
+        return nullptr;
+    }
+
     return &_startPosition[teamId];
 }
 

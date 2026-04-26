@@ -443,8 +443,8 @@ void Map::Update(const uint32 t_diff, const uint32 s_diff, bool  /*thread*/)
         _mapCollisionData.GetDynamicTree().update(t_diff);
 
     // Update world sessions for players on this map.
-    // UpdateOwnedSessions iterates _ownedSessions (built via Player::SetMap/ResetMap hooks)
-    // and runs MapSessionFilter::Update for each, safe to call from a map worker thread.
+    // Iterate the live player list instead of cached raw session ownership so map-thread
+    // session updates cannot race a logout path that already destroyed the Player object.
     UpdateOwnedSessions(s_diff);
 
     // Update players at sub-tick (s_diff only, no t_diff)
@@ -3554,36 +3554,33 @@ void Map::DrainNextTickTasks()
         task();
 }
 
-void Map::AddOwnedSession(WorldSession* session)
-{
-    std::lock_guard<std::mutex> lock(_ownedSessionsMutex);
-    if (std::find(_ownedSessions.begin(), _ownedSessions.end(), session) == _ownedSessions.end())
-        _ownedSessions.push_back(session);
-}
-
-void Map::RemoveOwnedSession(WorldSession* session)
-{
-    std::lock_guard<std::mutex> lock(_ownedSessionsMutex);
-    _ownedSessions.erase(
-        std::remove(_ownedSessions.begin(), _ownedSessions.end(), session),
-        _ownedSessions.end());
-}
-
 void Map::UpdateOwnedSessions(uint32 diff)
 {
-    std::vector<WorldSession*> sessions;
+    for (m_mapRefIter = m_mapRefMgr.begin(); m_mapRefIter != m_mapRefMgr.end(); ++m_mapRefIter)
     {
-        std::lock_guard<std::mutex> lock(_ownedSessionsMutex);
-        sessions = _ownedSessions;
-    }
-
-    for (WorldSession* session : sessions)
-    {
-        Player* player = session ? session->GetPlayer() : nullptr;
+        Player* player = m_mapRefIter->GetSource();
         // While the player is transferring between maps, WorldSessionMgr still updates the
         // session on the world thread. Do not also update it from a map worker until the
         // player is fully back in-world on this specific map, otherwise teleports can race.
         if (!player || !player->IsInWorld() || player->FindMap() != this)
+            continue;
+
+        WorldSession* session = player->GetSession();
+        if (!session)
+            continue;
+
+#ifdef MOD_PLAYERBOTS
+        // mod-playerbots drains bot session packets from its own world-thread update hooks.
+        // Re-processing those sessions here on the map strand adds extra contention exactly
+        // when large bot groups load into the server.
+        if (session->IsBot())
+            continue;
+#endif
+
+        // The world thread still updates every session each tick for maintenance and
+        // thread-unsafe packet handling. Skip the map-thread pass for fully idle sessions
+        // so we do not take the shared session mutex twice per tick with no work to do.
+        if (!session->HasQueuedPackets())
             continue;
 
         MapSessionFilter updater(session);

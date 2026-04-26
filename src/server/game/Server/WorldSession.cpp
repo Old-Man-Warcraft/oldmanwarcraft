@@ -89,7 +89,8 @@ bool WorldSessionFilter::Process(WorldPacket* packet)
     Player* player = m_pSession->GetPlayer();
     bool const playerInWorld = player && player->IsInWorld();
 
-    // When a player is in-world, their session is also updated by Map::UpdateOwnedSessions().
+    // When a player is in-world, their session is also updated by Map::UpdateOwnedSessions()
+    // via the map's live player list.
     // Keep packet ordering deterministic by letting the world thread drain only thread-unsafe
     // opcodes from the head of the queue, while the map thread handles in-place/thread-safe work.
     if (opHandle->ProcessingPlace == PROCESS_INPLACE)
@@ -374,7 +375,12 @@ void WorldSession::LogUnprocessedTail(WorldPacket* packet)
 /// Update the WorldSession (triggered by World update)
 bool WorldSession::Update(uint32 diff, PacketFilter& updater)
 {
-    std::lock_guard<std::mutex> guard(_updateMutex);
+    std::unique_lock<std::mutex> guard(_updateMutex, std::defer_lock);
+
+    if (updater.ProcessUnsafe())
+        guard.lock();
+    else if (!guard.try_lock())
+        return true;
 
     ///- Before we process anything:
     /// If necessary, kick the player because the client didn't send anything for too long
@@ -571,19 +577,16 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     METRIC_VALUE("addon_messages", _addonMessageReceiveCount.load());
     _addonMessageReceiveCount = 0;
 
-    if (!updater.ProcessUnsafe()) // <=> updater is of type MapSessionFilter
+    if (_timeSyncTimer > 0)
     {
-        // Send time sync packet every 10s.
-        if (_timeSyncTimer > 0)
+        // Send time sync packet every 10s from whichever update path reaches the session.
+        if (diff >= _timeSyncTimer)
         {
-            if (diff >= _timeSyncTimer)
-            {
-                SendTimeSync();
-            }
-            else
-            {
-                _timeSyncTimer -= diff;
-            }
+            SendTimeSync();
+        }
+        else
+        {
+            _timeSyncTimer -= diff;
         }
     }
 
