@@ -1,28 +1,57 @@
-name: Game issues
-description: Create a bug report to help us improve.
+name: Gameplay bug report
+description: Report a reproducible in-game issue on Old Man Warcraft.
+title: "[Bug]: "
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to fill out a bug report. Remember to fill out all fields including the title above. 
-        An issue that is not properly filled out will be closed. 
-        You can read more about the standards for a bug report [here](https://www.azerothcore.org/wiki/issue-tracker-standards).
-  - type: textarea
-    id: current
+        Thanks for helping improve Old Man Warcraft.
+
+        Before opening a new issue:
+        - Search existing issues first so we can keep reports consolidated.
+        - Use the support center for private account or payment matters.
+        - Do **not** post passwords, email addresses, IPs, or other sensitive information.
+  - type: input
+    id: character
     attributes:
-      label: Current Behaviour
-      description: |
-        Description of the problem or issue here.
-        Include entries of affected creatures / items / quests / spells etc.
-        Never upload files! Use GIST for text and YouTube for videos!
+      label: Character name
+      description: The character that experienced the problem.
+      placeholder: Example: Thrallina
+    validations:
+      required: false
+  - type: dropdown
+    id: category
+    attributes:
+      label: Area affected
+      description: Pick the closest gameplay category.
+      options:
+        - Quest
+        - NPC / Creature
+        - Spell / Talent / Glyph
+        - Item / Loot
+        - Dungeon / Raid
+        - Battleground / Arena / PvP
+        - Profession
+        - Playerbot behavior
+        - Custom OMW system
+        - Other
     validations:
       required: true
   - type: textarea
-    id: expected
+    id: current_behavior
+    attributes:
+      label: Current Behaviour
+      description: |
+        What is happening right now?
+        Include names/IDs for affected quests, spells, NPCs, items, maps, achievements, or systems when possible.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
     attributes:
       label: Expected Behaviour
       description: |
-        Tell us what should happen instead.
+        What should happen instead?
     validations:
       required: true
   - type: textarea
@@ -30,56 +59,64 @@ body:
     attributes:
       label: Source
       description: |
-        If you have a source that proves how it is supposed to work, please add that to make it easier for devs to fix the issue.
+        Optional: links to Wowhead, videos, old patch notes, screenshots, or other references that show the intended behavior.
     validations:
       required: false
   - type: textarea
     id: reproduce
     attributes:
-      label: Steps to reproduce the problem
+      label: Steps to reproduce
       description: |
-        What does someone else need to do to encounter the same bug?
+        What does someone else need to do to reproduce the bug?
       placeholder: |
         1. Step 1
         2. Step 2
         3. Step 3
     validations:
       required: true
-  - type: textarea
-    id: extra
+  - type: dropdown
+    id: frequency
     attributes:
-      label: Extra Notes
-      description: |
-        Do you have any extra notes that can help solve the issue that does not fit any other field?
-      placeholder: |
-        None
-    validations:
-      required: false
-  - type: textarea
-    id: commit
-    attributes:
-      label: AC rev. hash/commit
-      description: |
-        Paste the entire output result of the `.server debug` command. (If you need to run it from the client get a prat addon)
-      placeholder: |
-        Paste the entire output result of the `.server debug` command. (If you need to run it from the client get a prat addon)
+      label: How often does it happen?
+      options:
+        - Always
+        - Often
+        - Sometimes
+        - Only happened once
     validations:
       required: true
   - type: input
-    id: os
+    id: occurred_at
     attributes:
-      label: Operating system
-      description: |
-        The Operating System the Server is running on.
-        i.e. Windows 11 x64, Debian 10 x64, macOS 12, Ubuntu 20.04
+      label: Approximate date and time
+      description: When did you last observe the issue?
+      placeholder: 2026-04-26 around 18:30 server time
     validations:
-      required: true
+      required: false
   - type: textarea
-    id: custom
+    id: evidence
     attributes:
-      label: Custom changes or Modules
+      label: Screenshots / videos / logs
       description: |
-        List which custom changes or modules you have applied, i.e. Eluna module, etc.
+        Paste links to screenshots, clips, combat logs, or text snippets that help explain the issue.
+      placeholder: |
+        https://...
+    validations:
+      required: false
+  - type: input
+    id: client_info
+    attributes:
+      label: Client details
+      description: Optional but helpful for UI or addon-related issues.
+      placeholder: enUS client, no addons / using ElvUI / etc.
+    validations:
+      required: false
+  - type: textarea
+    id: extra_notes
+    attributes:
+      label: Extra Notes
+      description: |
+        Anything else that might help us investigate?
       placeholder: |
         None
     validations:
@@ -87,9 +124,4 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for your contribution.
-        If you use AzerothCore regularly, we really NEED your help to:
-        - Test our fixes: https://www.azerothcore.org/wiki/How-to-test-a-PR
-        - Report issues or suggestions: https://github.com/azerothcore/azerothcore-wotlk/issues/new/choose
-        - Improve the documentation/wiki: https://www.azerothcore.org/wiki/home
-        With your help, the project can evolve much quicker!
+        Thanks again — good reports save a surprising amount of goblin engineering time.

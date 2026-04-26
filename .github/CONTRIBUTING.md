@@ -1,30 +1,36 @@
-## CONTRIBUTING
+## Contributing to Old Man Warcraft
 
-AzerothCore can also serve as a learning resource for aspiring developers who want to understand how WoW servers work, how MMORPGs are structured, how game server emulators are created, or to improve their C++ and SQL knowledge.
+This repository powers the customized AzerothCore fork behind **Old Man Warcraft**.
 
-If you want to contribute to the project, you will find a lot of resources that will guide you in our [wiki](https://www.azerothcore.org/wiki/contribute).
+We welcome contributions that improve the realm, player experience, operational tooling, and maintainability of the codebase.
 
-We also recommend you read our [Contributor Covenant Code of Conduct](https://github.com/azerothcore/azerothcore-wotlk/blob/master/.github/CODE_OF_CONDUCT.md).
+## Before you contribute
 
-Feel free to join our [Discord server](https://discord.gg/gkt4y2x).
+- Read the project guidance in `CLAUDE.md`, `.github/copilot-instructions.md`, and the relevant repository instructions.
+- Keep changes targeted. This repo has a lot of gameplay and module customizations, so broad refactors are usually higher risk than they look.
+- If a fix is generic and upstreamable, consider whether it should also be proposed to the relevant upstream project after confirming the behavior outside OMW.
+- If you are a player reporting a bug rather than contributing code, please use the issue templates instead of this guide.
 
-## AUTHORS & CONTRIBUTORS
+## Pull requests
 
-This project exists thanks to the [authors](https://github.com/azerothcore/azerothcore-wotlk/blob/master/AUTHORS).
+Good pull requests usually include:
 
-## IMPORTANT LINKS
+- a clear description of the problem being solved
+- testing notes
+- any relevant gameplay, database, or operational context
+- disclosure of AI assistance when used
 
-- [Doxygen documentation](https://www.azerothcore.org/pages/doxygen/index.html)
-- [Website](http://www.azerothcore.org/)
-- [AzerothCore catalogue](http://www.azerothcore.org/catalogue.html  "Modules, tools, and other stuff for AzerothCore") (modules, tools, etc...)
-- [Our Discord server](https://discord.gg/gkt4y2x)
-- [Our wiki](http://www.azerothcore.org/wiki "Easy to use and developed by AzerothCore founder")
-- [Our forum](https://github.com/azerothcore/azerothcore-wotlk/discussions/)
-- [Our Facebook page](https://www.facebook.com/AzerothCore/)
-- [Our LinkedIn page](https://www.linkedin.com/company/azerothcore/)
+If your change affects player-facing gameplay, include enough detail for maintainers to understand likely regression areas.
 
-All contributions, big or small, are appreciated <3
+## Community standards
 
-The AzerothCore Staff appreciate all the help and contribution that *you* put your time into.
+Please follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
-Thank you!
+## Useful links
+
+- [Website](https://oldmanwarcraft.com/)
+- [Support center](https://oldmanwarcraft.com/support)
+- [Knowledge base](https://oldmanwarcraft.com/knowledge-base)
+- [Changelog](https://oldmanwarcraft.com/changelog)
+- [Discord](https://oldmanwarcraft.com/discord)
+- [AUTHORS](../AUTHORS)

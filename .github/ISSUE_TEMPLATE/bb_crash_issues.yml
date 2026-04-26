@@ -1,86 +1,86 @@
-name: Crash / Server Crash issues
-description: Did your server crash? Post an issue here!
-title: "Crash: "
-labels: ["Priority-Critical", "HasBacktrace"]
+name: Disconnect / crash / realm outage report
+description: Report disconnect loops, apparent server crashes, or realm outages affecting players.
+title: "[Crash/Disconnect]: "
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to fill out a bug report. Remember to fill out all fields including the title above. 
-        An issue that is not properly filled out will be closed.
+        Use this template for player-visible crashes, disconnect loops, or sudden realm outages.
+
+        If your report includes account-specific details, redact them first or use the support center instead.
   - type: textarea
-    id: current
+    id: happened
     attributes:
-      label: Steps to Reproduce
+      label: What happened?
       description: |
-        If possible provide detailed steps to reproduce the crash.
+        Describe what you were doing just before the disconnect or crash.
       placeholder: |
-        1. Provide the exact steps to trigger the crash.
-        2. Include any relevant configurations or commands.
-        3. Mention if the crash is consistent or intermittent.
+        1. Zone / dungeon / battleground
+        2. Action taken just before the issue
+        3. What the client/server did next
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+      description: |
+        Tell us what you expected instead.
+    validations:
+      required: true
+  - type: input
+    id: character
+    attributes:
+      label: Character name(s)
+      description: One or more characters affected.
+      placeholder: Example: Thrallina, Botmage
     validations:
       required: false
-  - type: markdown
+  - type: input
+    id: location
     attributes:
-      value: |
-        NOTE: Make sure your server was compiled in RelWithDebug or Debug mode as crashlogs from Release do not contain enough information.
+      label: Zone / instance / battleground
+      description: Where it happened.
+      placeholder: Icecrown, Utgarde Keep, Warsong Gulch, etc.
+    validations:
+      required: false
+  - type: input
+    id: occurred_at
+    attributes:
+      label: Approximate date and time
+      description: When did this happen?
+      placeholder: 2026-04-26 around 20:15 server time
+    validations:
+      required: false
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does it happen?
+      options:
+        - Every time
+        - Intermittently
+        - Happened once
+        - Realm was fully offline
+    validations:
+      required: true
   - type: textarea
-    id: logs
+    id: evidence
     attributes:
       label: Logs and Screenshots
       description: |
-        Do you have any logs or screenshots that can be useful?
-        Crash logs in text are preffered over screenshots.
-        DO NOT POST THE FULL CRASH LOG IN THE ISSUE BODY. DO NOT UPLOAD TEXT FILES. USE [GITHUB GIST](https://gist.github.com/), PASTEBIN, OR ANY SIMILAR SERVICE INSTEAD.
+        Paste links to screenshots, clips, Discord uploads, or any visible errors.
+        If staff asks for logs later, link them in a follow-up comment.
     validations:
       required: false
-  - type: input
-    id: os
-    attributes:
-      label: Operating System
-      description: |
-        The Operating System you are having issues on.
-        i.e. Windows 11 x64, Debian 10 x64, macOS 12, Ubuntu 20.04
-    validations:
-      required: true
-  - type: textarea
-    id: deps
-    attributes:
-      label: Dependencies & versions
-      description: |
-        Relevant information about dependencies and their versions that can be useful to debug the issue.
-        Example:
-        - OpenSSL ver ...
-        - Boost ver ...
-        - MySQL ver ...
-        - Visual Studio ver ...
-        - GCC ver ...
-        - Clang ver ...
-        - CMake ver ... 
-    validations:
-      required: true
-  - type: input
-    id: commit
-    attributes:
-      label: Commit
-      description: |
-        Which commit hash are you using.
-    validations:
-      required: true
   - type: textarea
     id: extra
     attributes:
       label: Additional Context
       description: |
-        Do you have any other relevant information about the issue?
+        Anything else that might help us narrow this down?
     validations:
       required: false
   - type: markdown
     attributes:
       value: |
-        Thank you for your contribution.
-        If you use AzerothCore regularly, we really NEED your help to:
-        - Test our fixes: https://www.azerothcore.org/wiki/How-to-test-a-PR
-        - Report issues or suggestions: https://github.com/azerothcore/azerothcore-wotlk/issues/new/choose
-        - Improve the documentation/wiki: https://www.azerothcore.org/wiki/home
-        With your help, the project can evolve much quicker!
+        Thank you for reporting this. Timing, location, and a short clip are often enough to turn “it exploded” into “we found it.”

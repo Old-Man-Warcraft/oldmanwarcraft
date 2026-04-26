@@ -51,8 +51,8 @@ not aligned to this Code of Conduct.
 
 ## Scope
 
-This Code of Conduct applies within all community spaces, which includes but is not limited to AzerothCore
-managed sites and community spaces, and also applies when an individual is officially representing the 
+This Code of Conduct applies within all community spaces, which includes but is not limited to Old Man Warcraft
+managed sites and community spaces, and also applies when an individual is officially representing the
 community in public spaces.
 
 Examples of representing our community include
@@ -64,8 +64,8 @@ Examples of representing our community include
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at the AzerothCore 
-[https://discord.gg/gkt4y2x][discord].
+reported to the community leaders responsible for enforcement through the Old Man Warcraft
+[support center][support] or [Discord][discord].
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
@@ -135,4 +135,5 @@ For answers to common questions about this code of conduct, see the FAQ at
 [Mozilla CoC]: https://github.com/mozilla/diversity
 [FAQ]: https://www.contributor-covenant.org/faq
 [translations]: https://www.contributor-covenant.org/translations
-[discord]: https://discord.gg/gkt4y2x
+[discord]: https://oldmanwarcraft.com/discord
+[support]: https://oldmanwarcraft.com/support

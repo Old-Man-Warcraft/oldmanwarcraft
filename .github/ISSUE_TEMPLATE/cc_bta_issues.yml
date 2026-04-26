@@ -1,17 +1,40 @@
-name: Build/Tools/Apps issues
-description: Got an issue with build, tools or apps? Create an issue to let us know!
+name: Account / connection / website issue
+description: Report public-facing technical problems outside normal gameplay.
+title: "[Support/Service]: "
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to fill out a bug report. Remember to fill out all fields including the title above. 
-        An issue that is not properly filled out will be closed.
+        Use this template for issues such as login failures, broken website pages, connection problems, or public support tooling bugs.
+
+        This tracker is public. Do **not** include passwords, email addresses, payment details, or other sensitive information.
+  - type: dropdown
+    id: category
+    attributes:
+      label: Issue type
+      options:
+        - Login / realm list
+        - Website page or form
+        - Support center
+        - Shop / donation flow
+        - Connection guide / launcher setup
+        - Other
+    validations:
+      required: true
   - type: textarea
     id: current
     attributes:
       label: Current Behaviour
       description: |
-        What actually happens and how do we reproduce it?
+        What is happening, and how can someone else reproduce it?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+      description: |
+        What should happen instead?
     validations:
       required: true
   - type: textarea
@@ -19,57 +42,35 @@ body:
     attributes:
       label: Logs and Screenshots
       description: |
-        Do you have any logs or screenshots that can be useful?
-        If you have logs in text form please upload them to [Gist](https://gist.github.com/) or PasteBin and upload the link.
+        Share screenshots, browser error text, or screen recordings if available.
     validations:
       required: false
   - type: input
-    id: os
+    id: occurred_at
     attributes:
-      label: Operating System
+      label: Approximate date and time
       description: |
-        The Operating System you are having issues on.
-        i.e. Windows 11 x64, Debian 10 x64, macOS 12, Ubuntu 20.04
+        When did this happen?
     validations:
-      required: true
-  - type: textarea
-    id: deps
-    attributes:
-      label: Dependencies & versions
-      description: |
-        Relevant information about dependencies and their versions that can be useful to debug the issue.
-        Example:
-        - OpenSSL ver ...
-        - Boost ver ...
-        - MySQL ver ...
-        - Visual Studio ver ...
-        - GCC ver ...
-        - Clang ver ...
-        - CMake ver ... 
-    validations:
-      required: true
+      required: false
   - type: input
-    id: commit
+    id: device
     attributes:
-      label: Commit
+      label: Device / browser / client info
       description: |
-        Which commit hash are you using.
+        Helpful for connection or website issues.
+      placeholder: Windows 11 + Chrome 135, macOS Safari, WoW 3.3.5a client, etc.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: extra
     attributes:
       label: Additional Context
       description: |
-        Do you have any other relevant information about the issue?
+        Any other details that might help?
     validations:
       required: false
   - type: markdown
     attributes:
       value: |
-        Thank you for your contribution.
-        If you use AzerothCore regularly, we really NEED your help to:
-        - Test our fixes: https://www.azerothcore.org/wiki/How-to-test-a-PR
-        - Report issues or suggestions: https://github.com/azerothcore/azerothcore-wotlk/issues/new/choose
-        - Improve the documentation/wiki: https://www.azerothcore.org/wiki/home
-        With your help, the project can evolve much quicker!
+        If your problem involves private account details, please move it to the support center after opening the report.

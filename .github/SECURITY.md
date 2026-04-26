@@ -1,97 +1,40 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+## Supported branches
 
-We support the following versions of dependencies.
+Security fixes are currently maintained for the following branches in this repository:
 
-| Icon                 |      Meaning      |
-| :------------------- | :---------------: |
-| :white_check_mark:   |   **Supported**   |
-| :red_circle:         | **NOT** Supported |
-| :large_blue_diamond: |  **Recommended**  |
+| Branch | Status |
+| :----- | :----- |
+| `Playerbot` | Supported |
+| `test-staging` | Best effort / pre-release |
+| Other branches | Not supported |
 
-### Versions of AzerothCore:
+## What to report
 
-| AzerothCore Branch           |       Status       |     Recommended      |
-| ---------------------------- | :----------------: | :------------------: |
-| **master**                   | :white_check_mark: | :large_blue_diamond: |
-| Any non-official fork        |    :red_circle:    |                      |
-| Any Playerbots fork          |    :red_circle:    |                      |
-| Any NPCBots fork             |    :red_circle:    |                      |
-| Any AC (non-official) repack |    :red_circle:    |                      |
+Please report vulnerabilities that could:
 
-### Supported Operating Systems
+- compromise player accounts or staff access
+- expose sensitive data
+- allow duping, exploitation, or unfair gameplay abuse at scale
+- cause denial of service, severe instability, or privilege escalation
+- affect payment, support, or account infrastructure tied to Old Man Warcraft
 
-| Linux (Ubuntu) |       Status       |     Recommended      |
-| :------------- | :----------------: | :------------------: |
-| 24.04          | :white_check_mark: | :large_blue_diamond: |
-| 22.04          | :white_check_mark: |                      |
-| 20.04 ≤        |    :red_circle:    |                      |
+## How to report a vulnerability
 
-| macOS |       Status       |     Recommended      |
-| :---- | :----------------: | :------------------: |
-| 14    | :white_check_mark: | :large_blue_diamond: |
-| 12 ≤  |    :red_circle:    |                      |
+Please **do not open a public GitHub issue first** for security-sensitive problems.
 
-| Windows       |       Status       |     Recommended      |
-| :------------ | :----------------: | :------------------: |
-| Windows 11    | :white_check_mark: | :large_blue_diamond: |
-| Windows 10    | :white_check_mark: |
-| Windows 8.1 ≤ |    :red_circle:    |
+Instead, report them privately through one of these channels:
 
-<br>
+- [Old Man Warcraft support center](https://oldmanwarcraft.com/support)
+- [Old Man Warcraft Discord](https://oldmanwarcraft.com/discord) for initial contact if you are unsure where to send it
 
-### Supported Boost Versions:
+When possible, include:
 
-| Boost  |       Status       |     Recommended      |
-| :----- | :----------------: | :------------------: |
-| 1.70 ≥ | :white_check_mark: | :large_blue_diamond: |
+- a short description of the issue
+- impact and worst-case outcome
+- steps to reproduce or validate
+- screenshots, logs, or proof-of-concept details
+- whether the issue is currently being exploited in the wild
 
-### Supported OpenSSL Versions:
-
-| OpenSSL |       Status       |     Recommended      |
-| :------ | :----------------: | :------------------: |
-| 3.X.X ≥ | :white_check_mark: | :large_blue_diamond: |
-
-### Supported CMake Versions:
-
-| CMake  |       Status       |     Recommended      |
-| :----- | :----------------: | :------------------: |
-| 3.16 ≥ | :white_check_mark: | :large_blue_diamond: |
-
-### Supported MySQL Versions:
-
-| MySQL |       Status       |     Recommended      |
-| :---- | :----------------: | :------------------: |
-| 8.4 ≥ | :white_check_mark: | :large_blue_diamond: |
-| 8.0   | :white_check_mark: |                      |
-| 8.1   |    :red_circle:    |                      |
-| 8.0 < |    :red_circle:    |                      |
-
-### Supported CLang Versions:
-
-| CLang |       Status       |     Recommended      |
-| :---- | :----------------: | :------------------: |
-| 18    | :white_check_mark: | :large_blue_diamond: |
-| 15    | :white_check_mark: |                      |
-| 14 ≤  |    :red_circle:    |                      |
-
-### Supported GCC Versions:
-
-| GCC  |       Status       |     Recommended      |
-| :--- | :----------------: | :------------------: |
-| 14   | :white_check_mark: | :large_blue_diamond: |
-| 12   | :white_check_mark: |                      |
-| 11 ≤ |    :red_circle:    |                      |
-
-> [!NOTE]
-> We do **NOT** support any repacks that may or may not have been made based on AzerothCore. This is because they are usually based on older versions and there is no way to know what is in the precompiled binaries. Instead, you should compile your binaries from the AzerothCore source. To get started, read the [Installation Guide](https://www.azerothcore.org/wiki/installation).
-
-> [!CAUTION] 
-> [Why you should not use repacks to run your WoW server](https://www.mangosrumors.org/why-you-should-not-use-repacks-to-run-your-wow-server/)
-
-## Reporting a Vulnerability
-
-We class a vulnerability to be any hack or exploit that has an impact on the server performance or that gives unfair advantages in the game (e.g. fly hacking or injection tools).
-
-If a new vulnerability is found you should always create a new [bug report](https://github.com/azerothcore/azerothcore-wotlk/issues/new?assignees=&labels=&projects=&template=bug_report.yml).
+We will review reports privately and coordinate any public disclosure after mitigation.

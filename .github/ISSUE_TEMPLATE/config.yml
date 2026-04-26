@@ -1,17 +1,17 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Website
-    url: https://www.azerothcore.org
-    about: On the AC website you can find a lot of things, such as existing modules.
-  - name: Wiki
-    url: https://www.azerothcore.org/wiki
-    about: You can find plenty of information on our Wiki.
-  - name: FAQ
-    url: https://www.azerothcore.org/wiki/faq
-    about: Frequently asked questions.
-  - name: Common Errors
-    url: https://www.azerothcore.org/wiki/common-errors
-    about: You can find common errors and their solutions here.
+  - name: Old Man Warcraft website
+    url: https://oldmanwarcraft.com/
+    about: News, account tools, armory, and server information.
+  - name: Support center
+    url: https://oldmanwarcraft.com/support
+    about: Use this for private account help, payment questions, appeals, and sensitive support requests.
+  - name: Knowledge base
+    url: https://oldmanwarcraft.com/knowledge-base
+    about: Connection guides, FAQs, and common troubleshooting steps.
+  - name: Changelog
+    url: https://oldmanwarcraft.com/changelog
+    about: Check whether a bug or feature was already changed recently.
   - name: Discord
-    url: https://discord.gg/gkt4y2x
-    about: Join the discussions over at our Discord Server.
+    url: https://oldmanwarcraft.com/discord
+    about: Join the community for quick questions, triage, and follow-up discussion.

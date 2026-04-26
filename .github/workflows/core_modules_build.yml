@@ -2,7 +2,7 @@ name: nopch-module-build
 on:
   push:
     branches:
-      - 'master'
+      - 'Playerbot'
       - 'test-staging'
   pull_request:
     types:

@@ -1,14 +1,15 @@
 <!-- First of all, THANK YOU for your contribution. -->
 
-<!-- How to title your Pull Request, Description, Co-Authors (Cherry Pick) and others, please see the link below -->
-<!-- https://www.azerothcore.org/wiki/commit-message-guidelines -->
+<!-- Please keep PR titles descriptive and scoped. Conventional commits are preferred when practical. -->
 
 ## Changes Proposed:
-<!-- If your pull request promotes complex changes that require a detailed explanation, please describe them in detail specifying what your solution is and what is it meant to address. -->
+<!-- For larger changes, explain the problem, the approach, and any tradeoffs. -->
 This PR proposes changes to:
--  [ ] Core (units, players, creatures, game systems).
--  [ ] Scripts (bosses, spell scripts, creature scripts).
--  [ ] Database (SAI, creatures, etc).
+- [ ] Core / gameplay systems
+- [ ] Scripts / content behavior
+- [ ] Database / SQL / SAI
+- [ ] Tooling / CI / automation
+- [ ] Documentation / community files
 
 ### AI-assisted Pull Requests
 
@@ -20,51 +21,42 @@ This PR proposes changes to:
 - [ ] AI tools (e.g. ChatGPT, Claude, or similar) were used entirely or partially in preparing this pull request. Please specify which tools were used, if any.
 
 ## Issues Addressed:
-<!-- If your fix has a relating issue, link it below -->
+<!-- If relevant, link the related issue(s) below. -->
 - Closes 
 
-## SOURCE:
-<!-- If you can, include a source that can strengthen your claim -->
+## Validation Sources
+
 The changes have been validated through:
-- [ ] Live research (checked on live servers, e.g Classic WotLK, Retail, etc.)
-- [ ] Sniffs (remember to share them with the open source community!)
-- [ ] Video evidence, knowledge databases or other public sources (e.g forums, Wowhead, etc.)
-- [ ] The changes promoted by this pull request come partially or entirely from another project (cherry-pick). **Cherry-picks must be committed using the proper --author tag in order to be accepted, thus crediting the original authors, unless otherwise unable to be found**
+- [ ] In-game testing on an OMW environment
+- [ ] Staging / branch testing
+- [ ] Public references (videos, Wowhead, forums, patch notes, etc.)
+- [ ] Another project or upstream change (credited appropriately)
 
 ## Tests Performed:
-<!-- Does it build without errors? Did you test in-game? What did you test? On which OS did you test? Describe any other tests performed -->
 This PR has been:
-- [ ] Tested in-game by the author.
-- [ ] Tested in-game by other community members/someone else other than the author/has been live on production servers.
-- [ ] This pull request requires further testing and may have edge cases to be tested.
+- [ ] Built successfully
+- [ ] Tested in-game by the author
+- [ ] Tested by another maintainer or community member
+- [ ] Verified with automation / CI
+- [ ] Not fully tested yet; additional coverage is needed
 
 
 ## How to Test the Changes:
-<!-- Describe in a detailed step-by-step order how to test the changes -->
+<!-- Describe the exact steps a reviewer should follow. -->
 
-- [ ] This pull request can be tested by following the reproduction steps provided in the linked issue
-- [ ] This pull request requires further testing. Provide steps to test your changes. If it requires any specific setup e.g multiple players please specify it as well.
+- [ ] This PR can be tested using reproduction steps already documented in the linked issue
+- [ ] This PR needs additional reviewer steps documented below
 
 1.
 2.
 3.
 
 ## Known Issues and TODO List:
-<!-- Is there anything else left to do after this PR? -->
+<!-- Call out anything intentionally deferred. -->
 
 - [ ]
 - [ ]
 
-<!-- If you intend to contribute repeatedly to our project, it is a good idea to join our discord channel. We set ranks for our contributors and give them access to special resources or knowledge: https://discord.com/invite/GyFvXpk7)
-     Do not remove the instructions below about testing, they will help users to test your PR -->
-## How to Test AzerothCore PRs
- 
-When a PR is ready to be tested, it will be marked as **[WAITING TO BE TESTED]**.
+## Reviewer Notes
 
-You can help by testing PRs and writing your feedback here on the PR's page on GitHub. Follow the instructions here:
-
-http://www.azerothcore.org/wiki/How-to-test-a-PR
-
-**REMEMBER**: when testing a PR that changes something **generic** (i.e. a part of code that handles more than one specific thing), the tester should not only check that the PR does its job (e.g. fixing spell XXX) but **especially** check that the PR does not cause any regression (i.e. introducing new bugs).
-
-**For example**: if a PR fixes spell X by changing a part of code that handles spells X, Y, and Z, we should not only test X, but **we should test Y and Z as well**.
+If this PR touches generic systems, please test likely regression areas too — not just the exact bug or feature mentioned in the title.

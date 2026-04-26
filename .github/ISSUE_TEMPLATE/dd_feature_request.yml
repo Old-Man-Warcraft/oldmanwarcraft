@@ -1,27 +1,43 @@
-name: Feature request
-description: Suggest an idea for this project
-title: "Feature: "
-labels: "Feature"
+name: Suggestion / feature request
+description: Suggest an improvement for the Old Man Warcraft player experience.
+title: "[Suggestion]: "
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to fill out a feature request. Remember to fill out all fields including the title above. 
-        An issue that is not properly filled out will be closed. 
+        Thanks for sharing an idea.
+
+        Good suggestions explain the player problem first, then the proposed solution.
   - type: textarea
     id: description
     attributes:
-      label: Describe your feature request or suggestion in detail
+      label: What would you like to see changed?
       description: |
-        A clear and concise description of what you want to happen.
+        Describe the idea and the player-facing result you want.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: |
+        Explain the pain point, frustration, or missed opportunity behind the suggestion.
     validations:
       required: true
   - type: textarea
     id: solution
     attributes:
-      label: Describe a possible solution to your feature or suggestion in detail
+      label: Suggested implementation
       description: |
-        A clear and concise description of any alternative solutions or features you've considered.
+        Optional: describe how you think this could work in practice.
+    validations:
+      required: false
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or references
+      description: |
+        Optional: link examples from other realms, games, patch notes, or mockups.
     validations:
       required: false
   - type: textarea
@@ -29,15 +45,10 @@ body:
     attributes:
       label: Additional context
       description: |
-        Add any other context or screenshots about the feature request here.
+        Add any extra notes, screenshots, or edge cases here.
     validations:
       required: false
   - type: markdown
     attributes:
       value: |
-        Thank you for your contribution.
-        If you use AzerothCore regularly, we really NEED your help to:
-        - Test our fixes: https://www.azerothcore.org/wiki/How-to-test-a-PR
-        - Report issues or suggestions: https://github.com/azerothcore/azerothcore-wotlk/issues/new/choose
-        - Improve the documentation/wiki: https://www.azerothcore.org/wiki/home
-        With your help, the project can evolve much quicker!
+        Suggestions are easier to act on when they are scoped, specific, and tied to actual player experience.
