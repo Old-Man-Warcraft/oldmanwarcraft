@@ -5,69 +5,63 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this template for issues such as login failures, broken website pages, connection problems, or public support tooling bugs.
+        Use this template for login failures, broken website pages, connection problems, or public support tooling bugs.
 
-        This tracker is public. Do **not** include passwords, email addresses, payment details, or other sensitive information.
+        Please do not include passwords, email addresses, payment details, or other sensitive information.
   - type: dropdown
     id: category
     attributes:
       label: Issue type
       options:
-        - Login / realm list
-        - Website page or form
-        - Support center
-        - Shop / donation flow
-        - Connection guide / launcher setup
-        - Other
+        - "Login / realm list"
+        - "Website page or form"
+        - "Support center"
+        - "Shop / donation flow"
+        - "Connection guide / launcher setup"
+        - "Other"
     validations:
       required: true
   - type: textarea
     id: current
     attributes:
-      label: Current Behaviour
-      description: |
-        What is happening, and how can someone else reproduce it?
+      label: Current behaviour
+      description: What is happening, and how can someone else reproduce it?
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Expected Behaviour
-      description: |
-        What should happen instead?
+      label: Expected behaviour
+      description: What should happen instead?
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
-      label: Logs and Screenshots
-      description: |
-        Share screenshots, browser error text, or screen recordings if available.
+      label: Logs and screenshots
+      description: Share screenshots, browser error text, or screen recordings if available.
     validations:
       required: false
   - type: input
     id: occurred_at
     attributes:
       label: Approximate date and time
-      description: |
-        When did this happen?
+      placeholder: 2026-04-26 around 20:15 server time
     validations:
       required: false
   - type: input
     id: device
     attributes:
       label: Device / browser / client info
-      description: |
-        Helpful for connection or website issues.
-      placeholder: Windows 11 + Chrome 135, macOS Safari, WoW 3.3.5a client, etc.
+      description: Helpful for connection or website issues.
+      placeholder: "Windows 11 + Chrome 135, macOS Safari, WoW 3.3.5a client, etc."
     validations:
       required: false
   - type: textarea
     id: extra
     attributes:
-      label: Additional Context
-      description: |
-        Any other details that might help?
+      label: Additional context
+      description: Any other details that might help?
     validations:
       required: false
   - type: markdown

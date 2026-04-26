@@ -26,14 +26,14 @@ body:
     id: character
     attributes:
       label: Character name(s)
-      placeholder: Example: Thrallina, Botmage
+      placeholder: "Example: Thrallina, Botmage"
     validations:
       required: false
   - type: input
     id: location
     attributes:
       label: Zone / instance / battleground
-      placeholder: Icecrown, Utgarde Keep, Warsong Gulch, etc.
+      placeholder: "Icecrown, Utgarde Keep, Warsong Gulch, etc."
     validations:
       required: false
   - type: dropdown
@@ -51,7 +51,7 @@ body:
     id: occurred_at
     attributes:
       label: Approximate date and time
-      placeholder: 2026-04-26 around 20:15 server time
+      placeholder: "2026-04-26 around 20:15 server time"
     validations:
       required: false
   - type: textarea

@@ -13,7 +13,7 @@ body:
     attributes:
       label: Character name
       description: Optional, but helpful.
-      placeholder: Example: Thrallina
+      placeholder: "Example: Thrallina"
     validations:
       required: false
   - type: checkboxes
@@ -74,7 +74,7 @@ body:
     id: occurred_at
     attributes:
       label: Approximate date and time
-      placeholder: 2026-04-26 around 18:30 server time
+      placeholder: "2026-04-26 around 18:30 server time"
     validations:
       required: false
   - type: textarea
