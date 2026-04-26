@@ -1,0 +1,93 @@
+name: Gameplay bug report
+description: Report a reproducible in-game issue on Old Man Warcraft.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Old Man Warcraft.
+
+        Please do not include passwords, email addresses, payment details, or other sensitive information.
+  - type: input
+    id: character
+    attributes:
+      label: Character name
+      description: Optional, but helpful.
+      placeholder: Example: Thrallina
+    validations:
+      required: false
+  - type: checkboxes
+    id: issue_tags
+    attributes:
+      label: Issue tags
+      description: Select every tag that applies.
+      options:
+        - label: Levels 1-20
+        - label: Levels 21-40
+        - label: Levels 41-60
+        - label: Levels 61-80
+        - label: Dungeons
+        - label: Raids
+  - type: dropdown
+    id: category
+    attributes:
+      label: Area affected
+      options:
+        - Quest
+        - NPC / Creature
+        - Spell / Talent / Glyph
+        - Item / Loot
+        - Dungeon / Raid
+        - Battleground / Arena / PvP
+        - Profession
+        - Playerbot behavior
+        - Custom OMW system
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current behaviour
+      description: What is happening right now?
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behaviour
+      description: What should happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: List the steps needed to reproduce the bug.
+      placeholder: |
+        1. Go to...
+        2. Use / click...
+        3. Observe...
+    validations:
+      required: true
+  - type: input
+    id: occurred_at
+    attributes:
+      label: Approximate date and time
+      placeholder: 2026-04-26 around 18:30 server time
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots / videos / logs
+      description: Paste any links or text that help explain the issue.
+    validations:
+      required: false
+  - type: textarea
+    id: extra_notes
+    attributes:
+      label: Extra notes
+      description: Anything else that might help us investigate?
+    validations:
+      required: false
