@@ -6,14 +6,14 @@
 
 ## CI status
 
-[![nopch-build](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/core-build-nopch.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/core-build-nopch.yml?query=branch%3APlayerbot)
-[![pch-build](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/core-build-pch.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/core-build-pch.yml?query=branch%3APlayerbot)
-[![core-modules-build](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/core_modules_build.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/core_modules_build.yml?query=branch%3APlayerbot)
-[![windows-build](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/windows_build.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/windows_build.yml?query=branch%3APlayerbot)
-[![macos-build](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/macos_build.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/macos_build.yml?query=branch%3APlayerbot)
-[![docker-build](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/docker_build.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/docker_build.yml?query=branch%3APlayerbot)
-[![tools-build](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/tools_build.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/tools_build.yml?query=branch%3APlayerbot)
-[![dashboard-ci](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/dashboard-ci.yml/badge.svg?branch=Playerbot)](https://github.com/mod-playerbots/azerothcore-wotlk/actions/workflows/dashboard-ci.yml?query=branch%3APlayerbot)
+[![nopch-build](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/core-build-nopch.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/core-build-nopch.yml?query=branch%3Amain)
+[![pch-build](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/core-build-pch.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/core-build-pch.yml?query=branch%3Amain)
+[![core-modules-build](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/core_modules_build.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/core_modules_build.yml?query=branch%3Amain)
+[![windows-build](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/windows_build.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/windows_build.yml?query=branch%3Amain)
+[![macos-build](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/macos_build.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/macos_build.yml?query=branch%3Amain)
+[![docker-build](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/docker_build.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/docker_build.yml?query=branch%3Amain)
+[![tools-build](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/tools_build.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/tools_build.yml?query=branch%3Amain)
+[![dashboard-ci](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/dashboard-ci.yml/badge.svg?branch=main)](https://github.com/Old-Man-Warcraft/oldmanwarcraft/actions/workflows/dashboard-ci.yml?query=branch%3Amain)
 
 ## What this repository is for
 

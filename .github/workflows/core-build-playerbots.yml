@@ -4,9 +4,9 @@ name: ubuntu-build
 
 on:
   push:
-    branches: [ "Playerbot", "test-staging" ]
+    branches: [ "main", "test-staging" ]
   pull_request:
-    branches: [ "Playerbot", "test-staging" ]
+    branches: [ "main", "test-staging" ]
 
 jobs:
   build:
@@ -44,7 +44,7 @@ jobs:
         with:
           repository: mod-playerbots/mod-playerbots
           # Map AC branch → PB branch
-          ref: ${{ github.ref_name == 'Playerbot' && 'master' || 'test-staging' }}
+          ref: ${{ github.ref_name == 'test-staging' && 'test-staging' || 'master' }}
           path: modules/mod-playerbots
 
       - name: Install Requirements

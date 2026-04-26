@@ -2,9 +2,9 @@ name: windows-build
 
 on:
   push:
-    branches: [ "Playerbot", "test-staging" ]
+    branches: [ "main", "test-staging" ]
   pull_request:
-    branches: [ "Playerbot", "test-staging" ]
+    branches: [ "main", "test-staging" ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: mod-playerbots/mod-playerbots
-          ref: ${{ github.ref_name == 'Playerbot' && 'master' || 'test-staging' }}
+          ref: ${{ github.ref_name == 'test-staging' && 'test-staging' || 'master' }}
           path: modules/mod-playerbots
 
       - name: Move repo to short path

@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   route_issue:
-    if: github.repository == 'mod-playerbots/azerothcore-wotlk'
+    if: github.repository == 'Old-Man-Warcraft/oldmanwarcraft'
     runs-on: ubuntu-latest
     steps:
       - name: Sync routing labels from issue tags
