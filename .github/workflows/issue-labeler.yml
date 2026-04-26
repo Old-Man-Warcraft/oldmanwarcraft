@@ -5,7 +5,6 @@ on:
 
 jobs:
   issue_labeler:
-    if: github.repository == 'Old-Man-Warcraft/oldmanwarcraft'
     runs-on: ubuntu-latest
     name: Issue Labeler
     steps:

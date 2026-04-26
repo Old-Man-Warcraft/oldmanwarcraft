@@ -3,6 +3,7 @@ name: pch-build
 on:
   push:
     branches:
+      - 'Playerbot'
       - 'main'
       - 'test-staging'
   pull_request:
@@ -35,7 +36,7 @@ jobs:
               CXX: clang++-18
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }}-${{ matrix.compiler.CC }}-pch
-    if: github.repository == 'Old-Man-Warcraft/oldmanwarcraft' && !github.event.pull_request.draft
+    if: ${{ !github.event.pull_request.draft }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/linux-build

@@ -15,7 +15,6 @@ permissions:
 
 jobs:
   route_issue:
-    if: github.repository == 'Old-Man-Warcraft/oldmanwarcraft'
     runs-on: ubuntu-latest
     steps:
       - name: Sync routing labels from issue tags
@@ -70,43 +69,43 @@ jobs:
       # - OMW_PROJECT_RAIDS_URL
 
       - name: Add to Levels 1-20 project
-        if: steps.route.outputs.levels_1_20 == 'true' && vars.OMW_PROJECT_LEVELS_1_20_URL != ''
+        if: steps.route.outputs.levels_1_20 == 'true' && vars['OMW_PROJECT_LEVELS_1_20_URL'] != ''
         uses: actions/add-to-project@v1.0.2
         with:
-          project-url: ${{ vars.OMW_PROJECT_LEVELS_1_20_URL }}
+          project-url: ${{ vars['OMW_PROJECT_LEVELS_1_20_URL'] }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add to Levels 21-40 project
-        if: steps.route.outputs.levels_21_40 == 'true' && vars.OMW_PROJECT_LEVELS_21_40_URL != ''
+        if: steps.route.outputs.levels_21_40 == 'true' && vars['OMW_PROJECT_LEVELS_21_40_URL'] != ''
         uses: actions/add-to-project@v1.0.2
         with:
-          project-url: ${{ vars.OMW_PROJECT_LEVELS_21_40_URL }}
+          project-url: ${{ vars['OMW_PROJECT_LEVELS_21_40_URL'] }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add to Levels 41-60 project
-        if: steps.route.outputs.levels_41_60 == 'true' && vars.OMW_PROJECT_LEVELS_41_60_URL != ''
+        if: steps.route.outputs.levels_41_60 == 'true' && vars['OMW_PROJECT_LEVELS_41_60_URL'] != ''
         uses: actions/add-to-project@v1.0.2
         with:
-          project-url: ${{ vars.OMW_PROJECT_LEVELS_41_60_URL }}
+          project-url: ${{ vars['OMW_PROJECT_LEVELS_41_60_URL'] }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add to Levels 61-80 project
-        if: steps.route.outputs.levels_61_80 == 'true' && vars.OMW_PROJECT_LEVELS_61_80_URL != ''
+        if: steps.route.outputs.levels_61_80 == 'true' && vars['OMW_PROJECT_LEVELS_61_80_URL'] != ''
         uses: actions/add-to-project@v1.0.2
         with:
-          project-url: ${{ vars.OMW_PROJECT_LEVELS_61_80_URL }}
+          project-url: ${{ vars['OMW_PROJECT_LEVELS_61_80_URL'] }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add to Dungeons project
-        if: steps.route.outputs.dungeons == 'true' && vars.OMW_PROJECT_DUNGEONS_URL != ''
+        if: steps.route.outputs.dungeons == 'true' && vars['OMW_PROJECT_DUNGEONS_URL'] != ''
         uses: actions/add-to-project@v1.0.2
         with:
-          project-url: ${{ vars.OMW_PROJECT_DUNGEONS_URL }}
+          project-url: ${{ vars['OMW_PROJECT_DUNGEONS_URL'] }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add to Raids project
-        if: steps.route.outputs.raids == 'true' && vars.OMW_PROJECT_RAIDS_URL != ''
+        if: steps.route.outputs.raids == 'true' && vars['OMW_PROJECT_RAIDS_URL'] != ''
         uses: actions/add-to-project@v1.0.2
         with:
-          project-url: ${{ vars.OMW_PROJECT_RAIDS_URL }}
+          project-url: ${{ vars['OMW_PROJECT_RAIDS_URL'] }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

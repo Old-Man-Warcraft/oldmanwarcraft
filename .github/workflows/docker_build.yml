@@ -2,6 +2,7 @@ name: docker-build
 on:
   push:
     branches:
+      - 'Playerbot'
       - 'main'
   pull_request:
     types:
@@ -23,15 +24,14 @@ env:
   COMPOSE_DOCKER_CLI_BUILD: 1
   DOCKER_BUILDKIT: 1
   RUNNING_ON_PRIMARY_BRANCH: |
-    ${{ (github.repository == 'Old-Man-Warcraft/oldmanwarcraft' && github.ref_name == 'main') && 'true' || 'false' }}
+    ${{ github.ref_name == github.event.repository.default_branch && 'true' || 'false' }}
 
 jobs:
   build-containers:
     runs-on: "ubuntu-latest"
     if: |
-      github.repository == 'Old-Man-Warcraft/oldmanwarcraft'
-      && !github.event.pull_request.draft
-      && (github.ref_name == 'main' || contains(github.event.pull_request.labels.*.name, 'run-build') || github.event.label.name == 'run-build')
+      !github.event.pull_request.draft
+      && (github.ref_name == github.event.repository.default_branch || contains(github.event.pull_request.labels.*.name, 'run-build') || github.event.label.name == 'run-build')
     steps:
       - name: Free up disk space
         run: |
@@ -48,18 +48,18 @@ jobs:
       # If you're wanting containers without mod-ale, the best solution is to
       # build them locally (such as with `docker compose build`)
       - name: Download mod-ale dependency
-        if: github.repository == 'Old-Man-Warcraft/oldmanwarcraft' && github.ref_name == 'main'
+        if: env.RUNNING_ON_PRIMARY_BRANCH == 'true'
         uses: actions/checkout@v4
         with:
           repository: azerothcore/mod-ale
           path: modules/mod-ale
 
       - name: Login to Docker Hub
-        if: github.repository == 'Old-Man-Warcraft/oldmanwarcraft' && github.ref_name == 'main'
-        uses: docker/login-action@v1
+        if: env.RUNNING_ON_PRIMARY_BRANCH == 'true'
+        uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets['DOCKERHUB_USERNAME'] }}
+          password: ${{ secrets['DOCKERHUB_TOKEN'] }}
 
       - name: Get version
         id: version
@@ -75,41 +75,41 @@ jobs:
         with:
           component-name: worldserver
           version: ${{ steps.version.outputs.version }}
-          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH }}
+          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH == 'true' }}
 
       - name: build authserver
         uses: ./.github/actions/docker-tag-and-build
         with:
           component-name: authserver
           version: ${{ steps.version.outputs.version }}
-          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH }}
+          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH == 'true' }}
 
       - name: build db-import
         uses: ./.github/actions/docker-tag-and-build
         with:
           component-name: db-import
           version: ${{ steps.version.outputs.version }}
-          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH }}
+          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH == 'true' }}
 
       - name: build client-data
         uses: ./.github/actions/docker-tag-and-build
         with:
           component-name: client-data
           version: ${{ steps.version.outputs.version }}
-          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH }}
+          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH == 'true' }}
 
       - name: build tools
         uses: ./.github/actions/docker-tag-and-build
         with:
           component-name: tools
           version: ${{ steps.version.outputs.version }}
-          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH }}
+          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH == 'true' }}
 
       - name: build dev-server
         uses: ./.github/actions/docker-tag-and-build
         with:
           component-name: dev
           version: ${{ steps.version.outputs.version }}
-          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH }}
+          push: ${{ env.RUNNING_ON_PRIMARY_BRANCH == 'true' }}
           dockerfile: apps/docker/Dockerfile.dev-server
 

@@ -4,9 +4,9 @@ name: ubuntu-build
 
 on:
   push:
-    branches: [ "main", "test-staging" ]
+    branches: [ "Playerbot", "main", "test-staging" ]
   pull_request:
-    branches: [ "main", "test-staging" ]
+    branches: [ "Playerbot", "main", "test-staging" ]
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout AzerothCore
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set reusable strings
         id: strings
@@ -40,11 +40,11 @@ jobs:
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Checkout Playerbot Module
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: mod-playerbots/mod-playerbots
           # Map AC branch → PB branch
-          ref: ${{ github.ref_name == 'test-staging' && 'test-staging' || 'master' }}
+          ref: ${{ (github.base_ref == 'test-staging' || github.ref_name == 'test-staging') && 'test-staging' || 'master' }}
           path: modules/mod-playerbots
 
       - name: Install Requirements

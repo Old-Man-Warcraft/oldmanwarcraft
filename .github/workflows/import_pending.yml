@@ -2,6 +2,7 @@ name: import-pending
 on:
   push:
     branches:
+      - Playerbot
       - main
       - test-staging   # add this if you want pending SQL imported on this branch too
 
@@ -12,7 +13,6 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write  # 'write-all' is not a valid permission, should specify what is needed
-    if: github.repository == 'Old-Man-Warcraft/oldmanwarcraft'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,7 +37,7 @@ jobs:
           BRANCH: ${{ github.ref_name }}
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref_name }}

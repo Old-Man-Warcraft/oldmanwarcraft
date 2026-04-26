@@ -2,6 +2,7 @@ name: tools
 on:
   push:
     branches:
+      - 'Playerbot'
       - 'main'
   pull_request:
     types:
@@ -32,7 +33,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }}-${{ matrix.compiler.CC }}
     if: |
-      github.repository == 'Old-Man-Warcraft/oldmanwarcraft' && !github.event.pull_request.draft
+      !github.event.pull_request.draft
       && (
         contains(github.event.pull_request.labels.*.name, 'run-build')
         || github.event.label.name == 'run-build'
