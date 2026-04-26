@@ -297,7 +297,10 @@ public:
         {
             if (!summoner)
                 return;
+
             victimGUID = summoner->GetGUID();
+            me->RestoreFaction();
+            me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
         }
 
         void JustDied(Unit* /*killer*/) override
