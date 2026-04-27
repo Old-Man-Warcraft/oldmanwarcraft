@@ -936,6 +936,11 @@ void ScriptMgr::OnPlayerLearnTaxiNode(Player const* player, uint32 nodeId)
     CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_LEARN_TAXI_NODE, script->OnPlayerLearnTaxiNode(player, nodeId));
 }
 
+void ScriptMgr::OnEnvironmentalDamage(Player* player, EnviromentalDamage type, uint32 damage)
+{
+    CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_ENVIRONMENTAL_DAMAGE, script->OnEnvironmentalDamage(player, type, damage));
+}
+
 PlayerScript::PlayerScript(const char* name, std::vector<uint16> enabledHooks)
     : ScriptObject(name, PLAYERHOOK_END)
 {

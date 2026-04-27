@@ -82,6 +82,11 @@ class SpellScriptLoader;
 
 struct AchievementCriteriaData;
 struct AuctionEntry;
+struct CalcDamageInfo;
+class DamageInfo;
+class HealInfo;
+struct SpellNonMeleeDamage;
+struct SpellPeriodicAuraLogInfo;
 struct Condition;
 struct ConditionSourceInfo;
 struct DungeonProgressionRequirements;
@@ -488,6 +493,7 @@ public: /* PlayerScript */
     void OnPlayerGetReputationPriceDiscount(Player const* player, Creature const* creature, float& discount);
     void OnPlayerGetReputationPriceDiscount(Player const* player, FactionTemplateEntry const* factionTemplate, float& discount);
     void OnPlayerLearnTaxiNode(Player const* player, uint32 nodeId);
+    void OnEnvironmentalDamage(Player* player, EnviromentalDamage type, uint32 damage);
 
     // Anti cheat
     void AnticheatSetCanFlybyServer(Player* player, bool apply);
@@ -554,6 +560,10 @@ public: /* GlobalScript */
     void OnInstanceIdRemoved(uint32 instanceId);
     void OnBeforeSetBossState(uint32 id, EncounterState newState, EncounterState oldState, Map* instance);
     void AfterInstanceGameObjectCreate(Map* instance, GameObject* go);
+    void OnSpellSendSpellGo(Spell* spell);
+    void OnAuraApplicationClientUpdate(Unit* target, Aura* aura, bool remove);
+    void OnSpellExecuteLogSummonObject(Spell* spell, WorldObject* obj);
+    void OnSpellInterrupt(Unit* interrupter, Unit* interrupted, uint32 interruptSpellId, uint32 interruptedSpellId);
 
 public: /* Scheduled scripts */
     uint32 IncreaseScheduledScriptsCount() { return ++_scheduledScripts; }
@@ -583,6 +593,17 @@ public: /* UnitScript */
     void OnUnitEnterCombat(Unit* unit, Unit* victim);
     void OnUnitDeath(Unit* unit, Unit* killer);
     void OnUnitSetShapeshiftForm(Unit* unit, uint8 form);
+    void OnDealDamageShieldDamage(DamageInfo* damageInfo, uint32 overkill);
+    void OnSendSpellNonMeleeDamageLog(SpellNonMeleeDamage* log, int32 overkill);
+    void OnSendAttackStateUpdate(CalcDamageInfo* damageInfo, int32 overkill);
+    void OnSendSpellDamageImmune(Unit* attacker, Unit* victim, uint32 spellId);
+    void OnSendSpellMiss(Unit* attacker, Unit* victim, uint32 spellID, SpellMissInfo missInfo);
+    void OnSendSpellDamageResist(Unit* attacker, Unit* victim, uint32 spellId);
+    void OnSendSpellNonMeleeReflectLog(SpellNonMeleeDamage* log, Unit* attacker);
+    void OnSendHealSpellLog(HealInfo const& healInfo, bool critical);
+    void OnSendEnergizeSpellLog(Unit* attacker, Unit* victim, uint32 spellID, uint32 amount, Powers powerType);
+    void OnSendPeriodicAuraLog(Unit* victim, SpellPeriodicAuraLogInfo* pInfo);
+    void OnDamageAbsorbed(DamageInfo& dmgInfo, SpellInfo const* absorbSpellInfo, Unit* absorbCaster, uint32 absorbAmount);
 
 public: /* MovementHandlerScript */
     void OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 opcode);
