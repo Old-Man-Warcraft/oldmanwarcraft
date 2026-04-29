@@ -12584,6 +12584,12 @@ void Unit::RemoveFromWorld()
     if (IsInWorld())
     {
         m_duringRemoveFromWorld = true;
+
+        // Remove outgoing threat references before the unit disappears from the world.
+        // This closes a race where another thread can still walk a stale threat entry
+        // during target selection while this unit is already being removed.
+        GetThreatMgr().RemoveMeFromThreatLists();
+
         if (IsVehicle())
             RemoveVehicleKit();
 

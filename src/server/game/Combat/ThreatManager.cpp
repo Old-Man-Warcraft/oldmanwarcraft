@@ -111,6 +111,10 @@ void ThreatReference::UpdateOffline()
 
 bool ThreatReference::ShouldBeOffline() const
 {
+    if (!_owner->IsInWorld() || _owner->IsDuringRemoveFromWorld())
+        return true;
+    if (!_victim->IsInWorld() || _victim->IsDuringRemoveFromWorld())
+        return true;
     if (!_owner->CanSeeOrDetect(_victim))
         return true;
     if (!_owner->_IsTargetAcceptable(_victim) || !_owner->CanCreatureAttack(_victim))
@@ -122,6 +126,10 @@ bool ThreatReference::ShouldBeOffline() const
 
 bool ThreatReference::ShouldBeSuppressed() const
 {
+    if (!_owner->IsInWorld() || _owner->IsDuringRemoveFromWorld())
+        return false;
+    if (!_victim->IsInWorld() || _victim->IsDuringRemoveFromWorld())
+        return false;
     if (IsTaunting()) // a taunting victim can never be suppressed
         return false;
     if (_victim->IsImmunedToDamage(_owner->GetMeleeDamageSchoolMask()))
