@@ -178,7 +178,7 @@ public: /* SpellScriptLoader */
     void CreateSpellScriptLoaders(uint32 spellId, std::vector<std::pair<SpellScriptLoader*, std::multimap<uint32, uint32>::iterator>>& scriptVector);
 
 public: /* ServerScript */
-    void OnNetworkStart();
+    void OnNetworkStart(Acore::Asio::IoContext& ioContext);
     void OnNetworkStop();
     void OnSocketOpen(std::shared_ptr<WorldSocket> const& socket);
     void OnSocketClose(std::shared_ptr<WorldSocket> const& socket);
@@ -493,6 +493,7 @@ public: /* PlayerScript */
     void OnPlayerGetReputationPriceDiscount(Player const* player, Creature const* creature, float& discount);
     void OnPlayerGetReputationPriceDiscount(Player const* player, FactionTemplateEntry const* factionTemplate, float& discount);
     void OnPlayerLearnTaxiNode(Player const* player, uint32 nodeId);
+    void OnPlayerBeforeGetLevelForXPGain(Player const* player, uint8& level);
     void OnEnvironmentalDamage(Player* player, EnviromentalDamage type, uint32 damage);
 
     // Anti cheat
