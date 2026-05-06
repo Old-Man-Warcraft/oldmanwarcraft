@@ -1,3 +1,4 @@
+-- DB update 2026_04_26_03 -> 2026_05_06_00
 -- Reassert quest turn-in data and restore missing request text for quest 7424 "What the Hoof?"
 
 DELETE FROM `creature_questender` WHERE `id` = 14188 AND `quest` = 7424;
