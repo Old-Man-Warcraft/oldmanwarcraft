@@ -287,6 +287,12 @@ ObjectGuid::LowType WorldSession::GetGuidLow() const
 /// Send a packet to the client
 void WorldSession::SendPacket(WorldPacket const* packet)
 {
+    if (!this)
+    {
+        LOG_ERROR("network", "WorldSession::SendPacket called with a null session pointer.");
+        return;
+    }
+
     if (packet->GetOpcode() == NULL_OPCODE)
     {
         LOG_ERROR("network.opcode", "{} send NULL_OPCODE", GetPlayerInfo());

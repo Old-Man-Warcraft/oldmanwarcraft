@@ -879,10 +879,18 @@ void Creature::Update(uint32 diff)
 
             if (!IsInEvadeMode() && IsAIEnabled)
             {
-                // do not allow the AI to be changed during update
-                m_AI_locked = true;
-                i_AI->UpdateAI(diff);
-                m_AI_locked = false;
+                if (CreatureAI* ai = AI())
+                {
+                    // do not allow the AI to be changed during update
+                    m_AI_locked = true;
+                    ai->UpdateAI(diff);
+                    m_AI_locked = false;
+                }
+                else
+                {
+                    LOG_ERROR("entities.unit", "Creature::Update({}) has IsAIEnabled set but no AI instance is available. Disabling AI for this update.", GetGUID().ToString());
+                    IsAIEnabled = false;
+                }
             }
 
             // creature can be dead after UpdateAI call
@@ -1114,6 +1122,14 @@ bool Creature::AIM_Initialize(CreatureAI* ai)
     Motion_Initialize();
 
     i_AI = ai ? ai : FactorySelector::SelectAI(this);
+
+    if (i_AI == oldAI)
+    {
+        IsAIEnabled = true;
+        i_AI->InitializeAI();
+        return true;
+    }
+
     delete oldAI;
     IsAIEnabled = true;
     i_AI->InitializeAI();

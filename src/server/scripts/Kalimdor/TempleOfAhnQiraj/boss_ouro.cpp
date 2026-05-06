@@ -65,10 +65,14 @@ struct npc_ouro_spawner : public ScriptedAI
     }
 
     bool hasSummoned;
+    ObjectGuid _triggerGuid;
 
     void Reset() override
     {
         hasSummoned = false;
+        _triggerGuid.Clear();
+        me->SetReactState(REACT_PASSIVE);
+        me->SetUnitFlag(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC);
         DoCastSelf(SPELL_DIRTMOUND_PASSIVE);
     }
 
@@ -82,6 +86,7 @@ struct npc_ouro_spawner : public ScriptedAI
                 Creature* ouro = instance->GetCreature(DATA_OURO);
                 if (instance->GetBossState(DATA_OURO) != IN_PROGRESS && !ouro)
                 {
+                    _triggerGuid = who->GetGUID();
                     DoCastSelf(SPELL_SUMMON_OURO);
                     hasSummoned = true;
                 }
@@ -96,7 +101,11 @@ struct npc_ouro_spawner : public ScriptedAI
         // Despawn when Ouro is spawned
         if (creature->GetEntry() == NPC_OURO)
         {
-            creature->SetInCombatWithZone();
+            if (Player* trigger = ObjectAccessor::GetPlayer(*me, _triggerGuid))
+                creature->EngageWithTarget(trigger);
+            else
+                creature->SetInCombatWithZone();
+
             me->DespawnOrUnsummon();
         }
     }
