@@ -104,7 +104,15 @@ VisiblePlayersMap::iterator ObjectVisibilityContainer::UnlinkVisibilityFromWorld
 void ObjectVisibilityContainer::DirectRemoveVisibilityReference(ObjectGuid guid)
 {
     ASSERT(_visibleWorldObjectsMap);
-    (*_visibleWorldObjectsMap).erase(guid);
+
+    for (VisibleWorldObjectsMap::iterator itr = _visibleWorldObjectsMap->begin(); itr != _visibleWorldObjectsMap->end(); ++itr)
+    {
+        if (itr->first != guid)
+            continue;
+
+        _visibleWorldObjectsMap->erase(itr);
+        break;
+    }
 }
 
 void ObjectVisibilityContainer::DirectInsertVisiblePlayerReference(Player* player)
@@ -114,5 +122,12 @@ void ObjectVisibilityContainer::DirectInsertVisiblePlayerReference(Player* playe
 
 void ObjectVisibilityContainer::DirectRemoveVisiblePlayerReference(ObjectGuid guid)
 {
-    _visiblePlayersMap.erase(guid);
+    for (VisiblePlayersMap::iterator itr = _visiblePlayersMap.begin(); itr != _visiblePlayersMap.end(); ++itr)
+    {
+        if (itr->first != guid)
+            continue;
+
+        _visiblePlayersMap.erase(itr);
+        break;
+    }
 }

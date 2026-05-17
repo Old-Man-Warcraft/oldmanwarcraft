@@ -3191,7 +3191,12 @@ uint32 Creature::GetScriptId() const
             return scriptId;
     }
 
-    return sObjectMgr->GetCreatureTemplate(GetEntry())->ScriptID;
+    if (CreatureTemplate const* creatureTemplate = sObjectMgr->GetCreatureTemplate(GetEntry()))
+        return creatureTemplate->ScriptID;
+
+    LOG_ERROR("sql.sql", "Creature::GetScriptId: missing creature template for entry {} (spawnId: {}, mapId: {}, guid: {})",
+        GetEntry(), GetSpawnId(), GetMapId(), GetGUID().ToString());
+    return 0;
 }
 
 VendorItemData const* Creature::GetVendorItems() const
