@@ -420,7 +420,9 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPackets::Character::LogoutRequ
     if (ObjectGuid lguid = GetPlayer()->GetLootGUID())
         DoLootRelease(lguid);
 
-    bool instantLogout = (HasPermission(rbac::RBAC_PERM_INSTANT_LOGOUT)
+    uint32 instantLogoutLevel = sWorld->getIntConfig(CONFIG_INSTANT_LOGOUT);
+    bool instantLogout = (((instantLogoutLevel < 4)
+                           && (uint32(GetSecurity()) >= instantLogoutLevel || HasPermission(rbac::RBAC_PERM_INSTANT_LOGOUT)))
                           || (GetPlayer()->HasPlayerFlag(PLAYER_FLAGS_RESTING) && !GetPlayer()->IsInCombat())) || GetPlayer()->IsInFlight();
 
     bool preventAfkSanctuaryLogout = sWorld->getIntConfig(CONFIG_AFK_PREVENT_LOGOUT) == 1

@@ -6,8 +6,8 @@ applyTo: "modules/**"
 # Module Guidelines
 
 - Treat each directory under `modules/` as potentially independent from the main repository for history, status, and diff inspection.
-- Preserve module-local structure and conventions before applying core-wide patterns; check the module's `README.md` and `CMakeLists.txt` when present.
-- Keep module changes targeted. Do not refactor across unrelated modules as part of feature or bug-fix work.
+- When editing a module, use this priority order: first follow the module's existing structure and conventions, then use core-wide patterns only where the module does not define a different approach. Check the module's `README.md` and `CMakeLists.txt` for guidance when present.
+- Keep module changes targeted to the module and the immediate issue being solved. Do not refactor across unrelated modules as part of feature or bug-fix work.
 - For module SQL, prefer canonical paths under the module's `data/sql/` tree and avoid optional or uninstall helpers unless explicitly requested.
 - If a module change requires core integration, keep the module-specific behavior in the module and touch core code only when the integration point truly belongs there.
 
