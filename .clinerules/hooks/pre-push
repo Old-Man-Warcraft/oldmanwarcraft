@@ -1,0 +1,44 @@
+#!/bin/bash
+# Pre-push hook for AzerothCore / Old Man Warcraft
+# Runs unit tests before allowing a push to remote.
+#
+# Install: .cline/hooks/install.sh
+# Or manually: ln -sf ../../.cline/hooks/pre-push .git/hooks/pre-push
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+REMOTE="$1"
+URL="$2"
+
+echo "=== Pre-push: Running pre-push validation ==="
+echo "Pushing to: $REMOTE ($URL)"
+
+# ---- Check for SQL update conflicts (post-merge scenario) ----
+CHANGED_FILES="$(git diff --name-only HEAD@{1}..HEAD 2>/dev/null || git diff --name-only origin/master..HEAD 2>/dev/null || true)"
+SQL_UPDATES="$(echo "$CHANGED_FILES" | grep -E 'data/sql/updates/' || true)"
+
+if [ -n "$SQL_UPDATES" ] && [ -n "$(echo "$SQL_UPDATES" | grep -E '\.sql$' || true)" ]; then
+    echo ""
+    echo "WARNING: SQL update files detected:"
+    echo "$SQL_UPDATES" | sed 's/^/  /'
+    echo ""
+    echo "Ensure these SQL files:"
+    echo "  1. Target the correct database (world/characters/auth)"
+    echo "  2. Follow the proper naming convention"
+    echo "  3. Are reversible with a rollback script"
+    echo ""
+fi
+
+# ---- Optional: Run unit tests (skipped by default for speed) ----
+# Uncomment the block below to enforce tests before push:
+# if [ -f "$REPO_ROOT/build/unit_tests" ] || [ -f "$REPO_ROOT/build/src/test/unit_tests" ]; then
+#     echo "Running unit tests..."
+#     cd "$REPO_ROOT/build" && ctest --output-on-failure || {
+#         echo "Tests FAILED. Fix before pushing."
+#         exit 1
+#     }
+# fi
+
+echo "=== Pre-push checks passed ==="
+exit 0

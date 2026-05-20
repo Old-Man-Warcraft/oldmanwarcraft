@@ -1,0 +1,41 @@
+---
+description: Database access, SQL update lifecycle, migration safety
+alwaysApply: false
+globs: data/sql/**/*.sql
+---
+
+# Database Rules
+
+## SQL update lifecycle
+
+1. **Create** SQL file in `data/sql/updates/pending_db_<database>/`
+2. **Name** using convention: `YYYY_MM_DD_XX.sql` (date + sequence)
+3. **Test** on a non-production database first
+4. **Apply** to production with `production-deploy-review` agent approval
+5. **Move** to archive after successful application
+
+## Database separation
+
+Three separate databases must never be crossed without explicit intent:
+
+| Database | Purpose | Cross-DB allowed? |
+|---|---|---|
+| `acore_world` | Game content | Read from world only |
+| `acore_characters` | Player data | Read from characters, write to world only via game code |
+| `acore_auth` | Authentication | Isolated |
+
+## Safety rules
+
+1. **Backup before changes**: Always dump DB before applying schema changes
+2. **Transactions**: Wrap multi-statement changes in `START TRANSACTION` / `COMMIT`
+3. **WHERE clauses**: Every `DELETE`/`UPDATE` must have a scoped `WHERE` clause
+4. **Incremental**: Never modify base files; always add new update files
+5. **Module SQL**: Apply module SQL updates after core updates
+6. **Rollback**: Include commented-out rollback SQL in update files
+7. **Character data**: Never modify character data directly in SQL — use in-game systems
+8. **Schema changes**: `ALTER TABLE` must handle existing data gracefully
+
+## Querying via MCP
+
+Use `mysql-azerothcore-wotlk` MCP server for all database queries.
+Do not hardcode connection strings; use MCP for credential management.

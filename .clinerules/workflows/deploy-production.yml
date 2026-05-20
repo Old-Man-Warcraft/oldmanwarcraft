@@ -1,0 +1,104 @@
+# Production Deployment Workflow
+# Triggered manually for controlled production deploys.
+# Always review with production-deploy-review agent before running.
+#
+# See: .cline/agents/production-deploy-review.md
+
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_type:
+        description: 'Deployment type'
+        required: true
+        type: choice
+        options:
+          - sql-only
+          - binary-only
+          - full-deploy
+      target_env:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - production
+          - staging
+        default: 'production'
+      confirm_rollback_plan:
+        description: 'I have written and verified a rollback plan'
+        required: true
+        type: boolean
+
+jobs:
+  deploy-review:
+    name: Production Deploy Review
+    runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.review.outputs.approved }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy review checklist
+        id: review
+        run: |
+          echo "=== PRODUCTION DEPLOY REVIEW ==="
+          echo "Deploy type: ${{ github.event.inputs.deploy_type }}"
+          echo "Target: ${{ github.event.inputs.target_env }}"
+          echo "Rollback plan confirmed: ${{ github.event.inputs.confirm_rollback_plan }}"
+          echo ""
+
+          # Verify rollback plan is confirmed
+          if [ "${{ github.event.inputs.confirm_rollback_plan }}" != "true" ]; then
+            echo "ERROR: Rollback plan must be confirmed before deploying."
+            exit 1
+          fi
+
+          echo "Review items:"
+          echo "  [x] Rollback plan confirmed"
+          echo "  [ ] Notion server facts verified (check notion-server-reference agent)"
+          echo "  [ ] SQL review completed (scoped WHERE, no cross-DB writes)"
+          echo "  [ ] Playerbots safety check (if applicable)"
+          echo "  [ ] Config files updated (worldserver.conf, modules/*.conf)"
+          echo "  [ ] Deployment notification drafted"
+
+          echo ""
+          echo "MANUAL STEP: Verify all checklist items above before proceeding."
+          echo "See: .cline/agents/production-deploy-review.md"
+
+      - name: Check for SQL changes
+        if: github.event.inputs.deploy_type == 'sql-only' || github.event.inputs.deploy_type == 'full-deploy'
+        run: |
+          SQL_FILES="$(git diff --name-only HEAD~1..HEAD -- '*.sql' 2>/dev/null || true)"
+          if [ -n "$SQL_FILES" ]; then
+            echo "SQL files in this deploy:"
+            echo "$SQL_FILES"
+          else
+            echo "No SQL files detected in the latest commit."
+          fi
+
+      - name: Check for binary changes
+        if: github.event.inputs.deploy_type == 'binary-only' || github.event.inputs.deploy_type == 'full-deploy'
+        run: |
+          CPP_FILES="$(git diff --name-only HEAD~1..HEAD -- 'src/**/*.cpp' 'src/**/*.h' 'modules/**/*.cpp' 'modules/**/*.h' 2>/dev/null || true)"
+          if [ -n "$CPP_FILES" ]; then
+            echo "C++ files in this deploy:"
+            echo "$CPP_FILES"
+          else
+            echo "No C++ files detected in the latest commit."
+          fi
+
+  notify:
+    name: Deployment Notification
+    needs: deploy-review
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Deploy summary
+        run: |
+          echo "=== DEPLOYMENT SUMMARY ==="
+          echo "Type: ${{ github.event.inputs.deploy_type }}"
+          echo "Target: ${{ github.event.inputs.target_env }}"
+          echo "Review status: ${{ needs.deploy-review.result }}"
+          echo ""
+          echo "Post to #deployments channel (Discord/Notion) when complete."

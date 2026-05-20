@@ -1,0 +1,45 @@
+#!/bin/bash
+# Post-merge hook for AzerothCore / Old Man Warcraft
+# Checks for SQL update conflicts and pending migrations after a merge.
+#
+# Install: .cline/hooks/install.sh
+# Or manually: ln -sf ../../.cline/hooks/post-merge .git/hooks/post-merge
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+echo "=== Post-merge: Checking merged changes ==="
+
+# Detect if this was a squash merge (first argument is 1 for squash)
+IS_SQUASH="${1:-0}"
+
+if [ "$IS_SQUASH" = "1" ]; then
+    echo "Squash merge detected."
+fi
+
+# ---- Check for SQL update files in the merge ----
+MERGE_FILES="$(git diff-tree --name-only -r HEAD 2>/dev/null || true)"
+SQL_FILES="$(echo "$MERGE_FILES" | grep -E 'data/sql/updates/.*\.sql$' || true)"
+
+if [ -n "$SQL_FILES" ]; then
+    echo ""
+    echo "=== SQL update files found in this merge ==="
+    echo "$SQL_FILES" | sed 's/^/  /'
+    echo ""
+    echo "ACTION REQUIRED: Review these SQL updates and apply pending ones to the database."
+    echo "  Use: bin/acore-db-pendings to list pending updates"
+    echo ""
+fi
+
+# ---- Check if modules have their own SQL updates ----
+if [ -d "$REPO_ROOT/modules" ]; then
+    MODULE_SQL="$(find "$REPO_ROOT/modules" -name '*.sql' -newer "$REPO_ROOT/.git/MERGE_HEAD" 2>/dev/null || true)"
+    if [ -n "$MODULE_SQL" ]; then
+        echo "=== Module SQL files detected ==="
+        echo "Review module-specific SQL updates under modules/*/data/sql/"
+    fi
+fi
+
+echo "=== Post-merge check complete ==="
+exit 0

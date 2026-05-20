@@ -1,0 +1,145 @@
+# Upstream Merge Workflow
+# Automates the process of merging upstream AzerothCore / Playerbots changes.
+#
+# See: .cline/agents/upstream-merge-advisor.md
+# See: .cline/skills/workflow-gitlab-bug-reports/SKILL.md
+
+name: Upstream Merge
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_remote:
+        description: 'Upstream remote to merge from'
+        required: true
+        type: choice
+        options:
+          - azerothcore
+          - playerbots
+          - both
+      upstream_branch:
+        description: 'Upstream branch'
+        required: true
+        type: string
+        default: 'master'
+      target_branch:
+        description: 'Target branch for merge'
+        required: true
+        type: string
+        default: 'master'
+
+jobs:
+  pre-merge-check:
+    name: Pre-Merge Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch upstream remotes
+        run: |
+          git remote add azerothcore https://github.com/azerothcore/azerothcore-wotlk.git 2>/dev/null || true
+          git remote add playerbots https://github.com/mod-playerbots/azerothcore-wotlk 2>/dev/null || true
+          git fetch azerothcore
+          git fetch playerbots
+
+      - name: Check for local changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "ERROR: Working directory is not clean. Commit or stash changes before merging."
+            git status --short
+            exit 1
+          fi
+          echo "Working directory clean."
+
+      - name: Preview merge conflicts
+        run: |
+          merge_remote() {
+            local remote=$1
+            local branch=$2
+            echo "--- Previewing merge from $remote/$branch ---"
+            git merge --no-commit --no-ff "$remote/$branch" 2>&1 || true
+            if git diff --name-only --diff-filter=U 2>/dev/null | grep -q .; then
+              echo "CONFLICTS detected with $remote/$branch:"
+              git diff --name-only --diff-filter=U
+            else
+              echo "No conflicts detected with $remote/$branch."
+            fi
+            git merge --abort 2>/dev/null || true
+          }
+
+          if [ "${{ github.event.inputs.upstream_remote }}" = "azerothcore" ] || [ "${{ github.event.inputs.upstream_remote }}" = "both" ]; then
+            merge_remote "azerothcore" "${{ github.event.inputs.upstream_branch }}"
+          fi
+
+          if [ "${{ github.event.inputs.upstream_remote }}" = "playerbots" ] || [ "${{ github.event.inputs.upstream_remote }}" = "both" ]; then
+            merge_remote "playerbots" "${{ github.event.inputs.upstream_branch }}"
+          fi
+
+  merge-and-test:
+    name: Merge and Build Test
+    needs: pre-merge-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch and merge upstream
+        run: |
+          git remote add azerothcore https://github.com/azerothcore/azerothcore-wotlk.git 2>/dev/null || true
+          git remote add playerbots https://github.com/mod-playerbots/azerothcore-wotlk 2>/dev/null || true
+          git fetch azerothcore
+          git fetch playerbots
+
+          if [ "${{ github.event.inputs.upstream_remote }}" = "azerothcore" ] || [ "${{ github.event.inputs.upstream_remote }}" = "both" ]; then
+            echo "Merging azerothcore/${{ github.event.inputs.upstream_branch }}..."
+            git merge "azerothcore/${{ github.event.inputs.upstream_branch }}" --no-edit
+          fi
+
+          if [ "${{ github.event.inputs.upstream_remote }}" = "playerbots" ] || [ "${{ github.event.inputs.upstream_remote }}" = "both" ]; then
+            echo "Merging playerbots/${{ github.event.inputs.upstream_branch }}..."
+            git merge "playerbots/${{ github.event.inputs.upstream_branch }}" --no-edit
+          fi
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake make g++ libssl-dev libmysqlclient-dev
+
+      - name: Build test
+        run: |
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/azeroth-server \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DSCRIPTS=static -DMODULES=static
+          make -j$(nproc)
+
+      - name: Check for new SQL updates
+        run: |
+          echo "=== New SQL updates from merge ==="
+          git diff --name-only HEAD~1..HEAD -- 'data/sql/updates/**/*.sql' 2>/dev/null || echo "No SQL updates detected."
+          echo ""
+          echo "Review these updates and apply pending ones using:"
+          echo "  bin/acore-db-pendings"
+
+  notify:
+    name: Merge Summary
+    needs: merge-and-test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "=== UPSTREAM MERGE SUMMARY ==="
+          echo "From: ${{ github.event.inputs.upstream_remote }}"
+          echo "Branch: ${{ github.event.inputs.upstream_branch }}"
+          echo "Target: ${{ github.event.inputs.target_branch }}"
+          echo "Status: ${{ needs.merge-and-test.result }}"
+          echo ""
+          if [ "${{ needs.merge-and-test.result }}" = "success" ]; then
+            echo "Merge and build test passed. Review before pushing to origin."
+          else
+            echo "Merge or build failed. Check logs for details."
+          fi

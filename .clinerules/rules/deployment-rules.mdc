@@ -1,0 +1,39 @@
+---
+description: Deployment safety, rollback, production restart rules
+alwaysApply: false
+---
+
+# Deployment Rules
+
+## Pre-deploy checklist
+
+1. **Backup exists**: Database and binaries backed up
+2. **Rollback plan**: Written and tested
+3. **Review approved**: `production-deploy-review` agent pass
+4. **Maintenance window**: Scheduled or communicated
+5. **Notification**: Discord #deployments message drafted
+
+## Deployment order
+
+1. Database SQL updates (if any)
+2. Configuration file changes
+3. Binary replacement
+4. Service restart
+5. Smoke test
+
+## Restart safety
+
+1. Announce restart 5 minutes before
+2. Save all characters: `.saveall` from console
+3. Graceful shutdown: `SIGTERM` (not `SIGKILL`)
+4. Verify process stopped before starting new instance
+5. Check logs for errors on startup
+
+## Rollback triggers
+
+Immediate rollback if:
+- Server doesn't start within expected time
+- Crash loop detected (>3 crashes in 5 minutes)
+- Database corruption signs
+- Player data loss reported
+- Critical bug discovered within first 30 minutes

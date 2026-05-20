@@ -1,0 +1,52 @@
+---
+description: Lua scripting guidelines for mod-eluna and Lua-based modules
+alwaysApply: false
+globs: modules/mod-eluna/**
+---
+
+# Lua Scripting Rules
+
+## mod-eluna overview
+
+mod-eluna provides a Lua scripting engine for AzerothCore. Lua scripts can:
+- Register creature/player/gameobject hooks
+- Create custom commands
+- Modify spell effects
+- Handle events (login, kill, death, etc.)
+
+## Safety rules
+
+1. **No blocking operations**: Lua runs on the main thread; don't use `os.execute()` with long-running commands
+2. **Player object lifetime**: Check `player:IsInWorld()` before accessing player data
+3. **Database safety**: Use `CharDBQuery()` and `WorldDBQuery()` with parameterized queries
+4. **Avoid global state**: Prefer local variables; global state leaks between reloads
+5. **Error handling**: Use `pcall()` for operations that may fail
+6. **Performance**: Don't run heavy operations on frequently-triggered hooks (e.g., `OnUpdate`)
+
+## Registering scripts
+
+```lua
+-- Creature script
+local CREATURE_ID = 12345
+
+local function OnGossipHello(event, player, creature)
+    player:GossipMenuAddItem(0, "Hello!", 0, 1)
+    player:GossipSendMenu(1, creature)
+end
+
+RegisterCreatureGossipEvent(CREATURE_ID, 1, OnGossipHello)
+```
+
+## Common hooks
+
+| Hook | Event |
+|---|---|
+| `RegisterCreatureEvent(entry, event, func)` | Creature events (death, combat, spawn) |
+| `RegisterPlayerEvent(event, func)` | Player events (login, logout, levelup) |
+| `RegisterGameObjectEvent(entry, event, func)` | Gameobject events |
+| `RegisterServerEvent(event, func)` | Server-wide events |
+| `RegisterSpellEvent(spellId, event, func)` | Spell events |
+
+## Script location
+
+Lua scripts go in `lua_scripts/` at the server root. They are loaded on worldserver startup.

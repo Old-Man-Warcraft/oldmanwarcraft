@@ -1,0 +1,50 @@
+---
+description: SmartAI scripting rules, event/action patterns, and DB structure
+alwaysApply: false
+globs: data/sql/**/*smart*/*.sql,data/sql/**/*sai*/*.sql
+---
+
+# SmartAI Scripting Rules
+
+## SmartAI structure
+
+SmartAI scripts live in `acore_world.smart_scripts`. Each row = one event→action→target chain.
+
+### Required fields
+| Field | Description |
+|---|---|
+| `entryorguid` | Creature/gameobject entry or GUID (negative for GUID-based) |
+| `source_type` | 0 = creature, 1 = gameobject, 9 = area trigger |
+| `id` | Unique ID within entryorguid scope |
+| `link` | Link to next event/action (0 = none) |
+| `event_type` | Trigger event type |
+| `event_phase_mask` | Phase filter (bitmask) |
+| `event_chance` | Chance to fire (0-100) |
+| `event_flags` | Event flags |
+| `event_param1-5` | Event parameters |
+| `action_type` | Action to execute |
+| `action_param1-6` | Action parameters |
+| `target_type` | Target selection |
+| `target_param1-4` | Target parameters |
+| `comment` | Description of what this does |
+
+## Event/Action ordering
+
+- Events within same `entryorguid` are ordered by `id`
+- Linked events use `link` to chain (action triggers next event)
+- `event_phase_mask` controls which phases the event fires in
+- Use `ACTION_CALL_TIMED_ACTIONLIST` for timed sequences
+
+## Required conventions
+
+1. **Always use `entryorguid` negative for GUID-based scripts**: Positive for template-based
+2. **Comment every row**: The `comment` field is mandatory for maintainability
+3. **Link properly**: Don't create infinite loops with `link`
+4. **Phase transitions**: Use `ACTION_SET_EVENT_PHASE` + `event_phase_mask` for boss phases
+5. **Chance sums**: Event chances across phased events should be considered, not just per-ID
+6. **Timed action lists**: Must have a terminator action or they run forever
+
+## See also
+
+- Skill: `smartai-reference` — full event/action type reference
+- Rule: `conditions-rules.mdc` — for SmartAI conditions

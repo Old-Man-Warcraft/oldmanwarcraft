@@ -1,0 +1,47 @@
+# Pre-Commit Review Workflow
+# Runs on every commit to verify standards before merge
+
+name: Pre-Commit Review
+
+on:
+  push:
+    branches-ignore: [master]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: C++ Code Style
+        run: python3 apps/codestyle/codestyle-cpp.py
+
+      - name: SQL Code Style
+        run: python3 apps/codestyle/codestyle-sql.py
+
+      - name: Check Commit Message Format
+        run: |
+          # Verify commit message follows Conventional Commits
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          if ! echo "$COMMIT_MSG" | grep -qE '^(feat|fix|refactor|style|docs|test|chore)\([^)]+\): .{1,50}'; then
+            echo "ERROR: Commit message must follow format: Type(Scope): Short description"
+            echo "Got: $COMMIT_MSG"
+            exit 1
+          fi
+
+      - name: Check for SQL Updates
+        run: |
+          # If SQL files changed, verify naming convention
+          SQL_FILES=$(git diff --name-only HEAD~1..HEAD | grep '\.sql$' || true)
+          if [ -n "$SQL_FILES" ]; then
+            echo "SQL files changed:"
+            echo "$SQL_FILES"
+            for f in $SQL_FILES; do
+              # Check for WHERE clause in DELETE/UPDATE
+              if grep -nE '(DELETE\s+FROM|UPDATE\s+\w+\s+SET)' "$f" | grep -v 'WHERE'; then
+                echo "WARNING: DELETE/UPDATE without WHERE clause found in $f"
+              fi
+            done
+          fi

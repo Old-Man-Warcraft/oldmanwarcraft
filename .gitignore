@@ -99,7 +99,7 @@ local.properties
 .cproject
 
 # Local MCP secrets (if copied next to repo docs by mistake)
-.cursor/mcp.secrets.env
+.clinerules/mcp.secrets.env
 
 # vcpkg integration
 /vcpkg/

@@ -1,0 +1,59 @@
+---
+description: Playerbots-specific safety rules, null checks, and known risk areas
+alwaysApply: false
+globs: modules/playerbots/**
+---
+
+# Playerbots Rules
+
+## Safety rules
+
+1. **Null check everything**: `GetMaster()`, `GetGroup()`, `GetGuild()`, `GetArenaTeam()` can all return null
+2. **Thread safety**: Use `Player::Schedule()` for operations that need to run on the world thread
+3. **Group limits**: Party max = 5, Raid max = 40. Enforce before adding bots
+4. **Economy safety**: No infinite gold/items; validate AH and mail costs
+5. **Arena constraints**: Respect bracket levels, team sizes, rating calculations
+6. **Guild operations**: Verify permission levels before guild actions
+7. **Spell cooldowns**: Bots must respect spell cooldowns and GCD
+8. **Movement**: Rate-limit movement recalculations to avoid CPU spikes
+9. **Chat**: Rate-limit bot chat responses to avoid spam
+10. **Memory**: Clean up Strategy/Action objects on bot logout
+
+## Code patterns
+
+### Always safe pattern
+```cpp
+if (Player* master = bot->GetPlayerbotAI()->GetMaster())
+{
+    // Safe to use master
+}
+```
+
+### Dangerous pattern (avoid)
+```cpp
+bot->GetPlayerbotAI()->GetMaster()->GetName(); // Can crash if GetMaster() is null
+```
+
+### Correct pattern
+```cpp
+Player* master = bot->GetPlayerbotAI()->GetMaster();
+if (master)
+{
+    std::string name = master->GetName();
+}
+```
+
+## Known crash sources
+
+1. Null master pointer after master disconnects
+2. Stale group pointers after group disband
+3. Arena team null after team deletion
+4. Uninitialized bot values access
+5. Recursive strategy evaluation loops
+6. Movement pathing in invalid maps
+7. Trading with offline players
+
+## See also
+
+- Agent: `playerbots-safety-reviewer` — mandatory for all playerbots code reviews
+- Skill: `playerbots-system` — architecture and development guide

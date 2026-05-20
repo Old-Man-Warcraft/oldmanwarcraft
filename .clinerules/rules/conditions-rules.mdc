@@ -1,0 +1,91 @@
+---
+description: Conditions table rules and patterns for SmartAI, loot, spawns
+alwaysApply: false
+globs: data/sql/**/*.sql
+---
+
+# Conditions Rules
+
+## Conditions table overview
+
+The `conditions` table in `acore_world` controls conditional behavior for:
+- SmartAI events/actions (`SourceTypeOrReferenceId = 22`)
+- Loot drops
+- Creature/gameobject spawns
+- Gossip menus
+- Quest availability
+- Spell area triggers
+
+## Writing conditions
+
+### SourceTypeOrReferenceId values
+
+| Value | System |
+|---|---|
+| 0 | None |
+| 1 | Creature loot |
+| 2 | Disenchant loot |
+| 3 | Fishing loot |
+| 4 | Gameobject loot |
+| 5 | Item loot |
+| 6 | Mail loot |
+| 7 | Milling loot |
+| 8 | Pickpocketing loot |
+| 9 | Prospecting loot |
+| 10 | Reference loot |
+| 11 | Skinning loot |
+| 12 | Spell loot |
+| 13 | Creature spell |
+| 14 | Creature vendor |
+| 15 | Creature gossip |
+| 17 | Creature queststarter |
+| 18 | Gameobject queststarter |
+| 19 | Creature questender |
+| 20 | Gameobject questender |
+| 21 | Creature gossip (alternative) |
+| 22 | SmartAI scripts |
+| 23 | Area trigger |
+| 24 | Creature vehicle spell |
+| 26 | Spell click |
+| 27 | Phase definition |
+
+### Required fields
+
+For SmartAI conditions (`SourceTypeOrReferenceId = 22`):
+- `SourceGroup`: creature entry
+- `SourceEntry`: smart_scripts `entryorguid`
+- `SourceId`: event/action index within the script
+
+For loot conditions:
+- `SourceGroup`: loot template entry
+- `SourceEntry`: item ID
+- Condition applies to whether that item drops
+
+### Condition types (common)
+
+| ConditionTypeOrReference | Description |
+|---|---|
+| 1 | Aura active |
+| 2 | Item equipped or in bags |
+| 3 | Item in bank |
+| 5 | Quest rewarded |
+| 6 | Quest incomplete |
+| 8 | Quest complete |
+| 9 | Quest none (not taken) |
+| 14 | Race |
+| 15 | Class |
+| 16 | Level |
+| 17 | Gender |
+| 26 | Phase mask |
+| 31 | Map ID |
+| 36 | Achievement |
+| 47 | Quest taken (in quest log) |
+| 48 | Quest incomplete or not rewarded |
+
+## Safety rules
+
+1. **Always test conditions** with representative data
+2. **ElseGroup**: When using multiple conditions with OR logic, increment `ElseGroup`
+3. **ConditionTarget**: 0 = target, 1 = source (invoker). Be explicit.
+4. **Negative conditions**: Some condition types support `ConditionValue2` for "not equal" checks
+5. **Performance**: Avoid conditions on frequently-triggered events (UPDATE_IC) unless necessary

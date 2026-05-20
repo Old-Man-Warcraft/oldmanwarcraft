@@ -1,0 +1,53 @@
+---
+description: Core C++ and project coding standards for AzerothCore
+alwaysApply: true
+---
+
+# AzerothCore Development Standards
+
+## C++ Standards
+
+- **C++ Standard**: C++17
+- **Indentation**: Tabs (not spaces)
+- **Braces**: Allman style (braces on new line)
+- **Line length**: Max 120 characters
+- **Naming**:
+  - Classes: PascalCase (`PlayerScript`, `SpellScript`)
+  - Functions/Methods: camelCase (`doSomething()`, `getValue()`)
+  - Member variables: prefixed with `_` (`_someVar`)
+  - Constants: UPPER_SNAKE_CASE (`MAX_LEVEL`)
+  - Enums: PascalCase for type, values as needed
+- **Pointers/References**: `Type* ptr` (asterisk next to type)
+- **Null**: Use `nullptr`, never `NULL` or `0`
+- **Casts**: Use C++ casts (`static_cast`, `dynamic_cast`, etc.), not C-style
+- **Strings**: Use `std::string`, not C-style `char*`
+- **Logging**: Use `TC_LOG_*` macros, not `printf`/`cout`
+- **Headers**: Use `#pragma once` (not include guards)
+- **Include order**: Local → project → system → standard library
+- **Documentation**: Doxygen-style comments for public APIs
+
+## SQL Standards
+
+- Tab indentation
+- Keywords in UPPERCASE
+- Table/column names in lowercase
+- Include `DROP TABLE IF EXISTS` before `CREATE TABLE`
+- Include `DELETE` before `INSERT` for data changes
+- Always include `WHERE` clause in `DELETE`/`UPDATE` statements
+- Use transactions for multi-statement changes
+- Comment complex queries
+
+## Commit Standards
+
+- Follow Conventional Commits: `Type(Scope): Description`
+- Max 50 characters for subject line
+- Body wrapped at 72 characters
+- Reference issues with `Closes #<number>`
+- Use `.git_commit_template.txt`
+
+## General
+
+- UTF-8 encoding, LF line endings
+- No trailing whitespace
+- Files end with single newline
+- Pre-commit hooks enforce standards (see `.cline/hooks/`)

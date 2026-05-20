@@ -1,0 +1,49 @@
+# CI: Build and Test Workflow
+# Triggered on push to master and merge requests
+
+name: CI Build and Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake make g++ \
+            libmysqlclient-dev libssl-dev libboost-all-dev \
+            libreadline-dev zlib1g-dev
+
+      - name: Configure
+        run: |
+          mkdir -p build && cd build
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=$HOME/azeroth-server \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DSCRIPTS=static \
+            -DMODULES=static \
+            -DBUILD_TESTING=ON
+
+      - name: Build
+        run: cd build && make -j$(nproc)
+
+      - name: Run Tests
+        run: cd build && ctest --output-on-failure
+
+      - name: Code Standards (C++)
+        run: python3 apps/codestyle/codestyle-cpp.py
+
+      - name: Code Standards (SQL)
+        run: python3 apps/codestyle/codestyle-sql.py

@@ -1,0 +1,36 @@
+#!/bin/bash
+# Commit-msg hook for AzerothCore / Old Man Warcraft
+# Enforces Conventional Commit message format.
+#
+# Install: .cline/hooks/install.sh
+# Or manually: ln -sf ../../.cline/hooks/commit-msg .git/hooks/commit-msg
+
+set -euo pipefail
+
+COMMIT_MSG_FILE="$1"
+
+# Read the first line of the commit message
+COMMIT_MSG="$(head -n1 "$COMMIT_MSG_FILE")"
+
+echo "=== Commit-msg: Validating commit message format ==="
+echo "Message: $COMMIT_MSG"
+
+# Check Conventional Commits format: Type(Scope): description
+# Types: feat, fix, refactor, style, docs, test, chore, ci, perf, build, revert
+if echo "$COMMIT_MSG" | grep -qP '^(feat|fix|refactor|style|docs|test|chore|ci|perf|build|revert)(\([A-Za-z0-9_/.]+\))?!?: .+'; then
+    echo "  Commit message format: PASS"
+else
+    echo "  Commit message format: FAIL"
+    echo ""
+    echo "Expected format: Type(Scope): Description"
+    echo "  Types: feat, fix, refactor, style, docs, test, chore, ci, perf, build, revert"
+    echo "  Examples:"
+    echo "    feat(Core/Spells): Add new spell handler"
+    echo "    fix(DB/SAI): Missing spell to NPC Hogger"
+    echo "    chore: Update dependencies"
+    echo ""
+    echo "Your message: $COMMIT_MSG"
+    exit 1
+fi
+
+exit 0

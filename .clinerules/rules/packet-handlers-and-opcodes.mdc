@@ -1,0 +1,70 @@
+---
+description: Packet handler standards, opcode definitions, and security rules
+alwaysApply: false
+globs: src/server/game/Handlers/**,src/server/game/Server/Packets/**
+---
+
+# Packet Handlers and Opcodes Rules
+
+## Handler registration
+
+Packet handlers are registered in `WorldSession` with opcodes defined in `Opcodes.cpp`:
+
+```cpp
+// Handler registration (in WorldSession constructor or init)
+AddPacketHandler(CMSG_SOME_OPCODE, &WorldSession::HandleSomeOpcode);
+```
+
+## Safety rules
+
+1. **Input validation first**: Validate all packet data before processing
+2. **Ownership checks**: Verify the player owns items/spells they're trying to use
+3. **Anti-cheat**: Check for impossible values (e.g., movement speed, spell cooldowns)
+4. **Rate limiting**: Prevent packet spam (movement, chat, trade)
+5. **Boundary checks**: Array indices, string lengths, and numeric ranges
+6. **Null session checks**: Always verify `GetPlayer()` before using player pointer
+7. **Error packets**: Send appropriate error responses for invalid requests
+
+## Handler pattern
+
+```cpp
+void WorldSession::HandleSomeOpcode(WorldPacket& recvData)
+{
+    // 1. Extract data
+    ObjectGuid guid;
+    uint32 someValue;
+    recvData >> guid >> someValue;
+
+    // 2. Validate
+    if (!guid.IsPlayer())
+        return;
+
+    Player* player = ObjectAccessor::FindPlayer(guid);
+    if (!player)
+        return;
+
+    if (someValue > MAX_ALLOWED_VALUE)
+    {
+        SendNotification("Invalid value");
+        return;
+    }
+
+    // 3. Process
+    // ...
+}
+```
+
+## Opcode conventions
+
+- Client→Server: `CMSG_*`
+- Server→Client: `SMSG_*`
+- Movement: `MSG_MOVE_*` (bidirectional)
+- Opcodes defined in `src/server/game/Server/Opcodes.cpp`
+
+## Common attack vectors to guard against
+
+1. **Gold duplication**: Trade, mail, auction house packets
+2. **Item duplication**: Split/merge, bank, mail packets
+3. **Teleport hacks**: Movement packets, taxi, summon packets
+4. **Spell cooldown bypass**: Cast spell, cancel aura packets
+5. **Chat spam**: Chat, emote, channel packets

@@ -1,0 +1,61 @@
+---
+description: Module development standards, CMake integration, and hook patterns
+alwaysApply: false
+globs: modules/**
+---
+
+# Module Development Rules
+
+## Module structure
+
+```
+modules/<mod-name>/
+├── CMakeLists.txt
+├── src/
+│   ├── <mod>_loader.cpp      — AddSC entry point
+│   └── <mod>.cpp/h           — Module logic
+├── conf/
+│   └── <mod>.conf.dist       — Default config
+├── data/sql/
+│   └── db_world/             — SQL updates
+└── README.md
+```
+
+## CMake integration
+
+```cmake
+# Minimal CMakeLists.txt
+add_module(
+  NAME mod_name
+  SOURCES
+    src/mod_name_loader.cpp
+    src/mod_name.cpp
+  HEADERS
+    src/mod_name.h
+  MODULE_DEPS
+    # List dependencies
+)
+```
+
+## Module lifecycle hooks
+
+| Hook | Method | When |
+|---|---|---|
+| Load | `OnLoad()` | Module loaded on startup |
+| Unload | `OnUnload()` | Module unloaded on shutdown |
+| Config | `OnConfigLoad()` | Config (re)loaded |
+| WorldScript hooks | Various | Game events |
+
+## Safety rules
+
+1. **Don't modify core directly** — use hooks and ScriptObject registration
+2. **Config files**: Ship `.conf.dist` with defaults; never modify core config
+3. **SQL updates**: Follow same lifecycle as core SQL updates
+4. **Dependencies**: Declare in CMakeLists.txt MODULE_DEPS
+5. **Thread safety**: Module code runs on the world thread; use scheduled operations for async work
+6. **Memory**: Clean up in `OnUnload()`
+7. **Null checks**: All pointers from core API must be null-checked
+
+## Skeleton module reference
+
+https://github.com/azerothcore/skeleton-module/

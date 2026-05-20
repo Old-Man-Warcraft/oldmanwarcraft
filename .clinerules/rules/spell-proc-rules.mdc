@@ -1,0 +1,46 @@
+---
+description: Spell and proc scripting rules, registration, and hook patterns
+alwaysApply: false
+globs: src/server/scripts/Spells/**,src/server/game/Spells/**
+---
+
+# Spell and Proc Scripting Rules
+
+## Registration rules
+
+1. Every spell script must call `RegisterSpellScript()` (or `RegisterAuraScript()`) in an `AddSC_*()` function
+2. `AddSC_*()` must be wired in the regional loader (`spells_script_loader.cpp`)
+3. Spell scripts go in class-specific files: `spell_<class>.cpp`
+4. Generic/trade/racial spells go in `spell_generic.cpp`
+
+## Hook safety
+
+1. **Spell instance lifetime**: Don't store raw Spell* pointers across events
+2. **Aura removal**: `OnRemove` must clean up all state; auras can be removed unexpectedly
+3. **Proc recursion**: Guard against proc chains that could infinite-loop (e.g., proc triggers another proc)
+4. **Target validation**: In `OnEffectHitTarget`, validate `GetHitUnit()` is not null
+5. **Caster validation**: `GetCaster()` can be null for environmental damage
+6. **SpellInfo caching**: SpellInfo* is safe to store (constant), but Spell* is not
+7. **Effect index bounds**: `EFFECT_0` through `EFFECT_2` only (max 3 effects per spell)
+
+## Common mistakes
+
+1. Using `SpellScript` when `AuraScript` is needed (for persistent effects)
+2. Forgetting `PreventHitDefaultEffect()` when overriding default behavior
+3. Calling `GetHitDamage()` before base damage is calculated
+4. Modifying spell values in `OnCheckCast` instead of `OnCast`/`OnHit`
+5. Using raw IDs instead of enum/constant references
+6. Not handling spell reflect/immune/invulnerable cases
+
+## Proc rules
+
+1. `DoCheckProc` must be fast — it fires frequently
+2. Proc flags determine trigger events; check `SpellInfo::ProcFlags`
+3. `OnProc` fires after successful proc check — expensive operations are OK here
+4. Internal cooldown: Use `SpellInfo::ProcCooldown` for rate limiting
+5. Proc chance: Configured in `spell_proc` table, not hardcoded
+
+## See also
+
+- Skill: `spell-proc-reference` — detailed API reference
+- Agent: `core-cpp-game-reviewer` — spell code review checklist

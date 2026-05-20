@@ -1,6 +1,24 @@
-# Cursor agents, rules, and skills (OMW / AzerothCore)
+# AI Assistant Configuration (OMW / AzerothCore)
 
-This repository is optimized for AI-assisted work on **AzerothCore WotLK 3.3.5a** with **Old Man Warcraft** production constraints. Use this file as the **routing index**; detailed standards live under `.cursor/`.
+This repository is optimized for AI-assisted work on **AzerothCore WotLK 3.3.5a** with **Old Man Warcraft** production constraints. Use this file as the **routing index**.
+
+## Cline (`.cline/`) — Primary
+
+The primary AI assistant configuration for this project is under `.cline/`. Use this when working with **Cline** (VS Code extension) or compatible AI coding assistants.
+
+| Resource | Location | Purpose |
+|---|---|---|
+| **CLAUDE.md** | `.cline/CLAUDE.md` | Project context, build commands, architecture |
+| **Agents** | `.cline/agents/` | Specialized agent briefs (deploy, merge, DB, review) |
+| **Skills** | `.cline/skills/` | Domain reference & workflow guides |
+| **Rules** | `.cline/rules/` | Always-on code standards & safety rules |
+| **Workflows** | `.cline/workflows/` | CI/CD pipeline definitions (GitHub Actions) |
+| **Hooks** | `.cline/hooks/` | Git hooks (pre-commit, commit-msg, pre-push, post-merge) |
+| **Reference** | `.cline/reference/` | Project facts, MCP tools inventory |
+
+## Cursor (`.cursor/`) — Legacy
+
+Legacy Cursor IDE configuration is preserved under `.cursor/`. Detailed standards live there for reference.
 
 ## Subagents (`.cursor/agents/`)
 

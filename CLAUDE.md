@@ -1,19 +1,28 @@
 # CLAUDE.md
 
-Guidance for AI-assisted work in this repository (Cursor, Claude Code, and similar tools).
+Guidance for AI-assisted work in this repository (Cline, Claude Code, and similar tools).
 
 ## Where standards live
 
-- **Always-on / safety**: `.cursor/rules/` (especially `azerothcore-standards.mdc`, `playerbots-rules.mdc`).
-- **Workflows & checklists**: `.cursor/skills/` (`workflow-*`, domain references).
-- **Project facts & module list**: `.cursor/reference/PROJECT_SUMMARY.md`.
-- **Crash analysis**: `.cursor/docs/crash-debugging.md`.
+### Primary: Cline (`.cline/`)
+
+The primary AI assistant configuration is under `.cline/`. This is the active, maintained set of agents, skills, rules, workflows, and hooks.
+
+- **Project overview & quick reference**: `.cline/CLAUDE.md`
+- **Agents** (specialized AI assistants): `.cline/agents/`
+- **Skills** (domain reference & workflows): `.cline/skills/`
+- **Rules** (always-on code standards): `.cline/rules/`
+- **Workflows** (CI/CD pipelines): `.cline/workflows/`
+- **Hooks** (Git hooks): `.cline/hooks/`
+- **Reference** (project facts, MCP inventory): `.cline/reference/`
+
+### Legacy: Cursor (`.clinerules/`)
+
+Legacy Cursor IDE configuration is preserved under `.clinerules/` for reference. All current AI assistant standards have been migrated to `.cline/`.
 
 Keep long-lived facts about **Old Man Warcraft** operations in **Notion** (reference via Notion MCP when configuring or debugging live server behavior).
 
-**MCP credentials**: Do **not** rely on `${env:VAR}` inside `mcp.json` for GUI-launched Cursor. Use **`~/.cursor/mcp.secrets.env`** + **`~/.cursor/mcp-exec-with-secrets.sh`** + **`python3 .cursor/scripts/regenerate_mcp_json.py`** (writes `~/.cursor/mcp.json` from `.cursor/reference/mcp.base.json`). Details: `.cursor/reference/mcp.env.example`, `.cursor/rules/mcp-usage.mdc`.
-
-**MCP routing and tool catalog**: `.cursor/rules/mcp-usage.mdc` and `.cursor/reference/mcp-tools-inventory.md` (grouped `azerothcore`, `omw_*`, GitLab, Notion, fetch, firecrawl, research, browser).
+**MCP routing and tool catalog**: `.cline/rules/mcp-usage.mdc` and `.cline/reference/mcp-tools-inventory.md`.
 
 ## Project identity
 
@@ -133,7 +142,7 @@ Type(Scope/Subscope): Short description (max 50 chars)
 - **Scopes**: Core (C++), DB (SQL), etc.
 - **Examples**: `fix(Core/Spells): Fix damage calculation for Fireball`, `fix(DB/SAI): Missing spell to NPC Hogger`
 
-## Code style (aligned with `.cursor/rules`)
+## Code style (aligned with `.cline/rules`)
 
 - **C++**: 4 spaces, no tabs; **max 120** character lines; **Allman** braces; naming per AzerothCore conventions (PascalCase classes, camelCase functions/variables).
 - **JSON / YAML / shell**: 2-space indent where applicable.

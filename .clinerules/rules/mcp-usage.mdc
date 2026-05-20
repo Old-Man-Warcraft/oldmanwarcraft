@@ -1,0 +1,39 @@
+---
+description: MCP tool usage, credential management, and server routing
+alwaysApply: true
+---
+
+# MCP Usage Rules
+
+## MCP servers
+
+All external data access is routed through MCP tools:
+
+| MCP Server | Purpose |
+|---|---|
+| `mysql-azerothcore-wotlk` | Database queries (world, characters, auth) |
+| `notion-api` | OMW Notion workspace (docs, runbooks) |
+| `gitlab-api` | GitLab issues, MRs, repos |
+| `github-api` | GitHub upstream references |
+
+## Usage rules
+
+1. **Never hardcode credentials** — use MCP for all database/protected access
+2. **Route through correct server** — world queries to `mysql-azerothcore-wotlk`, docs to `notion-api`
+3. **Tool inventory**: See `.cline/reference/mcp-tools-inventory.md` for available tools
+4. **Always check MCP tool availability** before assuming you can query something
+
+## Database access (mysql-azerothcore-wotlk)
+
+Query `acore_world`, `acore_characters`, or `acore_auth` via this server.
+Use parameterized queries. Never use string concatenation for SQL.
+
+## Notion access (notion-api)
+
+Retrieve server facts, runbooks, and operational docs.
+Always consult before production actions.
+
+## Issue tracking (gitlab-api, github-api)
+
+- GitLab: primary origin for OMW issues and MRs
+- GitHub: upstream reference for AzerothCore + modules

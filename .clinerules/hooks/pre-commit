@@ -1,0 +1,52 @@
+#!/bin/bash
+# Pre-commit hook for AzerothCore / Old Man Warcraft
+# Runs C++ and SQL code style checks before allowing a commit.
+#
+# Install: .cline/hooks/install.sh
+# Or manually: ln -sf ../../.cline/hooks/pre-commit .git/hooks/pre-commit
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+STAGED_FILES="$(git diff --cached --name-only --diff-filter=ACM)"
+
+echo "=== Pre-commit: Code Standards Check ==="
+
+# ---- C++ checks ----
+CPP_FILES="$(echo "$STAGED_FILES" | grep -E '\.(cpp|h|hpp)$' || true)"
+if [ -n "$CPP_FILES" ]; then
+    echo "Running C++ code style check on staged files..."
+    if python3 "$REPO_ROOT/apps/codestyle/codestyle-cpp.py" 2>&1; then
+        echo "  C++ style: PASS"
+    else
+        echo "  C++ style: FAIL"
+        echo ""
+        echo "Please fix the C++ style issues above before committing."
+        echo "See: https://www.azerothcore.org/wiki/cpp-standards"
+        exit 1
+    fi
+fi
+
+# ---- SQL checks ----
+SQL_FILES="$(echo "$STAGED_FILES" | grep -E '\.sql$' || true)"
+if [ -n "$SQL_FILES" ]; then
+    echo "Running SQL code style check on staged files..."
+    if python3 "$REPO_ROOT/apps/codestyle/codestyle-sql.py" 2>&1; then
+        echo "  SQL style: PASS"
+    else
+        echo "  SQL style: FAIL"
+        echo ""
+        echo "Please fix the SQL style issues above before committing."
+        exit 1
+    fi
+fi
+
+# ---- Commit message format warning (non-blocking) ----
+echo ""
+echo "NOTE: Ensure your commit message follows the Conventional Commits format:"
+echo "  Type(Scope/Subscope): Short description (max 50 chars)"
+echo "  Types: feat, fix, refactor, style, docs, test, chore"
+echo ""
+
+echo "=== Pre-commit checks passed ==="
+exit 0

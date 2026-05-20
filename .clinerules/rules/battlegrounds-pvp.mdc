@@ -1,0 +1,46 @@
+---
+description: Battleground and PvP-specific rules and safety guidelines
+alwaysApply: false
+globs: src/server/game/Battlegrounds/**
+---
+
+# Battlegrounds / PvP Rules
+
+Apply when modifying or reviewing code in `src/server/game/Battlegrounds/`.
+
+## Safety rules
+
+1. **Player lifecycle**: Always handle player add (`AddPlayer`) and remove (`RemovePlayer`) symmetrically. Clean up all state on `RemovePlayer`.
+2. **Score tracking**: Verify score is updated atomically. No two players should be able to simultaneously update the score causing a race condition.
+3. **Timer-based events**: Use `Battleground::AddTimedEvent()` or map scheduler. Do not use raw timers.
+4. **Team balance**: Check `GetTeamSize()` before team-switching. Respect max player limits.
+5. **End conditions**: Verify that `EndBattleground()` is called exactly once. Double-calling can cause double rewards or crashes.
+6. **Deserter debuff**: Apply deserter debuff on `RemovePlayer` if player left early.
+7. **Award distribution**: Use `RewardHonorToTeam()` and `RewardXpOrMoney()`. Do not award directly.
+8. **Cross-faction**: Some BGs allow cross-faction (e.g., random BG). Check `isArena()` vs `isBattleground()` context.
+
+## Common BG types
+
+| BG | Map ID | Key features |
+|---|---|---|
+| Alterac Valley | 30 | Towers, graveyards, NPC bosses |
+| Warsong Gulch | 489 | Flag capture, flag carrier debuff |
+| Arathi Basin | 529 | Resource nodes, tick-based scoring |
+| Eye of the Storm | 566 | Flag capture + resource nodes |
+| Strand of the Ancients | 607 | Siege vehicles, gates, relic |
+| Isle of Conquest | 628 | Vehicles, gates, general kill |
+| Wintergrasp | 571 | Open world PvP, vehicles, fortress |
+
+## Arena rules
+
+1. **Team formation**: Verify both players are in same arena team before match starts
+2. **Rating calculations**: Use correct ELO formula; verify bracket (2v2, 3v3, 5v5)
+3. **Match end**: Check if all members of a team are dead or offline
+4. **Spectator**: Spectators must not affect match outcome
+5. **Preparation**: Handle pre-match buff/food/pet summoning period
+
+## Spell interactions in BGs
+
+- Some spells behave differently in BGs (e.g., crowd control duration modifiers)
+- Check `SpellInfo::AttributesEx*` for BG-specific behavior
+- Playerbot BGs: see `playerbots-rules.mdc` for safety concerns
