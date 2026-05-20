@@ -2,7 +2,7 @@
 # Triggered manually for controlled production deploys.
 # Always review with production-deploy-review agent before running.
 #
-# See: .cline/agents/production-deploy-review.md
+# See: .clinerules/agents/production-deploy-review.md
 
 name: Deploy to Production
 
@@ -64,7 +64,7 @@ jobs:
 
           echo ""
           echo "MANUAL STEP: Verify all checklist items above before proceeding."
-          echo "See: .cline/agents/production-deploy-review.md"
+          echo "See: .clinerules/agents/production-deploy-review.md"
 
       - name: Check for SQL changes
         if: github.event.inputs.deploy_type == 'sql-only' || github.event.inputs.deploy_type == 'full-deploy'

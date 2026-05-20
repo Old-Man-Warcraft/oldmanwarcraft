@@ -2,8 +2,8 @@
 # Commit-msg hook for AzerothCore / Old Man Warcraft
 # Enforces Conventional Commit message format.
 #
-# Install: .cline/hooks/install.sh
-# Or manually: ln -sf ../../.cline/hooks/commit-msg .git/hooks/commit-msg
+# Install: .clinerules/hooks/install.sh
+# Or manually: ln -sf ../../.clinerules/hooks/commit-msg .git/hooks/commit-msg
 
 set -euo pipefail
 

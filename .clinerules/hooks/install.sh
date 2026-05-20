@@ -1,13 +1,13 @@
 #!/bin/bash
 # Hook installer for AzerothCore / Old Man Warcraft
-# Symlinks the hooks from .cline/hooks/ into .git/hooks/
+# Symlinks the hooks from .clinerules/hooks/ into .git/hooks/
 #
-# Usage: bash .cline/hooks/install.sh
+# Usage: bash .clinerules/hooks/install.sh
 
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-HOOKS_SRC="$REPO_ROOT/.cline/hooks"
+HOOKS_SRC="$REPO_ROOT/.clinerules/hooks"
 HOOKS_DST="$REPO_ROOT/.git/hooks"
 
 echo "=== Installing Cline Git Hooks ==="
@@ -38,7 +38,7 @@ for hook in "${HOOKS[@]}"; do
     fi
 
     # Create relative symlink
-    REL_PATH="../../.cline/hooks/$hook"
+    REL_PATH="../../.clinerules/hooks/$hook"
     ln -sf "$REL_PATH" "$DST"
     chmod +x "$SRC"
     echo "  Installed: $hook -> $REL_PATH"
@@ -48,7 +48,7 @@ echo ""
 echo "=== Hooks installed successfully ==="
 echo ""
 echo "To verify:"
-echo "  ls -la .git/hooks/ | grep '\.cline'"
+echo "  ls -la .git/hooks/ | grep '\.clinerules'"
 echo ""
 echo "To uninstall:"
 echo "  rm .git/hooks/pre-commit .git/hooks/commit-msg .git/hooks/pre-push .git/hooks/post-merge"

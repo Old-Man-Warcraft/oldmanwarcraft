@@ -2,8 +2,8 @@
 # Pre-push hook for AzerothCore / Old Man Warcraft
 # Runs unit tests before allowing a push to remote.
 #
-# Install: .cline/hooks/install.sh
-# Or manually: ln -sf ../../.cline/hooks/pre-push .git/hooks/pre-push
+# Install: .clinerules/hooks/install.sh
+# Or manually: ln -sf ../../.clinerules/hooks/pre-push .git/hooks/pre-push
 
 set -euo pipefail
 

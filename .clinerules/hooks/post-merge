@@ -2,8 +2,8 @@
 # Post-merge hook for AzerothCore / Old Man Warcraft
 # Checks for SQL update conflicts and pending migrations after a merge.
 #
-# Install: .cline/hooks/install.sh
-# Or manually: ln -sf ../../.cline/hooks/post-merge .git/hooks/post-merge
+# Install: .clinerules/hooks/install.sh
+# Or manually: ln -sf ../../.clinerules/hooks/post-merge .git/hooks/post-merge
 
 set -euo pipefail
 

@@ -21,14 +21,14 @@ Guidance for AI-assisted work in this repository using **Cline** (VS Code extens
 
 | Resource | Location |
 |---|---|
-| **Agents** (specialized AI assistants) | `.cline/agents/` |
-| **Skills** (domain reference & workflows) | `.cline/skills/` |
-| **Rules** (always-on code standards) | `.cline/rules/` |
-| **Workflows** (CI/CD pipeline definitions) | `.cline/workflows/` |
-| **Hooks** (Git hook scripts) | `.cline/hooks/` |
-| **Reference** (project facts, MCP inventory) | `.cline/reference/` |
+| **Agents** (specialized AI assistants) | `.clinerules/agents/` |
+| **Skills** (domain reference & workflows) | `.clinerules/skills/` |
+| **Rules** (always-on code standards) | `.clinerules/rules/` |
+| **Workflows** (CI/CD pipeline definitions) | `.clinerules/workflows/` |
+| **Hooks** (Git hook scripts) | `.clinerules/hooks/` |
+| **Reference** (project facts, MCP inventory) | `.clinerules/reference/` |
 
-**MCP credentials**: See `.cline/reference/mcp-tools-inventory.md` and `.cline/rules/mcp-usage.mdc` for MCP server configuration and tool routing.
+**MCP credentials**: See `.clinerules/reference/mcp-tools-inventory.md` and `.clinerules/rules/mcp-usage.mdc` for MCP server configuration and tool routing.
 
 ## Project Identity
 
@@ -146,7 +146,7 @@ Type(Scope/Subscope): Short description (max 50 chars)
 Install hooks to enforce code standards automatically:
 
 ```sh
-bash .cline/hooks/install.sh
+bash .clinerules/hooks/install.sh
 ```
 
 Installed hooks:
@@ -159,7 +159,7 @@ Installed hooks:
 
 ## Workflows
 
-GitHub Actions workflows in `.cline/workflows/`:
+GitHub Actions workflows in `.clinerules/workflows/`:
 
 | Workflow | Purpose |
 |---|---|
@@ -170,13 +170,13 @@ GitHub Actions workflows in `.cline/workflows/`:
 
 ## Getting Help
 
-If you encounter problems, use the agents and skills in `.cline/`:
-- **Project orientation**: `.cline/skills/project-orientation/SKILL.md`
-- **Build/deploy**: `.cline/skills/workflow-deployment-and-testing/SKILL.md`
-- **Database**: `.cline/skills/database-operations/SKILL.md`
-- **Spell scripting**: `.cline/skills/spell-proc-reference/SKILL.md`
-- **Playerbots**: `.cline/skills/playerbots-system/SKILL.md`
-- **SmartAI**: `.cline/skills/smartai-reference/SKILL.md`
+If you encounter problems, use the agents and skills in `.clinerules/`:
+- **Project orientation**: `.clinerules/skills/project-orientation/SKILL.md`
+- **Build/deploy**: `.clinerules/skills/workflow-deployment-and-testing/SKILL.md`
+- **Database**: `.clinerules/skills/database-operations/SKILL.md`
+- **Spell scripting**: `.clinerules/skills/spell-proc-reference/SKILL.md`
+- **Playerbots**: `.clinerules/skills/playerbots-system/SKILL.md`
+- **SmartAI**: `.clinerules/skills/smartai-reference/SKILL.md`
 
 ### Agent Quick Reference
 | Task | Agent |

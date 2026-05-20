@@ -1,8 +1,8 @@
 # Upstream Merge Workflow
 # Automates the process of merging upstream AzerothCore / Playerbots changes.
 #
-# See: .cline/agents/upstream-merge-advisor.md
-# See: .cline/skills/workflow-gitlab-bug-reports/SKILL.md
+# See: .clinerules/agents/upstream-merge-advisor.md
+# See: .clinerules/skills/workflow-gitlab-bug-reports/SKILL.md
 
 name: Upstream Merge
 

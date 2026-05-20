@@ -20,7 +20,7 @@ All external data access is routed through MCP tools:
 
 1. **Never hardcode credentials** — use MCP for all database/protected access
 2. **Route through correct server** — world queries to `mysql-azerothcore-wotlk`, docs to `notion-api`
-3. **Tool inventory**: See `.cline/reference/mcp-tools-inventory.md` for available tools
+3. **Tool inventory**: See `.clinerules/reference/mcp-tools-inventory.md` for available tools
 4. **Always check MCP tool availability** before assuming you can query something
 
 ## Database access (mysql-azerothcore-wotlk)

@@ -2,8 +2,8 @@
 # Pre-commit hook for AzerothCore / Old Man Warcraft
 # Runs C++ and SQL code style checks before allowing a commit.
 #
-# Install: .cline/hooks/install.sh
-# Or manually: ln -sf ../../.cline/hooks/pre-commit .git/hooks/pre-commit
+# Install: .clinerules/hooks/install.sh
+# Or manually: ln -sf ../../.clinerules/hooks/pre-commit .git/hooks/pre-commit
 
 set -euo pipefail
 

@@ -4,25 +4,25 @@ Guidance for AI-assisted work in this repository (Cline, Claude Code, and simila
 
 ## Where standards live
 
-### Primary: Cline (`.cline/`)
+### Primary: Cline (`.clinerules/`)
 
-The primary AI assistant configuration is under `.cline/`. This is the active, maintained set of agents, skills, rules, workflows, and hooks.
+The primary AI assistant configuration is under `.clinerules/`. This is the active, maintained set of agents, skills, rules, workflows, and hooks.
 
-- **Project overview & quick reference**: `.cline/CLAUDE.md`
-- **Agents** (specialized AI assistants): `.cline/agents/`
-- **Skills** (domain reference & workflows): `.cline/skills/`
-- **Rules** (always-on code standards): `.cline/rules/`
-- **Workflows** (CI/CD pipelines): `.cline/workflows/`
-- **Hooks** (Git hooks): `.cline/hooks/`
-- **Reference** (project facts, MCP inventory): `.cline/reference/`
+- **Project overview & quick reference**: `.clinerules/CLAUDE.md`
+- **Agents** (specialized AI assistants): `.clinerules/agents/`
+- **Skills** (domain reference & workflows): `.clinerules/skills/`
+- **Rules** (always-on code standards): `.clinerules/rules/`
+- **Workflows** (CI/CD pipelines): `.clinerules/workflows/`
+- **Hooks** (Git hooks): `.clinerules/hooks/`
+- **Reference** (project facts, MCP inventory): `.clinerules/reference/`
 
 ### Legacy: Cursor (`.clinerules/`)
 
-Legacy Cursor IDE configuration is preserved under `.clinerules/` for reference. All current AI assistant standards have been migrated to `.cline/`.
+Legacy Cursor IDE configuration is preserved under `.clinerules/` for reference. All current AI assistant standards have been migrated to `.clinerules/`.
 
 Keep long-lived facts about **Old Man Warcraft** operations in **Notion** (reference via Notion MCP when configuring or debugging live server behavior).
 
-**MCP routing and tool catalog**: `.cline/rules/mcp-usage.mdc` and `.cline/reference/mcp-tools-inventory.md`.
+**MCP routing and tool catalog**: `.clinerules/rules/mcp-usage.mdc` and `.clinerules/reference/mcp-tools-inventory.md`.
 
 ## Project identity
 
@@ -142,7 +142,7 @@ Type(Scope/Subscope): Short description (max 50 chars)
 - **Scopes**: Core (C++), DB (SQL), etc.
 - **Examples**: `fix(Core/Spells): Fix damage calculation for Fireball`, `fix(DB/SAI): Missing spell to NPC Hogger`
 
-## Code style (aligned with `.cline/rules`)
+## Code style (aligned with `.clinerules/rules`)
 
 - **C++**: 4 spaces, no tabs; **max 120** character lines; **Allman** braces; naming per AzerothCore conventions (PascalCase classes, camelCase functions/variables).
 - **JSON / YAML / shell**: 2-space indent where applicable.

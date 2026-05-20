@@ -50,4 +50,4 @@ alwaysApply: true
 - UTF-8 encoding, LF line endings
 - No trailing whitespace
 - Files end with single newline
-- Pre-commit hooks enforce standards (see `.cline/hooks/`)
+- Pre-commit hooks enforce standards (see `.clinerules/hooks/`)

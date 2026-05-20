@@ -114,9 +114,9 @@ WHERE SourceGroup = <loot_id> AND SourceTypeOrReferenceId = 1;
 ## Reference
 
 For detailed content investigation patterns, see:
-- `.cline/agents/content-db-investigator.md`
-- `.cline/rules/database-rules.mdc`
-- `.cline/rules/conditions-rules.mdc`
-- `.cline/rules/smartai-scripting.mdc`
+- `.clinerules/agents/content-db-investigator.md`
+- `.clinerules/rules/database-rules.mdc`
+- `.clinerules/rules/conditions-rules.mdc`
+- `.clinerules/rules/smartai-scripting.mdc`
 
-Note: The `.clinerules/` directory preserves legacy Cursor IDE references. Use `.cline/` for current work.
+Note: The `.clinerules/` directory preserves legacy Cursor IDE references. Use `.clinerules/` for current work.

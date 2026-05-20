@@ -24,7 +24,7 @@ Load this skill:
 - `apps/` - Shell scripts for CI, installation, compilation
 - `conf/` - Worldserver and authserver configuration
 - `doc/` - Internal documentation and changelogs
-- `.cline/` - AI assistant configuration (this repo's primary assistant)
+- `.clinerules/` - AI assistant configuration (this repo's primary assistant)
 - `.clinerules/` - Legacy Cursor IDE configuration
 
 ### Source code (`src/`)
