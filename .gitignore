@@ -54,7 +54,7 @@ CMakeLists.txt.user
 *.LOCAL.*
 
 #
-# AI tools
+# Claude
 #
 .claude
 .firecrawl/
