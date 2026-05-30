@@ -4,7 +4,7 @@
 			"path": "/root/azerothcore-wotlk"
 		},
 		{
-			"path": "/data"
+			"path": "/root/logs"
 		}
 	],
 	"settings": {
