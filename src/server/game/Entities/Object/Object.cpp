@@ -3002,6 +3002,14 @@ void WorldObject::DestroyForVisiblePlayers()
     {
         Player* player = itr->second;
 
+        if (!player->IsInWorld())
+        {
+            // Player was already removed from world (e.g. bot logout sequence destroying bots sequentially).
+            // Their visibility container has already been cleaned — just drop the stale reference.
+            itr = visiblePlayerMap.erase(itr);
+            continue;
+        }
+
         DestroyForPlayer(player);
 
         // Clean up visibility references now

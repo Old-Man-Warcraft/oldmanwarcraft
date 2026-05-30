@@ -546,7 +546,13 @@ void Map::UpdateNonPlayerObjects(uint32 const diff)
                 continue;
             }
 
+            UpdatableMapObject* mapUpdatableObject = dynamic_cast<UpdatableMapObject*>(obj);
+            ASSERT(mapUpdatableObject);
+
             obj->Update(diff);
+
+            if (mapUpdatableObject->GetUpdateState() != UpdatableMapObject::UpdateState::Updating)
+                continue;
 
             if (!obj->IsUpdateNeeded())
             {
@@ -561,13 +567,24 @@ void Map::UpdateNonPlayerObjects(uint32 const diff)
     }
     else
     {
-        for (uint32 i = 0; i < _updatableObjectList.size(); ++i)
+        for (uint32 i = 0; i < _updatableObjectList.size();)
         {
             WorldObject* obj = _updatableObjectList[i];
             if (!obj->IsInWorld())
+            {
+                ++i;
                 continue;
+            }
+
+            UpdatableMapObject* mapUpdatableObject = dynamic_cast<UpdatableMapObject*>(obj);
+            ASSERT(mapUpdatableObject);
 
             obj->Update(diff);
+
+            if (mapUpdatableObject->GetUpdateState() != UpdatableMapObject::UpdateState::Updating)
+                continue;
+
+            ++i;
         }
     }
 }
@@ -722,6 +739,9 @@ void Map::RemovePlayerFromMap(Player* player, bool remove)
     else
         ASSERT(remove); //maybe deleted in logoutplayer when player is not in a map
 
+    RemoveUpdateObject(player);
+    RemoveObjectFromMapUpdateList(player);
+
     sScriptMgr->OnPlayerLeaveMap(this, player);
     if (remove)
     {
@@ -740,11 +760,13 @@ void Map::RemoveFromMap(T* obj, bool remove)
 
     obj->RemoveFromGrid();
 
+    RemoveUpdateObject(obj);
+    RemoveObjectFromMapUpdateList(obj);
+
     obj->ResetMap();
 
     if (remove)
     {
-        RemoveObjectFromMapUpdateList(obj);
         DeleteFromWorld(obj);
     }
 }
@@ -777,6 +799,8 @@ void Map::RemoveFromMap(Transport* obj, bool remove)
     }
     else
         _transports.erase(obj);
+
+    RemoveUpdateObject(obj);
 
     obj->ResetMap();
 
@@ -1704,9 +1728,12 @@ void Map::SendObjectUpdates()
     while (!_updateObjects.empty())
     {
         Object* obj = *_updateObjects.begin();
-        ASSERT(obj->IsInWorld());
 
         _updateObjects.erase(_updateObjects.begin());
+
+        if (!obj->IsInWorld())
+            continue;
+
         obj->BuildUpdate(update_players);
     }
 
@@ -1718,7 +1745,6 @@ void Map::SendObjectUpdates()
             iter->second.Clear();
             continue;
         }
-
 
         iter->second.BuildPacket(packet);
         iter->first->SendDirectMessage(&packet);
@@ -1783,6 +1809,9 @@ void Map::AddObjectToRemoveList(WorldObject* obj)
     ASSERT(obj->GetMapId() == GetId() && obj->GetInstanceId() == GetInstanceId());
 
     obj->CleanupsBeforeDelete(false);                            // remove or simplify at least cross referenced links
+
+    RemoveUpdateObject(obj);
+    RemoveObjectFromMapUpdateList(obj);
 
     i_objectsToRemove.insert(obj);
     //LOG_DEBUG("maps", "Object ({}) added to removing list.", obj->GetGUID().ToString());

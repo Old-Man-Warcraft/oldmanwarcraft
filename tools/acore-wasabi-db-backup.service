@@ -1,0 +1,12 @@
+[Unit]
+Description=AzerothCore Wasabi database backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/azerothcore-wotlk
+ExecStart=/root/azerothcore-wotlk/tools/backup_databases_to_wasabi.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

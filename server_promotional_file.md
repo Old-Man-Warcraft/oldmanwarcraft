@@ -6,9 +6,9 @@ Whether you log in for thirty minutes after work or spend an entire weekend push
 
 The core of Old Man Warcraft is **Individual Progression**: a character-based progression path through Vanilla, TBC, and Wrath that keeps older content relevant and turns the full game world into part of your journey instead of a leveling hallway to endgame.
 
-Old Man Warcraft combines the nostalgia of original WoW with a curated set of modern systems: advanced playerbots, AI-powered conversations, scalable group content, personal progression, a brand-new guild leveling system with meaningful perks, guild territorial warfare, account-friendly quality-of-life features, and a server philosophy centered on respecting your time.
+Old Man Warcraft combines the nostalgia of original WoW with a curated set of modern systems: advanced playerbots, AI-powered conversations, scalable group content, personal progression, a guild leveling system with meaningful perks, guild territorial warfare, account-friendly quality-of-life features, and a server philosophy centered on respecting your time.
 
-Come check us out at [oldmanwarcraft.com](https://oldmanwarcraft.com) or [Discord](https://discord.gg/thecgn)!
+Come check us out at [oldmanwarcraft.com](https://oldmanwarcraft.com) or [Discord](https://discord.gg/D3jUuj8yKN)!
 
 ---
 
@@ -104,9 +104,8 @@ We are not interested in turning progression into a meaningless blur, but we als
 
 Our rates are tuned to preserve the feeling of earned progression while cutting out unnecessary drag.
 
-- **Adjustable Experience Rates:** Set your leveling pace to match your schedule, whether you want a more blizzlike journey or a faster climb when time is tight.
-- **Reputation Support:** `1.5x` reputation rates keep important grinds moving at a satisfying pace without making progression feel disposable.
-- **Twitch XP Bonus:** Link your account and earn a unique **1.5x Twitch Bonus** while you are live on stream.
+- **Adjustable Experience Rates:** Start at `1x` and choose the pace that fits your schedule with `2x` and `3x` options, plus VIP rates up to `4x` and `5x`.
+- **Live Stream Bonus:** Eligible live streamers can earn an additional XP bonus while broadcasting.
 - **Blizzlike Economy and Drops:** Core drop rates remain meaningful so professions, farming, and loot progression still matter.
 - **Steady, Sustainable Progression:** The goal is not instant gratification. It is a healthier pace for real-world schedules.
 
@@ -126,12 +125,11 @@ Whether you are a hardcore PvPer or just like the occasional competitive session
 
 Some of the best MMO memories come from the players and enemies you learn to hate.
 
-Our custom **Nemesis System** turns PvE deaths into persistent revenge targets. The world remembers who has beaten you, promoting them into powerful foes with unique affixes and scaling power.
+Our custom **Nemesis System** turns PvE deaths into persistent revenge targets. The world remembers who has beaten you, letting recurring enemies grow in threat and become part of your character's story.
 
-- **NemesisTracker Companion Addon:** Track your rivals with a dedicated in-game interface built to surface last-seen locations and personal Nemesis data inside the client.
-- **Dynamic Promotions:** City Siege attackers and defenders can become temporary Nemeses, creating high-stakes conflicts during server events.
-- **Persistent Rivalries:** Recurring enemies and standout encounters gain ranks (1-5+) and affixes like `Vampiric`, `Enraged`, or `Spellward`, becoming part of your personal story.
-- **Rewards & Revenge:** Hunting down your Nemesis grants unique revenge rewards, while other players can claim bounties on world-famous threats.
+- **Persistent Rivalries:** Dangerous enemies can return as ranked Nemeses tied to your journey, giving repeat encounters real identity.
+- **Escalating Threat:** Nemeses grow more dangerous over time, turning ordinary defeats into memorable rematches.
+- **Rewards & Revenge:** Hunting down your Nemesis earns special rewards and the satisfaction of settling the score.
 
 ## Financial Flexibility: The Goblin Bank
 
@@ -180,11 +178,12 @@ Here is what defines the Old Man Warcraft experience:
 - Smart playerbots for parties, raids, and world play
 - AI-powered assistant tools and conversational bot systems
 - Flexible raid autobalance, Mythic+, and challenge content
-- A custom Nemesis System with companion addon support
+- A custom Nemesis System with ranked revenge targets and rewards
 - **25-level Guild Progression** with guild XP, shared perks, and utility unlocks
 - **Guild Wars** with capturable territories, war declarations, and open-world zone battles
 - **Goblin Bank** loan system with repayment and credit tracking
-- Adjustable XP rates with **Twitch Live** XP boosts
+- Adjustable XP rates from **1x-3x**, with VIP options up to **5x**
+- Live stream XP bonuses for eligible broadcasters
 - Solo queue and custom PvP systems
 - VIP account perks and portable convenience features
 - Strong quality-of-life upgrades without losing the Wrath feel
@@ -199,6 +198,6 @@ Ready to jump back in?
 
 Grab your gear and join us at [oldmanwarcraft.com](https://oldmanwarcraft.com).
 
-Join the community on [Discord](https://discord.gg/thecgn).
+Join the community on [Discord](https://discord.gg/D3jUuj8yKN).
 
 Welcome to the retirement home.

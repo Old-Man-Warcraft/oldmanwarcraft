@@ -1,0 +1,10 @@
+[Unit]
+Description=Run AzerothCore Wasabi database backup every hour
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+Unit=acore-wasabi-db-backup.service
+
+[Install]
+WantedBy=timers.target

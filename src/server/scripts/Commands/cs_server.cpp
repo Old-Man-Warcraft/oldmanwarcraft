@@ -217,7 +217,6 @@ public:
 #ifdef MOD_PLAYERBOTS
         handler->PSendSysMessage("Using Playerbots DB Revision: {}", sWorld->GetPlayerbotsDBRevision());
 #endif
-        
 
         std::string lldb = "No updates found!";
         if (QueryResult resL = LoginDatabase.Query("SELECT name FROM updates ORDER BY name DESC LIMIT 1"))
@@ -248,7 +247,6 @@ public:
 #ifdef MOD_PLAYERBOTS
         handler->PSendSysMessage("PlayerbotsDatabase queue size: {}", PlayerbotsDatabase.QueueSize());
 #endif
-        
 
         if (Acore::Module::GetEnableModulesList().empty())
             handler->PSendSysMessage("No modules are enabled");
