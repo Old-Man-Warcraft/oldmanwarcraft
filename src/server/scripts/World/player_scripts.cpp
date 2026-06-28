@@ -18,6 +18,7 @@
 #include "LFGMgr.h"
 #include "Player.h"
 #include "PlayerScript.h"
+#include "QuestPackets.h"
 
 enum ApprenticeAnglerQuestEnum
 {
@@ -65,14 +66,10 @@ public:
             player->SaveToDB(false, false);
 
             // Send packet with money
-            WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, (4 + 4 + 4 + 4 + 4));
-            data << uint32(quest->GetQuestId());
-            data << uint32(0);
-            data << uint32(moneyRew);
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(0);
-            player->SendDirectMessage(&data);
+            WorldPackets::Quest::QuestGiverQuestComplete questGiverQuestComplete;
+            questGiverQuestComplete.QuestId = quest->GetQuestId();
+            questGiverQuestComplete.RewardMoney = moneyRew;
+            player->SendDirectMessage(questGiverQuestComplete.Write());
         }
     }
 };
