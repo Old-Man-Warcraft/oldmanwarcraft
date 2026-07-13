@@ -701,6 +701,7 @@ public:
 
     [[nodiscard]] virtual bool isBeingLoaded() const { return false;}
     [[nodiscard]] bool IsDuringRemoveFromWorld() const {return m_duringRemoveFromWorld;}
+    [[nodiscard]] bool IsCleanupDone() const { return m_cleanupDone; }
 
     /*********************************************************/
     /***                    UNIT HELPERS                   ***/

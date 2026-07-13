@@ -533,6 +533,9 @@ void Object::ClearUpdateMask(bool remove)
 
 void Object::BuildFieldsUpdate(Player* player, UpdateDataMapType& data_map)
 {
+    if (!player || !player->IsInWorld() || player->IsDuringRemoveFromWorld())
+        return;
+
     UpdateDataMapType::iterator iter = data_map.find(player);
 
     if (iter == data_map.end())

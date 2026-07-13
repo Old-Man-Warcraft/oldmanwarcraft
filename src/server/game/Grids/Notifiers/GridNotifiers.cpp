@@ -198,6 +198,9 @@ void MessageDistDeliverer::Visit(VisiblePlayersMap const& m)
     for (auto const& kvPair : m)
     {
         Player const* target = kvPair.second;
+        if (target->IsDuringRemoveFromWorld())
+            continue;
+
         if (i_distSq != 0.0f && target->GetSightPosition().GetExactDist2dSq(i_source) > i_distSq)
             continue;
 

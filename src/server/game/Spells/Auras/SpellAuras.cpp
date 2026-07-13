@@ -641,6 +641,12 @@ void Aura::UpdateTargetMap(Unit* caster, bool apply)
             targets.erase(itr++);
         else
         {
+            // skip targets that are already being deleted
+            if (itr->first->IsCleanupDone())
+            {
+                targets.erase(itr++);
+                continue;
+            }
             // owner has to be in world, or effect has to be applied to self
             if (!GetOwner()->IsSelfOrInSameMap(itr->first))
             {
