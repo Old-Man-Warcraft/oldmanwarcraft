@@ -129,3 +129,5 @@ env/logs/Server.log
 env/logs/Playerbots.log
 env/logs/Errors.log
 logs/
+server_promotional_file.md
+azerothcore-wotlk.code-workspace

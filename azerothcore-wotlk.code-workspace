@@ -9,16 +9,6 @@
 	],
 	"settings": {
 		"mcp": {
-			"servers": {
-				"oldmanMCP": {
-					"url": "https://oldmanwarcraft.com/api/mcp/http",
-					"type": "http",
-					"headers": {
-						"X-API-Key": "omw_b2b228ca80cc43f26ad442385f65664e7ad9c86d6f031d01535f3b46b854c08a"
-					}
-				}
-			},
-			"inputs": []
-		}
+
 	}
 }

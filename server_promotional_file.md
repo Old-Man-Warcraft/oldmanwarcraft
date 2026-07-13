@@ -1,29 +1,41 @@
 # Welcome to Old Man Warcraft: WotLK, Reimagined for Adults
 
-We built **Old Man Warcraft** for players who still love Wrath of the Lich King but no longer have the time or patience for the parts of MMO life that get in the way of actually having fun. This is a custom 3.3.5a experience built around character-based individual progression, flexibility, accessibility, and long-term progression without sacrificing the spirit of classic World of Warcraft.
+We built **Old Man Warcraft** for players who still love Wrath of the Lich King but no longer have the time or patience for the parts of MMO life that get in the way of actually having fun. This is a custom 3.3.5a experience built around two pillars: **Individual Progression** through the full arc of Warcraft history, and **Advanced Playerbots** that make the entire game world playable on your schedule.
 
-Whether you log in for thirty minutes after work or spend an entire weekend pushing progression, the server is built to support the way adults actually play. You can level steadily, tackle dungeons and raids without waiting on a perfect roster, enjoy meaningful character progression through multiple eras of content, and experience a world that still feels social and alive even during off-hours.
-
-The core of Old Man Warcraft is **Individual Progression**: a character-based progression path through Vanilla, TBC, and Wrath that keeps older content relevant and turns the full game world into part of your journey instead of a leveling hallway to endgame.
-
-Old Man Warcraft combines the nostalgia of original WoW with a curated set of modern systems: advanced playerbots, AI-powered conversations, scalable group content, personal progression, a guild leveling system with meaningful perks, guild territorial warfare, account-friendly quality-of-life features, and a server philosophy centered on respecting your time.
+Whether you log in for thirty minutes after work or spend an entire weekend pushing progression, the server is built to support the way adults actually play. You can level steadily, tackle dungeons and raids without waiting on a perfect roster, and experience a world that still feels social and alive even during off-hours.
 
 Come check us out at [oldmanwarcraft.com](https://oldmanwarcraft.com) or [Discord](https://discord.gg/D3jUuj8yKN)!
 
 ---
 
-## True Individual Progression
+## Individual Progression: Your Journey, Your Era
 
-Experience the full Warcraft journey from the original game through The Burning Crusade and into Wrath of the Lich King at your own pace.
+The core of Old Man Warcraft — and what separates it from every other WotLK server — is **Individual Progression**: a character-based path through Vanilla, TBC, and Wrath of the Lich King that keeps the entire game world relevant and turns your adventure into a real journey rather than a sprint to the final patch.
 
-Instead of rushing everyone to the same final patch endgame, Old Man Warcraft gives your character an **individual progression path** through the major eras of content. That means older raids, dungeons, and zones matter again. Your journey feels like an actual adventure rather than a race to skip straight to the last tier.
+Instead of everyone starting at the finish line, you move through the eras *you have earned*. The world reacts to your progress. Content that most servers have abandoned becomes the heart of your experience.
 
-- **Progressive Eras:** You move through Vanilla, TBC, and WotLK in sequence, unlocking content as your character advances rather than starting at the finish line.
-- **Phased Content:** NPCs, drops, encounters, and world states react to *your* progression level, creating a more personalized world.
-- **Relevant Legacy Content:** Classic dungeons, raids, and elite outdoor zones remain meaningful and appropriately tuned for the era you're currently playing.
-- **Play Together Your Way:** Friends can move through progression at different speeds while still sharing the same world, grouping together when it makes sense and using bots to fill the gaps when needed.
+- **Progressive Era Advancement:** Move through Vanilla, TBC, and WotLK in sequence. You unlock each era through play, not a server-wide schedule. Your character's history is genuinely yours.
+- **Phased, Reactive World:** NPCs, loot, encounters, and world states respond to *your* progression level. The world treats you differently depending on where you are in your journey.
+- **Relevant Legacy Content:** Classic dungeons, raids, and elite outdoor zones are tuned to matter at the era you are currently in. Nothing is obsolete. Nothing is skipped.
+- **Play at Your Own Speed:** Friends can be at different progression stages and still share the same world — grouping when it makes sense, using bots to fill gaps when it doesn't.
+- **A Reason to Experience Everything:** For the first time in years, older raid tiers, classic zones, and forgotten dungeons are part of an active progression path, not just transmog runs.
 
-This system makes the entire game world matter again, not just the latest raid tier.
+This is the full Warcraft story, played as it was meant to be — start to finish, at your pace, with every chapter worth experiencing.
+
+## Playerbots: Your Crew, Always Ready
+
+The hardest part of any private server is not the content — it is finding people at the exact moment you want to play. Old Man Warcraft solves that with the most advanced playerbot integration available on any WotLK server.
+
+These are not simple follow-bots. They are capable, geared, class-aware companions that make real content accessible whenever you are ready for it.
+
+- **Run Real Content, Anytime:** Fill your party or raid with intelligent AI companions that can tank, heal, or DPS at a competent level. Queue for a dungeon at 2am, start a raid with friends and bots filling the gaps, or take on outdoor elites without waiting on a roster.
+- **Bots That Grow With You:** Your bot companions level, gear, and advance alongside your character. They feel like persistent party members — part of your ongoing story — not disposable throw-aways.
+- **Class-Aware Behavior:** Bots understand their roles. They respond to aggro, manage cooldowns, follow strategic commands, and handle real encounter mechanics rather than standing still and auto-attacking.
+- **AI-Powered Conversation:** Powered by real LLMs, bots and NPCs can communicate naturally in chat. They have personality, respond in context, and make the world feel inhabited rather than empty.
+- **Old Man Assistant Addon:** Our custom in-game AI interface gives you instant access to server documentation, synced Aowow data, and curated server knowledge — all from inside the game client.
+- **Always-On Economy:** An active Auction House bot keeps the market moving around the clock so you are never stuck without supplies.
+
+The result is a server where you are never truly alone, and content is never gated behind the availability of other people.
 
 ## Why Old Man Warcraft Exists
 
@@ -40,22 +52,6 @@ This server is for:
 - Long-term MMO players who want progression to feel meaningful again
 
 You should be able to log in, make progress, and have a good time without spending your entire session forming a group, traveling across the world for basic convenience, or feeling locked out because most of the server is active in a different time zone.
-
-## A World That Actually Feels Alive
-
-The hardest part of many private servers is not the content. It is finding people at the exact moment you want to play.
-
-Old Man Warcraft addresses that by making the world feel active, responsive, and social even when your guild is offline.
-
-- **Intelligent Playerbots:** Fill parties and raids with capable AI companions that can tank, heal, DPS, follow commands, and help you run real content on demand.
-- **Bots That Grow With You:** Your companions level, gear, and adventure alongside you, making them feel like part of your ongoing journey instead of disposable placeholders.
-- **Next-Gen AI Chat & Assistant:** Powered by real LLMs, bots and NPCs can communicate naturally. Our custom **Old Man Assistant** addon provides an in-game AI interface backed by server documentation, synced Aowow data, and curated server knowledge to help you on your journey.
-- **Always-On Economy:** An active Auction House bot keeps the market moving, while the **Goblin Bank** loan system adds another layer of adult-friendly financial flexibility, with real consequences for defaulting.
-- **Global Cross-Faction Chat:** The community stays connected across faction lines, helping the server feel like one living world instead of multiple isolated groups.
-- **Guilds That Actually Progress:** Guilds now earn experience from the things your members are already doing—questing, leveling, exploring, and fighting—unlocking meaningful long-term perks as your community grows.
-- **Guild Territory That Matters:** Guilds can claim strategic zones, hold them through taxes and activity, and turn open-world ownership into a real source of pride, pressure, and rivalry.
-
-The result is a server where you can be self-sufficient without feeling alone.
 
 ## Raids & Dungeons on Your Terms
 
@@ -174,9 +170,9 @@ If that sounds like the kind of server you have been waiting for, you will proba
 
 Here is what defines the Old Man Warcraft experience:
 
-- Progressive character-based era advancement
-- Smart playerbots for parties, raids, and world play
-- AI-powered assistant tools and conversational bot systems
+- **Individual Progression** — your character moves through Vanilla, TBC, and WotLK in sequence; every era matters, nothing is skipped
+- **Advanced Playerbots** — capable, class-aware AI companions that level and gear with you, available for dungeons and raids anytime
+- AI-powered conversation and the **Old Man Assistant** in-game addon
 - Flexible raid autobalance, Mythic+, and challenge content
 - A custom Nemesis System with ranked revenge targets and rewards
 - **25-level Guild Progression** with guild XP, shared perks, and utility unlocks
