@@ -170,6 +170,7 @@ struct go_suppression_device : public GameObjectAI
     {
         if (action == ACTION_DEACTIVATE)
         {
+            Deactivate();
             _events.CancelEvent(EVENT_SUPPRESSION_RESET);
         }
         else if (action == ACTION_DISARMED)
@@ -230,9 +231,23 @@ class spell_suppression_aura : public SpellScript
     }
 };
 
+struct npc_blackwing_taskmaster : public ScriptedAI
+{
+    npc_blackwing_taskmaster(Creature* creature) : ScriptedAI(creature) { }
+
+    void JustDied(Unit* /*killer*/) override
+    {
+        std::list<GameObject*> _goList;
+        GetGameObjectListWithEntryInGrid(_goList, me, GO_SUPPRESSION_DEVICE, 30.0f);
+        if (!_goList.empty())
+            _goList.front()->AI()->DoAction(ACTION_DISARMED);
+    }
+};
+
 void AddSC_boss_broodlord()
 {
     RegisterBlackwingLairCreatureAI(boss_broodlord);
+    RegisterBlackwingLairCreatureAI(npc_blackwing_taskmaster);
     RegisterBlackwingLairGameObjectAI(go_suppression_device);
     RegisterSpellScript(spell_suppression_aura);
 }

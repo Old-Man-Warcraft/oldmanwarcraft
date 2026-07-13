@@ -297,7 +297,8 @@ struct boss_ouro : public BossAI
 
     void UpdateAI(uint32 diff) override
     {
-        UpdateVictim();
+        if (!_submerged)
+            UpdateVictim();
 
         scheduler.Update(diff,
             std::bind(&ScriptedAI::DoMeleeAttackIfReady, this));
@@ -381,6 +382,11 @@ struct npc_dirt_mound : ScriptedAI
     {
         if (_instance)
         {
+            if (Creature* ouro = _instance->GetCreature(DATA_OURO))
+            {
+                if (ouro->IsAlive())
+                    return;
+            }
             _instance->SetBossState(DATA_OURO, FAIL);
         }
 

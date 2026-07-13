@@ -778,7 +778,7 @@ public:
         npc_high_overlord_saurfang_igbAI(Creature* creature) : ScriptedAI(creature), _instance(creature->GetInstanceScript())
         {
             _events.Reset();
-            _controller.ResetSlots(TEAM_HORDE, creature->GetTransport()->ToMotionTransport());
+            _controller.ResetSlots(TEAM_HORDE, creature->GetTransport() ? creature->GetTransport()->ToMotionTransport() : nullptr);
             me->SetRegeneratingHealth(false);
             me->m_CombatDistance = 70.0f;
             _firstMageCooldown = GameTime::GetGameTime().count() + 45;
@@ -1113,7 +1113,7 @@ public:
         npc_muradin_bronzebeard_igbAI(Creature* creature) : ScriptedAI(creature), _instance(creature->GetInstanceScript())
         {
             _events.Reset();
-            _controller.ResetSlots(TEAM_ALLIANCE, creature->GetTransport()->ToMotionTransport());
+            _controller.ResetSlots(TEAM_ALLIANCE, creature->GetTransport() ? creature->GetTransport()->ToMotionTransport() : nullptr);
             me->SetRegeneratingHealth(false);
             me->m_CombatDistance = 70.0f;
             _firstMageCooldown = GameTime::GetGameTime().count() + 45;
