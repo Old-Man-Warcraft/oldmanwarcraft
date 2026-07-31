@@ -815,11 +815,12 @@ void AuraEffect::ApplySpellMod(Unit* target, bool apply)
     if (!m_spellmod || !target->IsPlayer())
         return;
 
-    target->ToPlayer()->AddSpellMod(m_spellmod, apply);
-
     // Auras with charges do not mod amount of passive auras
     if (GetBase()->IsUsingCharges())
+    {
+        target->ToPlayer()->AddSpellMod(m_spellmod, apply);
         return;
+    }
 
     // Guard against infinite recursion: a spell mod recalculating an aura that
     // triggers ApplySpellMod again (self-referencing or mutual spell mods).
@@ -830,6 +831,8 @@ void AuraEffect::ApplySpellMod(Unit* target, bool apply)
         return;
     }
     m_isRecalculatingPassiveAuras = true;
+
+    target->ToPlayer()->AddSpellMod(m_spellmod, apply);
 
     // reapply some passive spells after add/remove related spellmods
     // Warning: it is a dead loop if 2 auras each other amount-shouldn't happen

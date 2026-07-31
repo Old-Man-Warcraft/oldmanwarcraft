@@ -109,8 +109,8 @@ function configure_files() {
     TRACE_BEGIN_STRING="SIGSEGV"
     TRACE_FILE="$LOGS_PATH/${LOG_PREFIX_NAME}_trace.log"
     ERR_FILE="$LOGS_PATH/${LOG_PREFIX_NAME}_error.log"
-    SYSLOG="$LOGS_PATH/${LOG_PREFIX_NAME}_system.log"
-    SYSERR="$LOGS_PATH/${LOG_PREFIX_NAME}_system.err"
+    SYSLOG=""
+    SYSERR=""
     LINKS_FILE="$LOGS_PATH/${LOG_PREFIX_NAME}_crash_links.link"
 }
 

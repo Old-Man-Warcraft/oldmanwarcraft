@@ -29,6 +29,9 @@ void ACSoapThread(const std::string& host, uint16 port)
     soap_init(&soap);
     soap_set_imode(&soap, SOAP_C_UTFSTRING);
     soap_set_omode(&soap, SOAP_C_UTFSTRING);
+#ifdef MSG_NOSIGNAL
+    soap.socket_flags = MSG_NOSIGNAL;
+#endif
 
     // check every 3 seconds if world ended
     soap.accept_timeout = 3;
