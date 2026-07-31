@@ -106,6 +106,10 @@ local.properties
 /vcpkg/
 /vcpkg-ports/
 
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+
 # ==================
 #
 #  CUSTOM
